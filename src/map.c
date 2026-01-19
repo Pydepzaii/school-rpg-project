@@ -1,22 +1,47 @@
 #include "map.h"
+#include <stdio.h>
 
-void InitMap(GameMap *map) {
-    // 1. Tải ảnh từ thư mục resources
-    // QUAN TRỌNG: Sửa "world_map.png" thành tên file ảnh thật của bạn nếu khác
-    map->texture = LoadTexture("resources/thuvien.png"); 
-    
-    // 2. Chỉnh độ to của map. 
-    // Để 1.0f là giữ nguyên, 2.0f là to gấp đôi.
-    map->scale = 2.0f; 
+void LoadMap(GameMap *map, int mapID) {
+    // Nếu đang có map cũ thì xóa đi trước khi load map mới
+    if (map->texture.id > 0) UnloadTexture(map->texture);
+
+    map->currentMapID = mapID;
+    map->wallCount = 0; // Reset tường
+    map->scale = 2.0f;
+
+    switch (mapID) {
+        case MAP_THU_VIEN:
+            map->texture = LoadTexture("resources/thuvien.png");
+            // -- Tạo tường cho Thư Viện --
+            // Tường trái
+           // map->walls[0] = (Rectangle){0, 0, 50, 450}; 
+            // Cái bàn ở giữa (Vị trí X, Y, Rộng, Cao) - Bạn phải tự căn chỉnh
+            //map->walls[1] = (Rectangle){300, 250, 200, 80}; 
+            map->wallCount = 0; 
+            break;
+
+        case MAP_NHA_AN:
+            // map->texture = LoadTexture("resources/nhaan.png");
+            // Thêm tường nhà ăn...
+            break;
+            
+        // Thêm các case khác...
+        default:
+            break;
+    }
 }
 
 void DrawMap(GameMap *map) {
-    // Vẽ map tại vị trí (0,0) tức là góc trên cùng bên trái
-    // Dùng hàm DrawTextureEx để có thể phóng to (scale) được
     DrawTextureEx(map->texture, (Vector2){0, 0}, 0.0f, map->scale, WHITE);
 }
 
+void DrawMapDebug(GameMap *map) {
+    // Vẽ khung đỏ quanh các bức tường để dễ kiểm tra
+    for (int i = 0; i < map->wallCount; i++) {
+        DrawRectangleLinesEx(map->walls[i], 2.0f, RED);
+    }
+}
+
 void UnloadMap(GameMap *map) {
-    // Giải phóng bộ nhớ RAM chứa ảnh map
     UnloadTexture(map->texture);
 }

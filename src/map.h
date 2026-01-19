@@ -2,16 +2,23 @@
 #define MAP_H
 
 #include "raylib.h"
+#include "settings.h" // Để lấy MAX_MAP_WALLS
 
-// Định nghĩa cấu trúc Map
 typedef struct {
-    Texture2D texture; // Biến chứa hình ảnh
-    float scale;       // Biến chỉnh độ to nhỏ của map
+    int currentMapID;  // Đang ở map số mấy
+    Texture2D texture; 
+    float scale;       
+    
+    // --- HỆ THỐNG VA CHẠM (WALLS) ---
+    // Danh sách các hình chữ nhật vô hình ngăn cản người chơi
+    Rectangle walls[MAX_MAP_WALLS]; 
+    int wallCount; // Số lượng tường hiện có trong map này
 } GameMap;
 
-// Khai báo các hàm sẽ dùng
-void InitMap(GameMap *map);     // Hàm nạp map
-void DrawMap(GameMap *map);     // Hàm vẽ map
-void UnloadMap(GameMap *map);   // Hàm xóa map khi tắt game
+// Hàm LoadMap giờ nhận vào ID để biết load map nào
+void LoadMap(GameMap *map, int mapID);     
+void DrawMap(GameMap *map);     
+void DrawMapDebug(GameMap *map); // Hàm vẽ viền đỏ để debug tường
+void UnloadMap(GameMap *map);   
 
 #endif
