@@ -3,7 +3,7 @@
 void InitPlayer(Player *player) {
     // Load ảnh từ thư mục resources
     // Lưu ý: Dùng đường dẫn "resources/..." để máy nào cũng hiểu
-    player->texture = LoadTexture("resources/mouse_knight.png"); 
+    player->texture = LoadTexture("resources/main_hocba.png"); 
     player->position.x = 400; // Giữa màn hình (tạm tính)
     player->position.y = 225;
     player->speed = 5.0f;
