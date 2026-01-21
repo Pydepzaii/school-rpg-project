@@ -2,30 +2,28 @@
 #include <stdio.h>
 
 void LoadMap(GameMap *map, int mapID) {
-    // Nếu đang có map cũ thì xóa đi trước khi load map mới
+    // BƯỚC 1: Dọn dẹp map cũ
     if (map->texture.id > 0) UnloadTexture(map->texture);
 
+    // BƯỚC 2: Thiết lập thông số map mới
     map->currentMapID = mapID;
-    map->wallCount = 0; // Reset tường
-    map->scale = 2.0f;
+    map->wallCount = 0; 
+    map->scale = 2.0f;  
 
+    // BƯỚC 3: Nạp dữ liệu riêng
     switch (mapID) {
         case MAP_THU_VIEN:
             map->texture = LoadTexture("resources/thuvien.png");
-            // -- Tạo tường cho Thư Viện --
-            // Tường trái
-           // map->walls[0] = (Rectangle){0, 0, 50, 450}; 
-            // Cái bàn ở giữa (Vị trí X, Y, Rộng, Cao) - Bạn phải tự căn chỉnh
-            //map->walls[1] = (Rectangle){300, 250, 200, 80}; 
-            map->wallCount = 0; 
+            
+            // --- KHU VỰC ĐẶT TƯỜNG ---
+            // Paste code bạn copy từ Terminal vào đây:
+            map->walls[map->wallCount++] = (Rectangle){ 183, 204, 94, 40 };
+            map->walls[map->wallCount++] = (Rectangle){ 168, 314, 154, 36 };
             break;
 
         case MAP_NHA_AN:
-            // map->texture = LoadTexture("resources/nhaan.png");
-            // Thêm tường nhà ăn...
             break;
             
-        // Thêm các case khác...
         default:
             break;
     }
@@ -35,10 +33,13 @@ void DrawMap(GameMap *map) {
     DrawTextureEx(map->texture, (Vector2){0, 0}, 0.0f, map->scale, WHITE);
 }
 
+// HÀM NÀY QUẢN LÝ MÀU CỦA TƯỜNG CŨ (ĐÃ LƯU)
 void DrawMapDebug(GameMap *map) {
-    // Vẽ khung đỏ quanh các bức tường để dễ kiểm tra
     for (int i = 0; i < map->wallCount; i++) {
-        DrawRectangleLinesEx(map->walls[i], 2.0f, RED);
+        // Tô nền ĐỎ mờ
+        DrawRectangleRec(map->walls[i], Fade(RED, 0.6f));
+        // Vẽ viền ĐỎ đậm
+        DrawRectangleLinesEx(map->walls[i], 3.0f, RED);
     }
 }
 

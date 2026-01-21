@@ -4,26 +4,25 @@
 #include "raylib.h"
 
 typedef struct {
-    int id;               // Định danh NPC
-    int mapID;            // NPC này sống ở map nào?
-    char name[30];        // Tên NPC (VD: "Co Dau Bep")
+    int id;               
+    int mapID;            // Quan trọng: NPC thuộc về map nào?
+    char name[30];        // Tên hiển thị
     
-    Vector2 position;     
-    Texture2D texture;    
+    Vector2 position;     // Vị trí đứng
+    Texture2D texture;    // Ảnh Sprite sheet
     
-    // --- ANIMATION ---
-    int frameCount;       
-    int currentFrame;     
-    float frameTimer;     
-    float frameSpeed;     
+    // --- ANIMATION (Hoạt hình) ---
+    int frameCount;       // Tổng số khung hình trong ảnh (VD: 4 hình)
+    int currentFrame;     // Khung hình đang vẽ hiện tại
+    float frameTimer;     // Bộ đếm thời gian để chuyển hình
+    float frameSpeed;     // Tốc độ nhấp nháy (càng nhỏ càng nhanh)
     
-    // --- HỘI THOẠI (Cơ bản) ---
-    char dialog[100];     // Câu thoại mặc định
-    bool isTalking;       // Đang nói chuyện hay không
+    // --- HỘI THOẠI ---
+    char dialog[100];     // Câu thoại (chưa hỗ trợ tiếng Việt có dấu)
+    bool isTalking;       
 
 } Npc;
 
-// Khởi tạo một NPC cụ thể vào danh sách
 void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name);
 void UpdateNpc(Npc *npc);            
 void DrawNpc(Npc *npc);              

@@ -1,80 +1,88 @@
+// FILE: src/main.c
 #include "raylib.h"
 #include "settings.h"
 #include "player.h"
 #include "map.h"
 #include "npc.h"
-#include <stdio.h> // Debug
+#include "debug.h" // <--- Đã thêm file debug vào đây
+#include <stdio.h> 
 
 int main() {
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI);
+    // 1. SETUP CỬA SỔ
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI); // Hỗ trợ màn hình độ phân giải cao
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_TITLE);
-    SetTargetFPS(FPS);
+    SetTargetFPS(FPS); // Khóa FPS lại (thường là 60)
 
-    // --- 1. KHỞI TẠO PLAYER (CHỌN CLASS) ---
-    // Sau này có thể làm Menu chọn, giờ ta chọn cứng CLASS_STUDENT
+    // 2. KHỞI TẠO DỮ LIỆU (INIT)
+    // - Tạo Player
     Player mainCharacter;
     InitPlayer(&mainCharacter, CLASS_STUDENT); 
 
-    // --- 2. KHỞI TẠO MAP ---
+    // - Tạo Map
     GameMap currentMap;
-    currentMap.texture.id = 0; // Đánh dấu để biết chưa load
-    LoadMap(&currentMap, MAP_THU_VIEN); // Bắt đầu ở thư viện
+    currentMap.texture.id = 0; // Đánh dấu ID = 0 (chưa load gì)
+    LoadMap(&currentMap, MAP_THU_VIEN); // Load map đầu tiên
 
-    // --- 3. KHỞI TẠO HỆ THỐNG NPC (MẢNG) ---
+    // - Tạo NPC (Dùng mảng để quản lý nhiều NPC)
     Npc npcList[MAX_NPCS];
     int npcCount = 0;
 
-    // NPC 1: Cô Đầu Bếp (Chỉ xuất hiện ở MAP_THU_VIEN - ví dụ demo)
+    // NPC 01: Cô Đầu Bếp
     InitNpc(&npcList[0], MAP_THU_VIEN, "resources/codaubep.png", (Vector2){500, 300}, "Co Dau Bep");
     npcCount++;
 
-    // NPC 2: Ví dụ thêm một bạn học sinh khác (Thầy giáo...)
-    // InitNpc(&npcList[1], MAP_SAN_TRUONG, "resources/thaygiao.png", (Vector2){200, 200}, "Thay Giao");
-    // npcCount++;
-
+    // 3. VÒNG LẶP GAME (GAME LOOP)
     while (!WindowShouldClose()) {
-        // --- XỬ LÝ LOGIC ---
+        // --- PHẦN LOGIC (UPDATE) ---
+        // (Tính toán mọi thay đổi trước khi vẽ)
         
-        // (Cheat) Nhấn F1, F2 để test chuyển map
+        // Debug: Phím tắt chuyển map nhanh
         if (IsKeyPressed(KEY_F1)) LoadMap(&currentMap, MAP_THU_VIEN);
         if (IsKeyPressed(KEY_F2)) LoadMap(&currentMap, MAP_NHA_AN);
 
-        // Update Player (Truyền toàn bộ dữ liệu va chạm vào)
+        // Upda te Người chơi (Truyền map và npc vào để check va chạm)
         UpdatePlayer(&mainCharacter, &currentMap, npcList, npcCount);
 
-        // Update NPC (Chỉ update NPC nào đang ở cùng map với người chơi)
+        // Update NPC: Chỉ update những NPC đang ở cùng map với người chơi
         for (int i = 0; i < npcCount; i++) {
             if (npcList[i].mapID == currentMap.currentMapID) {
                 UpdateNpc(&npcList[i]);
             }
         }
 
-        // --- VẼ HÌNH ---
+        // --- PHẦN VẼ (DRAW) ---
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(RAYWHITE); // Xóa màn hình cũ
             
-            // 1. Vẽ Map
+            // Lớp 1: Vẽ nền Map
             DrawMap(&currentMap);
-            // DrawMapDebug(&currentMap); // Bỏ comment dòng này để xem tường va chạm
-
-            // 2. Vẽ NPC (Chỉ vẽ ai đang ở map này)
+            // (Phần vẽ tường Debug cũ đã được chuyển sang hàm Debug_UpdateAndDraw bên dưới)
+            
+            // Lớp 2: Vẽ NPC
             for (int i = 0; i < npcCount; i++) {
                 if (npcList[i].mapID == currentMap.currentMapID) {
                     DrawNpc(&npcList[i]);
                 }
             }
 
-            // 3. Vẽ Player
+            // Lớp 3: Vẽ Player (Vẽ sau cùng để đè lên trên nền)
             DrawPlayer(&mainCharacter);
 
-            // 4. UI Thông tin
+            // --- [TOOL DEBUG] ---
+            // Gọi hàm này để: 
+            // 1. Ấn phím 0 thì hiện tường đỏ
+            // 2. Kéo chuột thì hiện tường xanh để lấy tọa độ
+            Debug_UpdateAndDraw(&currentMap); 
+
+            // Lớp 4: UI (Giao diện người dùng)
             DrawText("F1: Thu Vien | F2: Nha An (Trong)", 10, 10, 20, BLACK);
             DrawText(TextFormat("HP: %d/%d", mainCharacter.stats.hp, mainCharacter.stats.maxHp), 10, 40, 20, RED);
 
         EndDrawing();
     }
 
-    // --- DỌN DẸP ---
+    // 4. DỌN DẸP (UNLOAD)
+    // Giải phóng RAM trước khi tắt
     UnloadPlayer(&mainCharacter);
     UnloadMap(&currentMap);
     for (int i = 0; i < npcCount; i++) UnloadNpc(&npcList[i]);

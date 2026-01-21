@@ -5,55 +5,52 @@
 #include "map.h"
 #include "npc.h"
 
-// 1. Định nghĩa các Lớp Nhân Vật
+// Phân loại nghề nghiệp nhân vật (Dễ mở rộng sau này)
 typedef enum {
-    CLASS_STUDENT = 0, // Cân bằng
-    CLASS_WARRIOR,     // Máu trâu, đánh gần
-    CLASS_MAGE,        // Máu giấy, đánh xa
-    CLASS_ARCHER       // Tốc độ cao
+    CLASS_STUDENT = 0,
+    CLASS_WARRIOR,     
+    CLASS_MAGE,        
+    CLASS_ARCHER       
 } PlayerClass;
 
-// 2. Struct chứa chỉ số (Stats)
+// Chứa toàn bộ chỉ số sức mạnh
 typedef struct {
-    int hp;            // Máu hiện tại
-    int maxHp;         // Máu tối đa
-    int mana;          // Năng lượng
-    int damage;        // Sát thương vật lý
-    int magicPower;    // Sát thương phép
-    float moveSpeed;   // Tốc độ chạy
+    int hp;            // Máu
+    int maxHp;         
+    int mana;          
+    int damage;        
+    int magicPower;    
+    float moveSpeed;   // Tốc độ chạy (Pixel/Frame)
 } PlayerStats;
 
-// 3. Struct Skill (Dự phòng cho sau này)
+// Struct chưa skill (Dự phòng)
 typedef struct {
     char name[30];
     int manaCost;
     int cooldown;
 } Skill;
 
-// 4. Struct Player Chính
 typedef struct {
-    Vector2 position;     
-    Texture2D texture;    
+    Vector2 position;     // Tọa độ người chơi (X, Y)
+    Texture2D texture;    // Ảnh Sprite Sheet nhân vật
     
-    // --- HỆ THỐNG CLASS & STATS MỚI ---
-    PlayerClass pClass;   // Lớp nhân vật
-    PlayerStats stats;    // Các chỉ số
-    Skill skills[4];      // Mảng chứa 4 kỹ năng
+    PlayerClass pClass;   // Nghề nghiệp
+    PlayerStats stats;    // Chỉ số
+    Skill skills[4];      
     
-    // --- ANIMATION ---
-    Rectangle frameRec;   
-    int currentFrame;     
-    int framesCounter;    
-    int framesSpeed;      
-    int spriteWidth;      
-    int spriteHeight;     
+    // --- ANIMATION CONTROLLER ---
+    Rectangle frameRec;   // Khung hình chữ nhật đang cắt từ ảnh gốc
+    int currentFrame;     // Số thứ tự frame hiện tại (0, 1, 2...)
+    int framesCounter;    // Đếm frame để điều chỉnh tốc độ
+    int framesSpeed;      // Tốc độ chuyển động ảnh
+    int spriteWidth;      // Chiều rộng 1 frame đơn lẻ
+    int spriteHeight;     // Chiều cao 1 frame đơn lẻ
 
 } Player;
 
-// Khởi tạo Player cần biết chọn Class nào
 void InitPlayer(Player *player, PlayerClass chosenClass); 
 
-// Update cần biết Map và Danh sách NPC để xử lý va chạm
+// Hàm Update cần Map và NPC list để kiểm tra va chạm không đi xuyên qua được
 void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount);
 
 void DrawPlayer(Player *player);        
