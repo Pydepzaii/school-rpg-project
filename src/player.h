@@ -2,19 +2,58 @@
 #define PLAYER_H
 
 #include "raylib.h"
+#include "map.h"
+#include "npc.h"
 
-// Struct chứa mọi thông tin của nhân vật
-// Giúp quản lý code gọn gàng, truyền 1 biến player là có đủ thông tin
+// Phân loại nghề nghiệp nhân vật (Dễ mở rộng sau này)
+typedef enum {
+    CLASS_STUDENT = 0,
+    CLASS_WARRIOR,     
+    CLASS_MAGE,        
+    CLASS_ARCHER       
+} PlayerClass;
+
+// Chứa toàn bộ chỉ số sức mạnh
 typedef struct {
-    Vector2 position; // Vị trí x, y
-    Texture2D texture; // Hình ảnh
-    float speed;      // Tốc độ
+    int hp;            // Máu
+    int maxHp;         
+    int mana;          
+    int damage;        
+    int magicPower;    
+    float moveSpeed;   // Tốc độ chạy (Pixel/Frame)
+} PlayerStats;
+
+// Struct chưa skill (Dự phòng)
+typedef struct {
+    char name[30];
+    int manaCost;
+    int cooldown;
+} Skill;
+
+typedef struct {
+    Vector2 position;     // Tọa độ người chơi (X, Y)
+    Texture2D texture;    // Ảnh Sprite Sheet nhân vật
+    
+    PlayerClass pClass;   // Nghề nghiệp
+    PlayerStats stats;    // Chỉ số
+    Skill skills[4];      
+    
+    // --- ANIMATION CONTROLLER ---
+    Rectangle frameRec;   // Khung hình chữ nhật đang cắt từ ảnh gốc
+    int currentFrame;     // Số thứ tự frame hiện tại (0, 1, 2...)
+    int framesCounter;    // Đếm frame để điều chỉnh tốc độ
+    int framesSpeed;      // Tốc độ chuyển động ảnh
+    int spriteWidth;      // Chiều rộng 1 frame đơn lẻ
+    int spriteHeight;     // Chiều cao 1 frame đơn lẻ
+
 } Player;
 
-// Khai báo các hàm sẽ dùng (chưa viết code cụ thể ở đây)
-void InitPlayer(Player *player);        // Khởi tạo nhân vật
-void UpdatePlayer(Player *player);      // Tính toán di chuyển (Logic)
-void DrawPlayer(Player *player);        // Vẽ nhân vật (Đồ họa)
-void UnloadPlayer(Player *player);      // Dọn dẹp bộ nhớ khi tắt game
+void InitPlayer(Player *player, PlayerClass chosenClass); 
+
+// Hàm Update cần Map và NPC list để kiểm tra va chạm không đi xuyên qua được
+void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount);
+
+void DrawPlayer(Player *player);        
+void UnloadPlayer(Player *player);      
 
 #endif
