@@ -13,12 +13,10 @@
                 "${workspaceFolder}/src/player.c",
                 "${workspaceFolder}/src/map.c",
                 "${workspaceFolder}/src/npc.c",
-<<<<<<< Updated upstream
-                "${workspaceFolder}/src/debug.c", // <--- ĐÃ THÊM DÒNG NÀY (Nhớ dấu phẩy ở dòng trên)
-=======
                 "${workspaceFolder}/src/debug.c",
                 "${workspaceFolder}/src/renderer.c", // <--- ĐÃ THÊM DÒNG NÀY (Để xử lý vẽ lớp trước sau)
->>>>>>> Stashed changes
+                "${workspaceFolder}/src/interact.c",
+
                 
                 "-o",
                 "${workspaceFolder}/game.exe",
