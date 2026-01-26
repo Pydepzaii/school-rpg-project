@@ -1,30 +1,33 @@
-// FILE: .vscode/tasks.json
 {
     "version": "2.0.0",
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "Build RPG Game",
+            "label": "Build RPG Game Standard",
             "command": "gcc",
             "args": [
-                "-g", 
-                // --- DANH SÁCH FILE CODE (.c) ---
+                "-g",
+                // 1. LIỆT KÊ CÁC FILE CODE (.c)
                 "${workspaceFolder}/src/main.c",
+                "${workspaceFolder}/src/intro.c",  // <--- ĐÃ BỔ SUNG FILE NÀY
+                "${workspaceFolder}/src/ui_style.c",
                 "${workspaceFolder}/src/player.c",
                 "${workspaceFolder}/src/map.c",
                 "${workspaceFolder}/src/npc.c",
                 "${workspaceFolder}/src/debug.c",
-                "${workspaceFolder}/src/renderer.c", // <--- ĐÃ THÊM DÒNG NÀY (Để xử lý vẽ lớp trước sau)
+                "${workspaceFolder}/src/renderer.c",
+                "${workspaceFolder}/src/audio_manager.c",
                 "${workspaceFolder}/src/interact.c",
 
-                
                 "-o",
                 "${workspaceFolder}/game.exe",
-                
-                "-I", "${workspaceFolder}/include",
-                "-I", "${workspaceFolder}/src",
+
+                // 2. CHỈ ĐỊNH NƠI TÌM FILE HEADER (.h)
+                "-I", "${workspaceFolder}/src",      
+                "-I", "${workspaceFolder}/include",  
+
+                // 3. THƯ VIỆN LIÊN KẾT
                 "-L", "${workspaceFolder}/lib",
-                
                 "-lraylib",
                 "-lopengl32",
                 "-lgdi32",
@@ -38,7 +41,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "Compiler for Raylib Multi-file"
+            "detail": "Compiler for Clean Structure"
         }
     ]
 }
