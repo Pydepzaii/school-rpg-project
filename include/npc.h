@@ -18,12 +18,13 @@ typedef struct {
     float frameSpeed;     // Tốc độ nhấp nháy (càng nhỏ càng nhanh)
     
     // --- HỘI THOẠI ---
-    char dialog[100];     // Câu thoại (chưa hỗ trợ tiếng Việt có dấu)
+    char dialogKey[32];   // Ví dụ: "DEFAULT", "QUEST_1", "NO_MONEY"
+    char currentText[256]; // Chứa nội dung lấy từ file txt ra
     bool isTalking;       
 
 } Npc;
 
-void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name);
+void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, int id);
 void UpdateNpc(Npc *npc);            
 void DrawNpc(Npc *npc);              
 void UnloadNpc(Npc *npc);            

@@ -1,147 +1,183 @@
 // FILE: src/debug.c
 #include "debug.h"
-#include "interact.h" 
 #include <stdio.h> 
+#include <stdlib.h> 
 
-// --- CONFIG ---
-#define MAX_TEMP_WALLS 100 
+// --- STATE QUẢN LÝ RIÊNG BIỆT ---
+static bool showMapDebug = false;  // Biến của Map Tool (Phím 0)
+static bool showMenuDebug = false; // Biến của Menu Tool (Phím =)
+static bool showDebugUI = true;    // Biến bật/tắt bảng hướng dẫn (Phím V)
 
-// --- STATE VARIABLES ---
-static Vector2 devStartPos = {0};       
-static bool devIsDragging = false;      
-static bool showDebugWalls = false;     // Biến tổng (Phím 0)
-static bool showDebugUI = true;         // Biến bật tắt bảng ghi chú (Phím V)
+// [MAP TOOL DATA]
+#define MAX_TEMP_WALLS 100
+static bool isMapDragging = false;
+static Vector2 mapStartPos = {0};
+static Rectangle tempMapWalls[MAX_TEMP_WALLS]; // Tường nháp (Xanh Lá)
+static int tempMapWallCount = 0;
 
-static Rectangle tempWalls[MAX_TEMP_WALLS];
-static int tempWallCount = 0;
+// [MENU TOOL DATA]
+#define MAX_DEBUG_BUTTONS 100
+static bool isMenuDragging = false;
+static Vector2 menuStartPos = {0};
+static Rectangle tempButtons[MAX_DEBUG_BUTTONS]; // Nút nháp (Xanh Lá)
+static int tempBtnCount = 0;
 
+// Hàm trả về trạng thái (cho menu_system dùng)
+bool IsMenuDebugActive() { return showMenuDebug; }
+
+// Hàm tắt cưỡng chế (Gọi khi vào game)
+void Debug_ForceCloseMenuTool() {
+    showMenuDebug = false;
+    printf(">> [DEBUG] Force Closed Menu Tool.\n");
+}
+
+// Hàm vẽ bảng hướng dẫn màu đen (Helper)
+void DrawDebugInfoBox(const char* title, const char* line1, const char* line2) {
+    if (!showDebugUI) return; 
+
+    float scrW = (float)GetScreenWidth();
+    Rectangle box = { scrW - 220, 10, 210, 100 };
+    
+    DrawRectangleRec(box, Fade(BLACK, 0.7f)); 
+    DrawRectangleLinesEx(box, 2, WHITE);      
+    
+    DrawText(title, box.x + 10, box.y + 10, 20, YELLOW);
+    DrawText(line1, box.x + 10, box.y + 40, 10, WHITE); 
+    DrawText(line2, box.x + 10, box.y + 60, 10, WHITE);
+    DrawText("[V] An/Hien Huong Dan", box.x + 10, box.y + 80, 10, GRAY);
+}
+
+// ---------------------------------------------
+// TOOL 1: MAP DEBUG (PHÍM 0)
+// ---------------------------------------------
 void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCount) {
-    // 1. INPUT HANDLING
-    // Phím 0: Bật/Tắt toàn bộ chế độ Debug (Master Switch)
-    if (IsKeyPressed(KEY_ZERO)) showDebugWalls = !showDebugWalls; 
+    // 1. Logic Bật/Tắt
+    if (IsKeyPressed(KEY_ZERO)) {
+        showMapDebug = !showMapDebug;
+        if (showMapDebug) {
+            showMenuDebug = false; // Tắt Tool Menu
+            printf(">> [DEBUG] MAP TOOL: ON\n");
+        } else {
+            tempMapWallCount = 0; // Xóa nháp
+        }
+    }
+    
+    // Toggle UI hướng dẫn
+    if (IsKeyPressed(KEY_V)) showDebugUI = !showDebugUI;
 
-    // Phím C: Xóa tường vừa vẽ (Undo)
-    if (IsKeyPressed(KEY_C)) { 
-        if (tempWallCount > 0) {
-            tempWallCount--; 
-            printf("--- UNDO LAST WALL ---\n");
+    if (!showMapDebug) return;
+
+    // 2. Vẽ Bảng Hướng Dẫn
+    DrawDebugInfoBox("MAP TOOL (0)", 
+                     "Keo: Blue | Tha: Green", 
+                     "Copy Code -> Map.c -> Red");
+
+    // 3. Vẽ Tường THẬT (Màu ĐỎ)
+    DrawMapDebug(map); 
+    DrawRectangleLinesEx(player->frameRec, 1.0f, GREEN); 
+    
+    // 4. Vẽ Tường NHÁP (Màu XANH LÁ)
+    for (int i = 0; i < tempMapWallCount; i++) {
+        DrawRectangleLinesEx(tempMapWalls[i], 2.0f, GREEN);
+        DrawRectangleRec(tempMapWalls[i], Fade(GREEN, 0.2f)); 
+    }
+
+    // 5. Logic Kéo Thả (Màu XANH DƯƠNG)
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        isMapDragging = true;
+        mapStartPos = GetMousePosition();
+    }
+    
+    if (isMapDragging) {
+        Vector2 currentPos = GetMousePosition();
+        Rectangle rect = {
+            (mapStartPos.x < currentPos.x) ? mapStartPos.x : currentPos.x,
+            (mapStartPos.y < currentPos.y) ? mapStartPos.y : currentPos.y,
+            (float)abs((int)(currentPos.x - mapStartPos.x)),
+            (float)abs((int)(currentPos.y - mapStartPos.y))
+        };
+        
+        DrawRectangleLinesEx(rect, 2.0f, BLUE); 
+
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            isMapDragging = false;
+            // Chỉ lưu vào mảng NHÁP
+            if (tempMapWallCount < MAX_TEMP_WALLS) {
+                tempMapWalls[tempMapWallCount++] = rect;
+            }
+            // In code
+            printf("map->walls[map->wallCount++] = (Rectangle){ %.0f, %.0f, %.0f, %.0f };\n", 
+                   rect.x, rect.y, rect.width, rect.height);
         }
     }
 
-    // [MỚI] Phím V: Chỉ bật/tắt bảng ghi chú hướng dẫn
+    // 6. Undo (Phím C)
+    if (IsKeyPressed(KEY_C) && tempMapWallCount > 0) {
+        tempMapWallCount--;
+        printf(">> [DEBUG] Undo Last Temp Wall.\n");
+    }
+}
+
+// ---------------------------------------------
+// TOOL 2: MENU DEBUG (PHÍM =)
+// ---------------------------------------------
+void Debug_RunMenuTool() {
+    if (IsKeyPressed(KEY_EQUAL)) {
+        showMenuDebug = !showMenuDebug;
+        if (showMenuDebug) {
+            showMapDebug = false; 
+            printf(">> [DEBUG] MENU TOOL: ON\n");
+        } else {
+            tempBtnCount = 0; 
+        }
+    }
+
+    // Toggle UI hướng dẫn
     if (IsKeyPressed(KEY_V)) showDebugUI = !showDebugUI;
 
-    // 2. RENDER & LOGIC LOOP
-    if (showDebugWalls) {
-        
-        // --- LAYER 1: TƯỜNG CŨ ---
-        DrawMapDebug(map); 
-        
-        // --- LAYER 2: TƯỜNG MỚI ---
-        for (int i = 0; i < tempWallCount; i++) {
-            DrawRectangleRec(tempWalls[i], Fade(LIME, 0.5f)); 
-            DrawRectangleLinesEx(tempWalls[i], 3.0f, LIME);   
-        }
+    if (!showMenuDebug) return;
 
-        // --- LAYER 3: NPC (HITBOX & INTERACT RANGE) ---
-        for (int i = 0; i < npcCount; i++) {
-            if (npcList[i].mapID == map->currentMapID) {
-                float npcW = (float)npcList[i].texture.width / npcList[i].frameCount;
-                float npcH = (float)npcList[i].texture.height;
+    // Vẽ Bảng Hướng Dẫn
+    DrawDebugInfoBox("MENU TOOL (=)", 
+                     "Do Nut Menu UI", 
+                     "Copy Code -> Menu.c -> Red");
 
-                // --- HITBOX LOGIC ---
-                float boxWidth = 24.0f;  
-                float boxHeight = 10.0f; 
-                float paddingBottom = 17.0f;  
-                float offsetX = (npcW - boxWidth) / 2.0f;
+    // Vẽ nháp (Xanh Lá)
+    for (int i = 0; i < tempBtnCount; i++) {
+        DrawRectangleRec(tempButtons[i], Fade(GREEN, 0.3f));
+        DrawRectangleLinesEx(tempButtons[i], 2.0f, GREEN);
+    }
 
-                Rectangle npcHitbox = { 
-                    npcList[i].position.x + offsetX,            
-                    npcList[i].position.y + npcH - boxWidth - paddingBottom, 
-                    boxWidth,  
-                    boxHeight                           
-                };
+    // Logic Kéo Thả (Xanh Dương)
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        isMenuDragging = true;
+        menuStartPos = GetMousePosition();
+    }
 
-                // 1. Vẽ Hitbox Vật lý (Tím)
-                DrawRectangleRec(npcHitbox, Fade(PURPLE, 0.5f));
-                DrawRectangleLinesEx(npcHitbox, 2.0f, PURPLE);
-                
-                // 2. Vẽ điểm Pivot Sort Y (Vàng chấm nhỏ)
-                DrawCircle(npcHitbox.x + npcHitbox.width/2, npcHitbox.y + npcHitbox.height, 3, YELLOW);
-
-                // 3. Vẽ Phạm vi tương tác (MÀU XANH DƯƠNG ĐẬM)
-                Vector2 centerPos = { 
-                    npcList[i].position.x + (npcW / 2), 
-                    npcList[i].position.y + (npcH / 2) 
-                };
-
-                // Vẽ vòng tròn
-                DrawCircleV(centerPos, INTERACT_DISTANCE, Fade(DARKBLUE, 0.3f));
-                DrawCircleLines((int)centerPos.x, (int)centerPos.y, INTERACT_DISTANCE, DARKBLUE);
-            }
-        }
-
-        // --- LAYER 4: HITBOX PLAYER (MÀU VÀNG) ---
-        float pW = (float)player->spriteWidth;
-        float pH = (float)player->spriteHeight;
-        float pFeetH = 20.0f;
-
-        Rectangle playerHitbox = {
-            player->position.x + 15,
-            player->position.y + pH - pFeetH,
-            player->spriteWidth - 30,
-            pFeetH
+    if (isMenuDragging) {
+        Vector2 currentPos = GetMousePosition();
+        Rectangle rect = {
+            (menuStartPos.x < currentPos.x) ? menuStartPos.x : currentPos.x,
+            (menuStartPos.y < currentPos.y) ? menuStartPos.y : currentPos.y,
+            (float)abs((int)(currentPos.x - menuStartPos.x)),
+            (float)abs((int)(currentPos.y - menuStartPos.y))
         };
+        
+        DrawRectangleLinesEx(rect, 2.0f, BLUE);
 
-        DrawRectangleRec(playerHitbox, Fade(YELLOW, 0.5f));
-        DrawRectangleLinesEx(playerHitbox, 2.0f, YELLOW);
-        DrawCircle(playerHitbox.x + playerHitbox.width/2, playerHitbox.y + playerHitbox.height, 3, YELLOW);
-
-        // --- UI HƯỚNG DẪN (BẢNG ĐEN) ---
-        // Chỉ vẽ bảng này nếu biến showDebugUI đang bật
-        if (showDebugUI) {
-            Rectangle infoBox = { 10, 60, 320, 125 }; // Tăng chiều cao một chút để chứa dòng hướng dẫn mới
-            DrawRectangleRec(infoBox, Fade(BLACK, 0.85f)); 
-            DrawRectangleLinesEx(infoBox, 2, WHITE);       
-
-            DrawText("CH CHE DO: DEBUG (Phim 0)", infoBox.x + 15, infoBox.y + 10, 20, RED);
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            isMenuDragging = false;
+            if (tempBtnCount < MAX_DEBUG_BUTTONS) tempButtons[tempBtnCount++] = rect;
             
-            DrawText("- [TIM]  : Hitbox Vat ly", infoBox.x + 15, infoBox.y + 40, 18, VIOLET);
-            DrawText("- [XANH] : Pham vi [E]", infoBox.x + 15, infoBox.y + 65, 18, SKYBLUE); 
-            
-            // Hướng dẫn phím tắt mới
-            DrawText("- [V]    : An/Hien Bang Nay", infoBox.x + 15, infoBox.y + 95, 18, GRAY);
+            printf("\n// [COPIED] Code nut:\n");
+            printf("if (DrawButton(\"NUT\", (Rectangle){ %.0f, %.0f, %.0f, %.0f })) { }\n", 
+                   rect.x, rect.y, rect.width, rect.height);
         }
+    }
 
-
-        // --- LAYER 5: TOOL VẼ ---
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            devStartPos = GetMousePosition();
-            devIsDragging = true;
-        }
-
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && devIsDragging) {
-            Vector2 currentPos = GetMousePosition();
-            float width = currentPos.x - devStartPos.x;
-            float height = currentPos.y - devStartPos.y;
-            Rectangle rec = { devStartPos.x, devStartPos.y, width, height };
-            DrawRectangleRec(rec, Fade(BLUE, 0.5f)); 
-        }
-
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && devIsDragging) {
-            devIsDragging = false;
-            Vector2 endPos = GetMousePosition();
-            float x = devStartPos.x;
-            float y = devStartPos.y;
-            float w = endPos.x - devStartPos.x;
-            float h = endPos.y - devStartPos.y;
-            if (w < 0) { x += w; w = -w; }
-            if (h < 0) { y += h; h = -h; }
-            if (tempWallCount < MAX_TEMP_WALLS) {
-                tempWalls[tempWallCount] = (Rectangle){ x, y, w, h };
-                tempWallCount++;
-                printf("map->walls[map->wallCount++] = (Rectangle){ %.0f, %.0f, %.0f, %.0f };\n", x, y, w, h);
-            }
-        }
-    } 
+    // [FIX] Thêm log báo Undo cho Menu Tool
+    if (IsKeyPressed(KEY_C) && tempBtnCount > 0) {
+        tempBtnCount--;
+        printf(">> [DEBUG] Undo Last Menu Button.\n");
+    }
 }

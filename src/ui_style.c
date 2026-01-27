@@ -1,32 +1,38 @@
 // FILE: src/ui_style.c
 #include "ui_style.h"
 
-// [QUAN TRỌNG] Phải có dòng này để kích hoạt code của Raygui
+// [CONFIG] Raygui Implementation
+// Define này BẮT BUỘC phải có đúng 1 lần trong toàn bộ project để kích hoạt code Raygui.
 #define RAYGUI_IMPLEMENTATION 
 #include "raygui.h"
 
 Font globalFont = { 0 };
 
 void InitUIStyle() {
-    // 1. Danh sách ký tự Tiếng Việt
+    // 1. VIETNAMESE CHARSET
+    // Danh sách đầy đủ các ký tự Tiếng Việt có dấu để load vào VRAM.
+    // Nếu thiếu ký tự nào ở đây, trong game sẽ hiện ô vuông (□).
     const char *vietnameseChars = 
-        "aáàảãạăắằẳẵặâấầẩẫậbcdeéèẻẽẹêếềểễệfghiíìỉĩịjklmnoóòỏõọôốồổỗộơớờởỡợ"
+        "aáàảãạăắằẳẵặâấầẩẫậbcdđeéèẻẽẹêếềểễệfghiíìỉĩịjklmnoóòỏõọôốồổỗộơớờởỡợ"
         "pqrstuúùủũụưứừửữựvwxyýỳỷỹỵz"
-        "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬBCDEÉÈẺẼẸÊẾỀỂỄỆFGHIÍÌỈĨỊJKLMNOÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ"
+        "AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬBCDĐEÉÈẺẼẸÊẾỀỂỄỆFGHIÍÌỈĨỊJKLMNOÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ"
         "PQRSTUÚÙỦŨỤƯỨỪỬỮỰVWXYÝỲỶỸỴZ"
         "0123456789!@#$%^&*()_+-=[]{};':\",./<>?|\\ ";
 
-    // 2. Load Codepoints
+    // 2. Generate Codepoints
     int codepointCount = 0;
     int *codepoints = LoadCodepoints(vietnameseChars, &codepointCount);
 
-    // 3. Nạp Font (Nhớ đổi tên file font trong folder resources thành game_font.ttf)
+    // 3. Load Font
+    // Lưu ý: Font phải hỗ trợ Unicode. Size 28 là base size, khi vẽ có thể scale.
     globalFont = LoadFontEx("resources/game_font.ttf", 28, codepoints, codepointCount);
 
-    // 4. Set font cho Raygui
+    // 4. Apply to Raygui
+    // Set font mặc định cho các control của thư viện Raygui (Button, Textbox...)
     GuiSetFont(globalFont);
+    SetTextureFilter(globalFont.texture, TEXTURE_FILTER_BILINEAR);
 
-    // 5. Giải phóng
+    // 5. Cleanup RAM
     UnloadCodepoints(codepoints);
 }
 

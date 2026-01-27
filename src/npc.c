@@ -1,29 +1,30 @@
 #include "npc.h"
-#include <string.h> // Thư viện xử lý chuỗi (strcpy)
+#include <string.h> 
 
-void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name) {
+void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, int id) {
     npc->mapID = mapID;
     npc->position = pos;
-    strcpy(npc->name, name); // Copy tên vào bộ nhớ
-    strcpy(npc->dialog, "Xin chao! Toi la NPC."); // Câu thoại mặc định
+    strcpy(npc->name, name); 
 
     npc->texture = LoadTexture(texturePath);
 
-    // Cấu hình Animation
-    npc->frameCount = 4;        // Giả sử ảnh NPC có 4 hình ngang
+    // [ANIMATION CONFIG]
+    npc->frameCount = 4;        // Số lượng frame ngang trong ảnh (Sprite Sheet)
     npc->currentFrame = 0;
     npc->frameTimer = 0.0f;
-    npc->frameSpeed = 0.2f;     // 0.2 giây đổi hình 1 lần
+    npc->frameSpeed = 0.2f;     // Tốc độ chuyển frame (giây) -> Càng nhỏ càng nhanh
     npc->isTalking = false;
 }
 
 void UpdateNpc(Npc *npc) {
-    // Logic Animation: Thay đổi khung hình theo thời gian
+    // [ANIMATION LOOP] 
+    // Tự động chuyển frame theo thời gian thực
     npc->frameTimer += GetFrameTime();
     if (npc->frameTimer >= npc->frameSpeed) {
         npc->frameTimer = 0.0f;
         npc->currentFrame++;
-        // Nếu chạy hết hình thì quay lại hình đầu tiên
+        
+        // Loop lại frame đầu nếu hết ảnh
         if (npc->currentFrame >= npc->frameCount) {
             npc->currentFrame = 0;
         }
@@ -31,20 +32,22 @@ void UpdateNpc(Npc *npc) {
 }
 
 void DrawNpc(Npc *npc) {
-    // Tính toán cắt ảnh từ Sprite Sheet
+    // 1. Tính toán Source Rectangle (Cắt ảnh từ Sprite Sheet)
     float frameWidth = (float)npc->texture.width / npc->frameCount;
     
     Rectangle source = {
         npc->currentFrame * frameWidth, 0.0f, frameWidth, (float)npc->texture.height
     };
+    
+    // 2. Tính toán Destination (Vị trí vẽ trên màn hình)
     Rectangle dest = {
         npc->position.x, npc->position.y, frameWidth, (float)npc->texture.height
     };
 
-    // Vẽ NPC lên màn hình
+    // 3. Render
     DrawTexturePro(npc->texture, source, dest, (Vector2){0,0}, 0.0f, WHITE);
     
-    // Vẽ tên trên đầu NPC
+    // Debug name tag
     DrawText(npc->name, (int)npc->position.x, (int)npc->position.y - 20, 10, DARKGRAY);
 }
 
