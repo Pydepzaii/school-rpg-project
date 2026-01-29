@@ -18,6 +18,11 @@
                 "${workspaceFolder}/src/renderer.c",
                 "${workspaceFolder}/src/audio_manager.c",
                 "${workspaceFolder}/src/interact.c",
+                "${workspaceFolder}/src/menu_system.c",
+                "${workspaceFolder}/src/settings.c",
+                "${workspaceFolder}/src/dialog_system.c",
+                "${workspaceFolder}/src/camera.c",
+                 "${workspaceFolder}/src/transition.c",
 
                 "-o",
                 "${workspaceFolder}/game.exe",

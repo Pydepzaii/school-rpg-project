@@ -4,13 +4,19 @@
 
 #include "raylib.h"
 #include "map.h"
-#include "player.h" // [MỚI] Cần struct Player
-#include "npc.h"    // [MỚI] Cần struct Npc
+#include "player.h"
+#include "npc.h"
 
-// Hàm này làm 2 việc:
-// 1. Kiểm tra phím 0 để Bật/Tắt hiển thị tường cũ + Hitbox nhân vật
-// 2. Cho phép kéo chuột vẽ tường mới
-// [CẬP NHẬT] Thêm tham số player, npcList, npcCount
+// Tool 1: Map (Phím 0)
 void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCount);
+
+// Tool 2: Menu (Phím =)
+void Debug_RunMenuTool(); 
+
+// Check xem menu tool có đang bật không (để vẽ viền đỏ nút)
+bool IsMenuDebugActive(); 
+
+// [NEW] Hàm cưỡng chế tắt Tool Menu (Dùng khi chuyển cảnh vào game)
+void Debug_ForceCloseMenuTool();
 
 #endif
