@@ -1,17 +1,18 @@
 // FILE: src/debug.c
 #include "debug.h"
-#include "settings.h" // Để dùng GetVirtualMousePos()
-#include "camera.h"   // [QUAN TRỌNG] Để lấy thông số gameCamera
+#include "settings.h" 
+#include "camera.h"   
 #include <stdio.h> 
+#include <player.h>
+#include <interact.h>
 #include <stdlib.h> 
 
 // --- STATE QUẢN LÝ RIÊNG BIỆT ---
 static bool showMapDebug = false;  
 static bool showMenuDebug = false; 
 static bool showDebugUI = true;    
-
+static bool showDrawFrame = false;
 // [MAP TOOL DATA]
-// [GIẢI THÍCH]: Mảng tạm thời lưu các bức tường vừa vẽ. Nó sẽ mất khi tắt game nếu không copy ra code.
 #define MAX_TEMP_WALLS 100
 static bool isMapDragging = false;
 static Vector2 mapStartPos = {0};
@@ -34,8 +35,7 @@ void Debug_ForceCloseMenuTool() {
 void DrawDebugInfoBox(const char* title, const char* line1, const char* line2) {
     if (!showDebugUI) return; 
 
-    // Vẽ UI luôn dùng toạ độ màn hình ảo (không bị camera tác động)
-    float scrW = (float)SCREEN_WIDTH; // Dùng kích thước chuẩn 800
+    float scrW = (float)SCREEN_WIDTH; 
     Rectangle box = { scrW - 220, 10, 210, 100 };
     
     DrawRectangleRec(box, Fade(BLACK, 0.7f)); 
@@ -49,7 +49,6 @@ void DrawDebugInfoBox(const char* title, const char* line1, const char* line2) {
 
 // ---------------------------------------------
 // TOOL 1: MAP DEBUG (PHÍM 0)
-// Tool này vẽ BÊN TRONG thế giới game (bị Camera zoom)
 // ---------------------------------------------
 void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCount) {
     if (IsKeyPressed(KEY_ZERO)) {
@@ -58,50 +57,91 @@ void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCoun
             showMenuDebug = false; 
             printf(">> [DEBUG] MAP TOOL: ON (Camera Sync Active)\n");
         } 
-        // [FIX MAP TOOL] Đã xóa dòng 'else { tempMapWallCount = 0; }'
-        // Giờ tắt Debug Map (phím 0) thì tường xanh lá vẫn còn lưu.
     }
     
     if (IsKeyPressed(KEY_V)) showDebugUI = !showDebugUI;
 
     if (!showMapDebug) return;
+    // --- [TÍNH NĂNG MỚI] PHÍM X: HIỆN KHUNG VẼ (DRAW RECT) ---
+    if (IsKeyPressed(KEY_X)) {
+        showDrawFrame = !showDrawFrame; // Đảo trạng thái (Bật -> Tắt, Tắt -> Bật)
+    }
+    if (showDrawFrame) {
+        Rectangle drawRect = {
+            player->position.x,
+            player->position.y,
+            player->drawWidth,   // Lấy từ biến bạn đã cài
+            player->drawHeight
+        };
+        
+        DrawRectangleLinesEx(drawRect, 1.0f, GREEN);
+        // Vẽ thêm chấm tròn đánh dấu gốc tọa độ
+        DrawCircle((int)player->position.x, (int)player->position.y, 2.0f, GREEN);
+    }
 
-    // [QUAN TRỌNG] Lấy tọa độ chuột ĐÃ ĐƯỢC CHUYỂN ĐỔI sang thế giới game
-    // [GIẢI THÍCH]: Vì Camera zoom và di chuyển, nên tọa độ chuột trên màn hình (Screen) 
-    // KHÁC tọa độ trong game (World). Hàm này giúp chuyển đổi để vẽ tường đúng chỗ.
     Vector2 mouseWorldPos = GetScreenToWorld2D(GetVirtualMousePos(), gameCamera);
 
-    // --- [SỬA LỖI UI BỊ TRÔI] ---
-    // 1. Tạm thời tắt Camera để vẽ UI lên mặt kính màn hình (Screen Space)
+    // 1. Tạm thời tắt Camera để vẽ UI
     EndMode2D();
+    DrawDebugInfoBox("MAP TOOL (0)", "Keo: Blue | Tha: Green", "Copy Code -> Map.c -> Red");
     
-    DrawDebugInfoBox("MAP TOOL (0)", 
-                     "Keo: Blue | Tha: Green", 
-                     "Copy Code -> Map.c -> Red");
-
-    // 2. Bật lại Camera để tiếp tục vẽ tường vào trong thế giới game (World Space)
+    // 2. Bật lại Camera để vẽ tường
     BeginMode2D(gameCamera);
-    // ---------------------------
 
-    // 2. Vẽ Tường THẬT
+    // Vẽ Tường & Debug Map
     DrawMapDebug(map); 
     DrawRectangleLinesEx(player->frameRec, 1.0f, GREEN); 
-    
-    // 3. Vẽ Tường NHÁP
+    Interact_DrawDebugExits(map);
+
+    // Vẽ Tường NHÁP
     for (int i = 0; i < tempMapWallCount; i++) {
         DrawRectangleLinesEx(tempMapWalls[i], 2.0f, GREEN);
         DrawRectangleRec(tempMapWalls[i], Fade(GREEN, 0.2f)); 
     }
 
-    // 4. Logic Kéo Thả (Dùng mouseWorldPos thay vì GetMousePosition)
+    // --- A. VẼ HITBOX PLAYER (VÀNG) ---
+    // Lấy trực tiếp kích thước vẽ từ Player
+    float drawW = player->drawWidth; 
+    float drawH = player->drawHeight;
+    
+    Rectangle playerHitbox = { 
+        player->position.x + (drawW - player->hitWidth) / 2.0f,  
+        player->position.y + drawH - player->hitHeight - 2.0f,    
+        player->hitWidth,                        
+        player->hitHeight                     
+    };
+    
+    DrawRectangleRec(playerHitbox, Fade(YELLOW, 0.5f));
+    DrawRectangleLinesEx(playerHitbox, 1.0f, YELLOW);
+
+    // --- B. VẼ HITBOX NPC (TÍM) ---
+    // [SỬA]: Khôi phục logic tính toán dựa trên Texture NPC (giống player.c)
+    for (int i = 0; i < npcCount; i++) {
+        if (npcList[i].mapID == map->currentMapID) {
+            float npcW = (float)npcList[i].texture.width / npcList[i].frameCount;
+            float npcH = (float)npcList[i].texture.height;
+
+            float offsetX = (npcW - npcList[i].hitWidth) / 2.0f;
+            Rectangle npcHitbox = { 
+                npcList[i].position.x + offsetX,            
+                npcList[i].position.y + npcH - npcList[i].paddingBottom - npcList[i].hitHeight,
+                npcList[i].hitWidth, 
+                npcList[i].hitHeight                       
+            };
+
+            DrawRectangleRec(npcHitbox, Fade(PURPLE, 0.5f));
+            DrawRectangleLinesEx(npcHitbox, 1.0f, PURPLE);
+        }
+    }
+
+    // Logic Kéo Thả
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         isMapDragging = true;
-        mapStartPos = mouseWorldPos; // Lưu vị trí bắt đầu trong map
+        mapStartPos = mouseWorldPos; 
     }
     
     if (isMapDragging) {
-        // [GIẢI THÍCH]: Logic tính toán hình chữ nhật khi kéo chuột (tính width/height dương).
-        Vector2 currentPos = mouseWorldPos; // Vị trí hiện tại trong map
+        Vector2 currentPos = mouseWorldPos; 
         Rectangle rect = {
             (mapStartPos.x < currentPos.x) ? mapStartPos.x : currentPos.x,
             (mapStartPos.y < currentPos.y) ? mapStartPos.y : currentPos.y,
@@ -116,7 +156,6 @@ void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCoun
             if (tempMapWallCount < MAX_TEMP_WALLS) {
                 tempMapWalls[tempMapWallCount++] = rect;
             }
-            // [OUTPUT]: In ra console để Dev copy vào code.
             printf("map->walls[map->wallCount++] = (Rectangle){ %.0f, %.0f, %.0f, %.0f };\n", 
                    rect.x, rect.y, rect.width, rect.height);
         }
@@ -130,7 +169,6 @@ void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCoun
 
 // ---------------------------------------------
 // TOOL 2: MENU DEBUG (PHÍM =)
-// Tool này vẽ BÊN NGOÀI Camera (UI tĩnh)
 // ---------------------------------------------
 void Debug_RunMenuTool() {
     if (IsKeyPressed(KEY_EQUAL)) {
@@ -139,7 +177,6 @@ void Debug_RunMenuTool() {
             showMapDebug = false; 
             printf(">> [DEBUG] MENU TOOL: ON\n");
         } 
-        // [FIX MENU TOOL] Đã xóa dòng 'else { tempBtnCount = 0; }'
     }
 
     if (IsKeyPressed(KEY_V)) showDebugUI = !showDebugUI;
@@ -148,8 +185,6 @@ void Debug_RunMenuTool() {
 
     DrawDebugInfoBox("MENU TOOL (=)", "Do Nut Menu UI", "Copy Code -> Menu.c");
 
-    // [QUAN TRỌNG] Menu không bị Camera ảnh hưởng, nên chỉ cần lấy chuột ảo (Virtual)
-    // Không dùng GetScreenToWorld2D ở đây!
     Vector2 mouseVirtualPos = GetVirtualMousePos();
 
     for (int i = 0; i < tempBtnCount; i++) {

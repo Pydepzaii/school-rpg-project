@@ -1,7 +1,7 @@
 // FILE: src/renderer.c
 #include "renderer.h"
 #include <stdlib.h> 
-
+#include <player.h>
 // --- TYPE DEFINITIONS ---
 typedef enum {
     TYPE_PLAYER,
@@ -35,7 +35,7 @@ void Render_AddPlayer(Player *player) {
     renderList[renderCount].data = (void*)player;
     // Pivot Y: Chân nhân vật (đáy ảnh)
     // [GIẢI THÍCH]: Logic quan trọng nhất: Lấy chân làm điểm mốc để so sánh.
-    renderList[renderCount].sortY = player->position.y + player->spriteHeight;
+   renderList[renderCount].sortY = player->position.y + player->drawHeight-2.0f;
     renderCount++;
 }
 
@@ -49,9 +49,7 @@ void Render_AddNpc(Npc *npc) {
     // [ADJUSTMENT] NPC Sort Y
     // Đồng bộ logic này với Hitbox trong debug.c và player.c
     // Trừ đi paddingBottom để điểm sort nằm đúng chân "vật lý"
-    float paddingBottom = 17.0f;
-    renderList[renderCount].sortY = npc->position.y + npc->texture.height - paddingBottom;
-    
+    renderList[renderCount].sortY = npc->position.y + npc->texture.height - npc->paddingBottom;
     renderCount++;
 }
 

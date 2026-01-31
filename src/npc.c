@@ -14,6 +14,10 @@ void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, in
     npc->frameTimer = 0.0f;
     npc->frameSpeed = 0.2f;     // Tốc độ chuyển frame (giây) -> Càng nhỏ càng nhanh
     npc->isTalking = false;
+    //dữ liệu hitbox npc
+    npc->hitWidth = 24.0f;      // Chiều rộng
+    npc->hitHeight = 10.0f;     // Chiều cao
+    npc->paddingBottom = 15.0f; // Khoảng cách từ đáy ảnh lên hitbox
 }
 
 void UpdateNpc(Npc *npc) {

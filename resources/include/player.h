@@ -12,7 +12,13 @@ typedef enum {
     CLASS_MAGE,        
     CLASS_ARCHER       
 } PlayerClass;
-
+//hướng nhìn của player
+typedef enum {
+    FACE_DOWN = 0,
+    FACE_UP,
+    FACE_LEFT,
+    FACE_RIGHT
+} Direction;
 // Chứa toàn bộ chỉ số sức mạnh
 typedef struct {
     int hp;            // Máu
@@ -36,8 +42,14 @@ typedef struct {
     
     PlayerClass pClass;   // Nghề nghiệp
     PlayerStats stats;    // Chỉ số
-    Skill skills[4];      
-    
+    Skill skills[4]; 
+    Direction currentDir;// lưu hướng hiện tại    
+    //Vẽ ảnh toàn cục
+    float drawWidth;  // Kích thước vẽ ra màn hình
+    float drawHeight; // Kích thước vẽ ra màn hình
+    //Debug only
+    float hitWidth;   // Chiều rộng va chạm
+    float hitHeight;  // Chiều cao va chạm (dẹt)
     // --- ANIMATION CONTROLLER ---
     Rectangle frameRec;   // Khung hình chữ nhật đang cắt từ ảnh gốc
     int currentFrame;     // Số thứ tự frame hiện tại (0, 1, 2...)

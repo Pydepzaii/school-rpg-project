@@ -1,6 +1,7 @@
 // FILE: src/settings.h
 #ifndef SETTINGS_H
 #define SETTINGS_H
+#include "raylib.h"
 
 // --- CẤU HÌNH MÀN HÌNH ---
 #define SCREEN_WIDTH 800  // Chiều rộng cửa sổ game
@@ -19,5 +20,13 @@
 #define MAP_THU_VIEN   0
 #define MAP_NHA_AN     1
 #define MAP_SAN_TRUONG 2
-
+#define MAP_DEN        3
+#define MAP_TRANG      4
+// --- [THÊM MỚI] KHAI BÁO CÁC HÀM SCALING ---
+void ToggleGameFullscreen(void);
+void InitScaling(void);
+void BeginScaling(void);
+void EndScaling(void);
+void UnloadScaling(void);
+Vector2 GetVirtualMousePos(void); // <--- THÊM DÒNG NÀY
 #endif

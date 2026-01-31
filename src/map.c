@@ -20,6 +20,7 @@ void LoadMap(GameMap *map, int mapID) {
             // Copy output từ chế độ Debug (Phím 0 -> Vẽ -> Console) dán vào đây.
             // Format: (Rectangle){ x, y, width, height }
             map->walls[map->wallCount++] = (Rectangle){ 472, 113, 189, 118 };
+            map->walls[map->wallCount++] = (Rectangle){ 286, 356, 120, 63 };
             break;
         //testMap không sử dụng trong bản chính
         case MAP_DEN:

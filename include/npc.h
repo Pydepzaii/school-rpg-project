@@ -21,7 +21,10 @@ typedef struct {
     char dialogKey[32];   // Ví dụ: "DEFAULT", "QUEST_1", "NO_MONEY"
     char currentText[256]; // Chứa nội dung lấy từ file txt ra
     bool isTalking;       
-
+    //debug only
+    float hitWidth;      // Chiều rộng hitbox
+    float hitHeight;     // Chiều cao hitbox
+    float paddingBottom; // Khoảng cách từ chân ảnh lên đến hitbox
 } Npc;
 
 void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, int id);

@@ -28,4 +28,6 @@ void Interact_Update(Player *player, Npc *npcList, int npcCount, GameMap *map);
 void Interact_DrawUI(Player *player, Npc *npcList, int npcCount, GameMap *map);
 // [MỚI] Hàm kiểm tra cửa (Teleport)
 void Interact_CheckExits(Player *player, GameMap *map);
+//debug only
+void Interact_DrawDebugExits(GameMap *map);
 #endif

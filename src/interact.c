@@ -106,3 +106,17 @@ void Interact_DrawUI(Player *player, Npc *npcList, int npcCount, GameMap *map) {
         DrawTextEx(globalFont, "[E] Ve Thu Vien", (Vector2){10, 10}, 24, 1, GREEN);
     }
 }
+//debug only
+void Interact_DrawDebugExits(GameMap *map) {
+    if (map->currentMapID == MAP_THU_VIEN) {
+        // Vẽ cửa sang Đen
+        DrawCircleV(exitToBlack, INTERACT_DISTANCE, Fade(MAGENTA, 0.3f));
+        DrawCircleLines((int)exitToBlack.x, (int)exitToBlack.y, INTERACT_DISTANCE, MAGENTA);
+        DrawText("EXIT > DEN", (int)exitToBlack.x - 20, (int)exitToBlack.y - 10, 10, WHITE);
+
+        // Vẽ cửa sang Trắng
+        DrawCircleV(exitToWhite, INTERACT_DISTANCE, Fade(MAGENTA, 0.3f));
+        DrawCircleLines((int)exitToWhite.x, (int)exitToWhite.y, INTERACT_DISTANCE, MAGENTA);
+        DrawText("EXIT > TRANG", (int)exitToWhite.x - 20, (int)exitToWhite.y - 10, 10, WHITE);
+    }
+}

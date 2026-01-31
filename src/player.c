@@ -1,78 +1,79 @@
-// FILE: src/player.c
 #include "player.h"
 #include "settings.h"
 
-// [CONFIG] SPRITE SHEET MAPPING
-// Quy định thứ tự hàng (Row) trong file ảnh nhân vật
-// [GIẢI THÍCH]: Sprite sheet là 1 ảnh lớn chứa nhiều ảnh nhỏ.
-// Các dòng này định nghĩa: Hàng 0 là đi trái, Hàng 1 là đi lên...
-#define ANIM_ROW_LEFT   0   
-#define ANIM_ROW_UP     1   
-#define ANIM_ROW_DOWN   2   
-#define ANIM_ROW_RIGHT  3   
+// [CONFIG] KÍCH THƯỚC CẮT TỪ ẢNH GỐC (Sprite Sheet)
+#define FRAME_WIDTH  80  
+#define FRAME_HEIGHT 80  
+//flame animation main
+#define MAX_FRAME_WALK 8
+#define MAX_FRAME_IDLE 14
 
-#define MAX_FRAME_COLS 6    
-
+// [CONFIG] ĐỊNH NGHĨA HÀNG (ROW) TRONG ẢNH
+#define ROW_DOWN     0    
+#define ROW_UP       2    
+#define ROW_RIGHT    1
+// Lưu ý: Không cần ROW_LEFT vì ta dùng kỹ thuật lật hình từ ROW_RIGHT
+//Quản lí các date quan trọng
 void InitPlayer(Player *player, PlayerClass chosenClass) {
-    player->pClass = chosenClass;
-    player->texture = LoadTexture("resources/main_hocba.png"); 
+    //load ảnh main
+    player->textureWalk = LoadTexture("resources/main1walk.png");
+    player->textureIdle = LoadTexture("resources/main1idle.png");
+    // 1. Gán kích thước frame thủ công
+    player->drawWidth = 40.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
+    player->drawHeight = 40.0f;  // Chỉnh ở đây là Debug tự nhận
+    player->spriteWidth = FRAME_WIDTH; 
+    player->spriteHeight = FRAME_HEIGHT;
     player->position = (Vector2){100, 100}; 
-
-    // [RPG STATS] Cấu hình chỉ số theo class
-    // [GIẢI THÍCH]: Set máu, mana, tốc độ chạy tùy theo nghề nghiệp (Warrior/Student).
+    //set mặc định đứng yên
+    player->currentTexture = &player->textureIdle;
+    player->maxFrames = MAX_FRAME_IDLE;
+    // 2. Cấu hình chỉ số RPG
     switch (chosenClass) {
         case CLASS_WARRIOR: player->stats = (PlayerStats){150, 150, 20, 20, 0, 3.0f}; break;
         case CLASS_STUDENT:
         default:            player->stats = (PlayerStats){100, 100, 50, 10, 10, 4.0f}; break;
-    }
+    }        
 
-    // Tính kích thước 1 frame
-    // [GIẢI THÍCH]: Chia chiều rộng ảnh tổng cho số cột để ra chiều rộng 1 frame đơn lẻ.
-    player->spriteWidth = player->texture.width / MAX_FRAME_COLS; 
-    player->spriteHeight = player->texture.height / 4;          
-
-    // Init Animation state
+    // 3. Khởi tạo Animation
     player->currentFrame = 0;
     player->framesCounter = 0;
-    player->framesSpeed = 8; // Tốc độ animation (frames per second game loop)
-
+    player->framesSpeed = 8; 
+    player->currentDir = FACE_DOWN; // Mặc định nhìn xuống
+    // sửa dữ liệu hitbox
+    player->hitWidth = 10.0f;  // Bạn muốn chỉnh to/nhỏ thì sửa số này
+    player->hitHeight = 8.0f;  // Sửa số này
+    player->paddingBottom = 6.0f; // [MỚI] Khoảng cách từ chân ảnh đến đáy hitbox
+    // [SỬA LỖI]: Thay ANIM_ROW_DOWN cũ bằng ROW_DOWN mới
     player->frameRec = (Rectangle){
         0.0f, 
-        (float)(ANIM_ROW_DOWN * player->spriteHeight), 
+        (float)(ROW_DOWN * player->spriteHeight), 
         (float)player->spriteWidth - 0.5f, 
         (float)player->spriteHeight - 0.5f
     };
 }
 
-// [PHYSICS] PREDICTIVE COLLISION
-// Kiểm tra xem hình chữ nhật (hitbox) CÓ SẼ va chạm không nếu di chuyển
-// [GIẢI THÍCH]: Logic này rất quan trọng. Nó "dự đoán" va chạm ở tương lai.
-// Nếu hàm này trả về true, nhân vật sẽ bị chặn lại, không cho đi tiếp.
+// Hàm kiểm tra va chạm dự đoán 
 bool CheckCollisionFuture(Rectangle hitbox, GameMap *map, Npc *npcList, int npcCount) {
-    // 1. Check Tường (Môi trường)
+    // 1. Check Tường
     for (int i = 0; i < map->wallCount; i++) {
         if (CheckCollisionRecs(hitbox, map->walls[i])) return true; 
     }
 
-    // 2. Check NPC (Dynamic Entities)
+    // 2. Check NPC
     for (int i = 0; i < npcCount; i++) {
-        // [GIẢI THÍCH]: Chỉ check va chạm với NPC ở cùng Map.
         if (npcList[i].mapID == map->currentMapID) { 
             float npcW = (float)npcList[i].texture.width / npcList[i].frameCount;
             float npcH = (float)npcList[i].texture.height;
 
-            // [CRITICAL] NPC HITBOX CALCULATION
-            // Cần tạo hitbox nhỏ nằm dưới CHÂN NPC, không phải toàn thân.
-            // Nếu hitbox quá lớn, player sẽ bị kẹt khi đi ngang qua đầu NPC.
-            float boxWidth = 24.0f;   
-            float boxHeight = 10.0f;  // Chiều cao thấp (dẹt) để mô phỏng không gian 3D
-            float paddingBottom = 17.0f; 
-            
+            // Hitbox NPC nằm ở chân
+            float boxWidth = npcList[i].hitWidth;
+            float boxHeight = npcList[i].hitHeight;
+            float paddingBottom = npcList[i].paddingBottom;
             float offsetX = (npcW - boxWidth) / 2.0f; 
 
             Rectangle npcFeetRect = { 
                 npcList[i].position.x + offsetX,            
-                npcList[i].position.y + npcH - boxWidth - paddingBottom, 
+                npcList[i].position.y + npcH - paddingBottom - boxHeight, 
                 boxWidth, 
                 boxHeight                            
             };
@@ -85,112 +86,140 @@ bool CheckCollisionFuture(Rectangle hitbox, GameMap *map, Npc *npcList, int npcC
 
 void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount) {
     bool isMoving = false;
-    Vector2 nextPos = player->position; // Biến tạm để tính toán vị trí tương lai
+    Vector2 nextPos = player->position; 
     
-    int targetRow = (int)(player->frameRec.y / player->spriteHeight); 
+    int targetRow = ROW_DOWN; 
+    if (!isMoving) {
+        if (player->currentDir == FACE_UP) targetRow = ROW_UP;
+        else if (player->currentDir == FACE_LEFT || player->currentDir == FACE_RIGHT) targetRow = ROW_RIGHT;
+        else targetRow = ROW_DOWN;
+    }
 
-    // --- INPUT HANDLING ---
-    // Di chuyển độc lập trục X/Y để cho phép trượt tường (Wall Sliding)
-    // [GIẢI THÍCH]: Check 4 phím điều hướng để tính toán vị trí tiếp theo (nextPos).
+    // --- 1. XỬ LÝ PHÍM BẤM (INPUT) ---
     if (IsKeyDown(KEY_LEFT)) { 
         nextPos.x -= player->stats.moveSpeed; 
-        targetRow = ANIM_ROW_LEFT; 
-        isMoving = true; 
+        player->currentDir = FACE_LEFT; 
+        targetRow = ROW_RIGHT; // Mẹo: Đi trái dùng ảnh hàng PHẢI
+        isMoving = true;
     }
     else if (IsKeyDown(KEY_RIGHT)) { 
         nextPos.x += player->stats.moveSpeed; 
-        targetRow = ANIM_ROW_RIGHT; 
-        isMoving = true; 
+        player->currentDir = FACE_RIGHT;
+        targetRow = ROW_RIGHT; 
+        isMoving = true;
     }
     else if (IsKeyDown(KEY_UP)) { 
         nextPos.y -= player->stats.moveSpeed; 
-        targetRow = ANIM_ROW_UP;   
-        isMoving = true; 
+        player->currentDir = FACE_UP;
+        targetRow = ROW_UP;   
+        isMoving = true;
     }
     else if (IsKeyDown(KEY_DOWN)) { 
         nextPos.y += player->stats.moveSpeed; 
-        targetRow = ANIM_ROW_DOWN; 
-        isMoving = true; 
+        player->currentDir = FACE_DOWN;
+        targetRow = ROW_DOWN; 
+        isMoving = true;
     }
 
-    // Update vùng cắt ảnh (Row) dựa trên hướng di chuyển
-    player->frameRec.y = (float)(targetRow * player->spriteHeight);
-    player->frameRec.width = (float)player->spriteWidth - 0.5f;
 
-    // --- COLLISION RESOLUTION ---
-    // Nguyên lý: Tách biệt check trục X và trục Y để tránh kẹt góc.
-    // Hitbox của Player cũng nằm ở CHÂN (Feet) giống NPC.
-    float pW = (float)player->spriteWidth;
-    float pH = (float)player->spriteHeight;
-    float pFeetH = 20.0f; // Độ cao hitbox chân
+    // --- 2. XỬ LÝ VA CHẠM (COLLISION) ---
+    // Hitbox siêu nhỏ (chỉ ở chân)
+    float hitW = player->hitWidth; 
+    float hitH = player->hitHeight;
+    
+    // Căn giữa hitbox vào nhân vật
+    float offsetX = (player->drawWidth - hitW) / 2.0f; 
+    float offsetY = player->drawHeight - hitH - player->paddingBottom;
 
-    // 1. Resolve X Axis (Xử lý va chạm ngang)
-    Rectangle boxX = { 
-        nextPos.x + 15,                 // Thu hẹp 15px mỗi bên
-        player->position.y + pH - pFeetH, 
-        pW - 30,                        
-        pFeetH                          
-    };
+    // [TRỤC X]
+    Rectangle boxX = { nextPos.x + offsetX, player->position.y + offsetY, hitW, hitH };
+    
     
     bool colX = CheckCollisionFuture(boxX, map, npcList, npcCount);
-    // Check biên giới hạn màn hình
-    if (nextPos.x < -10 || nextPos.x > SCREEN_WIDTH - pW + 10) colX = true;
     
-    if (!colX) player->position.x = nextPos.x; // Nếu không va chạm thì cho phép đi
+    // Check biên màn hình
+    if (nextPos.x < -5 || nextPos.x > SCREEN_WIDTH - player->drawWidth + 5) colX = true;
+    
+    if (!colX) player->position.x = nextPos.x;    
 
-    // 2. Resolve Y Axis (Xử lý va chạm dọc)
-    Rectangle boxY = { 
-        player->position.x + 15, 
-        nextPos.y + pH - pFeetH,      
-        pW - 30, 
-        pFeetH 
-    };
-
+    // [TRỤC Y]
+    Rectangle boxY = { player->position.x + offsetX, nextPos.y + offsetY, hitW, hitH };
     bool colY = CheckCollisionFuture(boxY, map, npcList, npcCount);
-    if (nextPos.y < -10 || nextPos.y > SCREEN_HEIGHT - pH + 10) colY = true;
+    
+   if (nextPos.y < -5 || nextPos.y > SCREEN_HEIGHT - player->drawHeight + 5) colY = true;
     
     if (!colY) player->position.y = nextPos.y;
 
-    // --- ANIMATION UPDATE ---
-    // [GIẢI THÍCH]: Logic chuyển đổi frame ảnh để tạo hiệu ứng bước đi.
+    // --- 3. ANIMATION ---
     if (isMoving) {
-        player->framesCounter++;
-        if (player->framesCounter >= player->framesSpeed) {
-            player->framesCounter = 0;
-            player->currentFrame++;
-            if (player->currentFrame >= MAX_FRAME_COLS) player->currentFrame = 0;
-
-            // Xử lý Flip sprite (nếu cần) hoặc mapping frame index
-            int displayFrame = player->currentFrame;
-            if (targetRow == ANIM_ROW_LEFT) {
-                // Ví dụ: Đảo ngược frame nếu animation đi trái bị ngược
-                displayFrame = (MAX_FRAME_COLS - 1) - player->currentFrame;
-            }
-            player->frameRec.x = (float)(displayFrame * player->spriteWidth);
-        }
+        // Nếu đang dùng ảnh IDLE mà chuyển sang đi -> Reset frame về 0 để tránh giật
+        if (player->currentTexture == &player->textureIdle) player->currentFrame = 0;
+        
+        // Trỏ vào bộ ảnh ĐI BỘ
+        player->currentTexture = &player->textureWalk;
+        player->maxFrames = MAX_FRAME_WALK; // Giới hạn 8 frame
     } else {
-        // Idle State: Reset về frame đầu tiên khi đứng yên
-        player->currentFrame = 0;
-        int displayFrame = 0;
-        if (targetRow == ANIM_ROW_LEFT) displayFrame = (MAX_FRAME_COLS - 1); 
-        player->frameRec.x = (float)(displayFrame * player->spriteWidth);
+        // Nếu đang dùng ảnh WALK mà dừng lại -> Reset frame về 0
+        if (player->currentTexture == &player->textureWalk) player->currentFrame = 0;
+        
+        // Trỏ vào bộ ảnh ĐỨNG Yên
+        player->currentTexture = &player->textureIdle;
+        player->maxFrames = MAX_FRAME_IDLE; // Giới hạn 14 frame
     }
+
+    // --- 4. CHẠY ANIMATION CHO CẢ 2 TRẠNG THÁI ---
+    player->framesCounter++;
+    if (player->framesCounter >= player->framesSpeed) {
+        player->framesCounter = 0;
+        player->currentFrame++;
+        
+        // Loop dựa trên maxFrames 
+        if (player->currentFrame >= player->maxFrames) {
+            player->currentFrame = 0;
+        }
+    }
+    
+    // --- 5.  CẬP NHẬT VÙNG CẮT ---
+    player->frameRec.x = (float)(player->currentFrame * player->spriteWidth); 
+    player->frameRec.y = (float)(targetRow * player->spriteHeight);
+    player->frameRec.width = (float)player->spriteWidth - 0.5f;
+    player->frameRec.height = (float)player->spriteHeight - 0.5f;
 }
 
 void DrawPlayer(Player *player) {
-    DrawTextureRec(player->texture, player->frameRec, player->position, WHITE);
+    // 1. Đích: Vẽ nhỏ
+    Rectangle dest = { 
+        player->position.x, 
+        player->position.y, 
+        player->drawWidth,   // <== Tự động
+        player->drawHeight   // <== Tự động
+    };
     
-    // Vẽ thanh máu (Health Bar) đơn giản
-    int barWidth = 40;
-    int barHeight = 5;
-    int barX = (int)(player->position.x + (player->spriteWidth / 2.0f) - (barWidth / 2.0f));
-    int barY = (int)player->position.y - 10;
+    // 2. Nguồn: Cắt to
+    Rectangle source = player->frameRec;
 
-    DrawRectangle(barX, barY, barWidth, barHeight, Fade(RED, 0.8f)); // Background
+    // 3. Lật hình (Flip) nếu đi trái
+    if (player->currentDir == FACE_LEFT) {
+        source.width = -source.width; 
+    }
+
+    // 4. Vẽ Texture Pro
+    DrawTexturePro(*player->currentTexture, source, dest, (Vector2){0,0}, 0.0f, WHITE);
+    // 5. Vẽ Thanh Máu
+    int barWidth = 30; // Chỉnh nhỏ lại cho hợp với nhân vật bé
+    int barHeight = 4;
+    
+    // Căn giữa thanh máu trên đầu
+   int barX = (int)(player->position.x + (player->drawWidth - barWidth) / 2.0f);
+    int barY = (int)player->position.y - 8;
+
+    DrawRectangle(barX, barY, barWidth, barHeight, Fade(RED, 0.6f)); // Nền
+    
     float hpPercent = (float)player->stats.hp / player->stats.maxHp;
-    DrawRectangle(barX, barY, (int)(barWidth * hpPercent), barHeight, LIME); // Foreground
+    DrawRectangle(barX, barY, (int)(barWidth * hpPercent), barHeight, LIME); // Máu hiện tại
 }
 
 void UnloadPlayer(Player *player) {
-    UnloadTexture(player->texture);
+    UnloadTexture(player->textureWalk);
+    UnloadTexture(player->textureIdle);
 }

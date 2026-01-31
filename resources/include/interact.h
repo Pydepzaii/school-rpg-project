@@ -5,6 +5,7 @@
 #include "raylib.h"
 #include "player.h"
 #include "npc.h"
+#include "map.h"
 
 // --- CẤU HÌNH TƯƠNG TÁC ---
 #define INTERACT_DISTANCE 60.0f // Khoảng cách tối đa để hiện nút [E] (Pixel)
@@ -17,13 +18,16 @@
  * 2. Bắt sự kiện phím E.
  * 3. Bật/Tắt trạng thái hội thoại (isTalking).
  */
-void Interact_Update(Player *player, Npc *npcList, int npcCount);
+void Interact_Update(Player *player, Npc *npcList, int npcCount, GameMap *map);
 
 /**
  * Vẽ giao diện tương tác (UI):
  * 1. Vẽ nhắc nhở "[E]" trên đầu NPC khi đứng gần.
  * 2. Vẽ hộp thoại (Dialog Box) khi đang nói chuyện.
  */
-void Interact_DrawUI(Player *player, Npc *npcList, int npcCount);
-
+void Interact_DrawUI(Player *player, Npc *npcList, int npcCount, GameMap *map);
+// [MỚI] Hàm kiểm tra cửa (Teleport)
+void Interact_CheckExits(Player *player, GameMap *map);
+//debug only
+void Interact_DrawDebugExits(GameMap *map);
 #endif
