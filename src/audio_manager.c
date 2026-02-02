@@ -21,19 +21,21 @@ void Audio_Init() {
     // [ASSETS] MUSIC (STREAMING)
     // Dùng cho nhạc nền dài (file nặng). Raylib sẽ stream trực tiếp từ ổ cứng để tiết kiệm RAM.
     // TODO: Nếu thêm bài mới, nhớ cập nhật enum MUSIC_COUNT trong file header.
-    musicList[MUSIC_INTRO]    = LoadMusicStream("resources/intro.mp3");
-    musicList[MUSIC_TITLE]    = LoadMusicStream("resources/bgm_title.mp3");
-    musicList[MUSIC_THU_VIEN] = LoadMusicStream("resources/bgm_thu_vien.mp3"); 
-    musicList[MUSIC_NHA_AN]   = LoadMusicStream("resources/bgm_canteen.mp3");
-    musicList[MUSIC_MAP_DEN]     = LoadMusicStream("resources/bgm_den.mp3");  
-    musicList[MUSic_MAP_TRANG]    = LoadMusicStream("resources/bgm_trang.mp3"); 
+    musicList[MUSIC_INTRO]    = LoadMusicStream("resources/intro/intro.mp3");
+    musicList[MUSIC_TITLE]    = LoadMusicStream("resources/sound/bgm/bgm_title.mp3");
+    musicList[MUSIC_TOA_ALPHA]    = LoadMusicStream("resources/sound/bgm/bgm_alpha.mp3");
+     musicList[MUSIC_NHA_VO]    = LoadMusicStream("resources/sound/bgm/bgm_nhavo.mp3");
+    musicList[MUSIC_THU_VIEN] = LoadMusicStream("resources/sound/bgm/bgm_thu_vien.mp3"); 
+    musicList[MUSIC_NHA_AN]   = LoadMusicStream("resources/sound/bgm/bgm_canteen.mp3");
+    musicList[MUSIC_MAP_DEN]     = LoadMusicStream("resources/sound/bgm/bgm_den.mp3");  
+    musicList[MUSic_MAP_TRANG]    = LoadMusicStream("resources/sound/bgm/bgm_trang.mp3"); 
 
     // [ASSETS] SFX (BUFFERED)
     // Dùng cho hiệu ứng ngắn (bước chân, click). Load toàn bộ vào RAM để phản hồi tức thì (low latency).
-    soundList[SFX_STEP]     = LoadSound("resources/sfx_step.wav");
-    soundList[SFX_TALK]     = LoadSound("resources/sfx_talk.wav");
-    soundList[SFX_UI_CLICK] = LoadSound("resources/sfx_click.ogg");
-    soundList[SFX_UI_HOVER] = LoadSound("resources/sfx_hover.ogg");
+    soundList[SFX_STEP]     = LoadSound("resources/sound/sfx/sfx_step.wav");
+    soundList[SFX_TALK]     = LoadSound("resources/sound/sfx/sfx_talk.wav");
+    soundList[SFX_UI_CLICK] = LoadSound("resources/sound/sfx/sfx_click.ogg");
+    soundList[SFX_UI_HOVER] = LoadSound("resources/sound/sfx/sfx_hover.ogg");
 
     // [CONFIG] Default Mix
     // Cân bằng âm lượng mặc định ngay khi khởi tạo.
@@ -80,6 +82,12 @@ void Audio_PlaySoundEffect(SoundType type) {
 // [GIẢI THÍCH]: Hàm tiện ích để map tự gọi nhạc khi chuyển cảnh, đỡ phải nhớ tên bài hát ở file main.
 void Audio_PlayMusicForMap(int mapID) {
     switch (mapID) {
+        case MAP_TOA_ALPHA:
+            Audio_PlayMusic(MUSIC_TOA_ALPHA);
+            break;
+        case MAP_NHA_VO:
+            Audio_PlayMusic(MUSIC_NHA_VO);
+            break;
         case MAP_THU_VIEN:
             Audio_PlayMusic(MUSIC_THU_VIEN);
             break;

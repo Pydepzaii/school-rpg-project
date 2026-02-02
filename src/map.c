@@ -13,8 +13,16 @@ void LoadMap(GameMap *map, int mapID) {
 
     // 3. Load Data riêng từng Map
     switch (mapID) {
+        case MAP_TOA_ALPHA:
+             map->texture = LoadTexture("resources/game_map/map1/alpha.png");
+             
+            break;
+        case MAP_NHA_VO:
+             map->texture = LoadTexture("resources/game_map/map2/nhavo.png");
+             
+            break;
         case MAP_THU_VIEN:
-            map->texture = LoadTexture("resources/thuvien.png");
+            map->texture = LoadTexture("resources/game_map/map3/thuvien.png");
             
             // [COLLISION DATA]
             // Copy output từ chế độ Debug (Phím 0 -> Vẽ -> Console) dán vào đây.
@@ -24,12 +32,11 @@ void LoadMap(GameMap *map, int mapID) {
             break;
         //testMap không sử dụng trong bản chính
         case MAP_DEN:
-             // Tạm dùng lại ảnh thư viện nếu chưa có ảnh nền đen
-            map->texture = LoadTexture("resources/wibu.png");
+            map->texture = LoadTexture("resources/game_map/test/wibu.png");
             break;
 
         case MAP_TRANG:
-            map->texture = LoadTexture("resources/wibu2.png");
+            map->texture = LoadTexture("resources/game_map/test/wibu2.png");
             break;
 
         case MAP_NHA_AN:

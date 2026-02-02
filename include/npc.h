@@ -31,5 +31,5 @@ void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, in
 void UpdateNpc(Npc *npc);            
 void DrawNpc(Npc *npc);              
 void UnloadNpc(Npc *npc);            
-
+void Npc_LoadForMap(int mapID, Npc *npcList, int *npcCount);
 #endif

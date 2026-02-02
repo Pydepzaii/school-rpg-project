@@ -7,6 +7,8 @@
 typedef enum {
     MUSIC_INTRO = 0,
     MUSIC_TITLE,
+    MUSIC_TOA_ALPHA,
+    MUSIC_NHA_VO,
     MUSIC_THU_VIEN,
     MUSIC_NHA_AN,
     MUSic_MAP_TRANG,

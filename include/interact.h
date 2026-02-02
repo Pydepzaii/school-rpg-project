@@ -8,7 +8,7 @@
 #include "map.h"
 
 // --- CẤU HÌNH TƯƠNG TÁC ---
-#define INTERACT_DISTANCE 60.0f // Khoảng cách tối đa để hiện nút [E] (Pixel)
+#define INTERACT_DISTANCE 30.0f//BÁN KÍNH TƯƠNG TAC CHUNG
 
 // --- CÁC HÀM CHÍNH ---
 
@@ -19,7 +19,6 @@
  * 3. Bật/Tắt trạng thái hội thoại (isTalking).
  */
 void Interact_Update(Player *player, Npc *npcList, int npcCount, GameMap *map);
-
 /**
  * Vẽ giao diện tương tác (UI):
  * 1. Vẽ nhắc nhở "[E]" trên đầu NPC khi đứng gần.

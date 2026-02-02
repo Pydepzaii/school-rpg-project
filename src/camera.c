@@ -17,7 +17,7 @@ void Camera_Init() {
 
 void Camera_Update(Player *player, GameMap *map) {
     // 1. Xử lý phím tắt bật/tắt Camera (Phím Y)
-    // [CÓ THỂ THỪA]: Tính năng này thường dùng để debug, khi game release có thể xóa để người chơi không vô tình bấm nhầm.
+    
     if (IsKeyPressed(KEY_Y)) {
         isCameraActive = !isCameraActive;
     }
@@ -28,7 +28,8 @@ void Camera_Update(Player *player, GameMap *map) {
 
     if (isCameraActive) {
         // --- CHẾ ĐỘ 1: RPG (Bám theo nhân vật) ---
-        gameCamera.zoom = 2.0f; // Trả về độ zoom chuẩn
+        //THU PHÓNG
+        gameCamera.zoom = 3.0f; // Trả về độ zoom chuẩn
 
         // Logic bám nhân vật
         gameCamera.target = (Vector2){ 

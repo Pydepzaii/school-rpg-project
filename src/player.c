@@ -16,8 +16,33 @@
 //Quản lí các date quan trọng
 void InitPlayer(Player *player, PlayerClass chosenClass) {
     //load ảnh main
-    player->textureWalk = LoadTexture("resources/main1walk.png");
-    player->textureIdle = LoadTexture("resources/main1idle.png");
+    //để mặc định
+    const char* pathWalk = "resources/player/class_1/main1walk.png"; // Mặc định
+    const char* pathIdle = "resources/player/class_1/main1idle.png";
+
+    // Chọn đường dẫn ảnh dựa trên class được truyền vào
+    switch (chosenClass) {
+        case 0: // Class 1
+            pathWalk = "resources/player/class_1/main1walk.png";
+            pathIdle = "resources/player/class_1/main1idle.png";
+            break;
+        case 1: // Class 2
+            pathWalk = "resources/player/class_2/main2walk.png"; 
+            pathIdle = "resources/player/class_2/main2idle.png";
+            break;
+        case 2: // Class 3
+            pathWalk = "resources/player/class_3/main3walk.png"; 
+            pathIdle = "resources/player/class_3/main3idle.png";
+            break;
+        case 3: // Class 4
+            pathWalk = "resources/player/class_4/main4walk.png"; 
+            pathIdle = "resources/player/class_4/main4idle.png";
+            break;
+    }
+
+    // Load ảnh thật từ đường dẫn đã chọn ở trên
+    player->textureWalk = LoadTexture(pathWalk);
+    player->textureIdle = LoadTexture(pathIdle);
     // 1. Gán kích thước frame thủ công
     player->drawWidth = 40.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
     player->drawHeight = 40.0f;  // Chỉnh ở đây là Debug tự nhận
@@ -29,9 +54,9 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
     player->maxFrames = MAX_FRAME_IDLE;
     // 2. Cấu hình chỉ số RPG
     switch (chosenClass) {
-        case CLASS_WARRIOR: player->stats = (PlayerStats){150, 150, 20, 20, 0, 3.0f}; break;
+        case CLASS_WARRIOR: player->stats = (PlayerStats){150, 150, 20, 20, 0, 2.5f}; break;
         case CLASS_STUDENT:
-        default:            player->stats = (PlayerStats){100, 100, 50, 10, 10, 4.0f}; break;
+        default:            player->stats = (PlayerStats){100, 100, 50, 10, 10, 2.5f}; break;
     }        
 
     // 3. Khởi tạo Animation
@@ -40,10 +65,9 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
     player->framesSpeed = 8; 
     player->currentDir = FACE_DOWN; // Mặc định nhìn xuống
     // sửa dữ liệu hitbox
-    player->hitWidth = 10.0f;  // Bạn muốn chỉnh to/nhỏ thì sửa số này
+    player->hitWidth = 10.0f;  // chỉnh to/nhỏ thì sửa số này
     player->hitHeight = 8.0f;  // Sửa số này
-    player->paddingBottom = 6.0f; // [MỚI] Khoảng cách từ chân ảnh đến đáy hitbox
-    // [SỬA LỖI]: Thay ANIM_ROW_DOWN cũ bằng ROW_DOWN mới
+    player->paddingBottom = 6.0f; // Khoảng cách từ chân ảnh đến đáy hitbox
     player->frameRec = (Rectangle){
         0.0f, 
         (float)(ROW_DOWN * player->spriteHeight), 
@@ -96,25 +120,26 @@ void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount) {
     }
 
     // --- 1. XỬ LÝ PHÍM BẤM (INPUT) ---
-    if (IsKeyDown(KEY_LEFT)) { 
+    //DI chuyển
+    if (IsKeyDown(KEY_A)) { 
         nextPos.x -= player->stats.moveSpeed; 
         player->currentDir = FACE_LEFT; 
         targetRow = ROW_RIGHT; // Mẹo: Đi trái dùng ảnh hàng PHẢI
         isMoving = true;
     }
-    else if (IsKeyDown(KEY_RIGHT)) { 
+    else if (IsKeyDown(KEY_D)) { 
         nextPos.x += player->stats.moveSpeed; 
         player->currentDir = FACE_RIGHT;
         targetRow = ROW_RIGHT; 
         isMoving = true;
     }
-    else if (IsKeyDown(KEY_UP)) { 
+    else if (IsKeyDown(KEY_W)) { 
         nextPos.y -= player->stats.moveSpeed; 
         player->currentDir = FACE_UP;
         targetRow = ROW_UP;   
         isMoving = true;
     }
-    else if (IsKeyDown(KEY_DOWN)) { 
+    else if (IsKeyDown(KEY_S)) { 
         nextPos.y += player->stats.moveSpeed; 
         player->currentDir = FACE_DOWN;
         targetRow = ROW_DOWN; 

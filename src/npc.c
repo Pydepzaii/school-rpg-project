@@ -1,4 +1,5 @@
 #include "npc.h"
+#include "settings.h"
 #include <string.h> 
 
 void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, int id) {
@@ -58,4 +59,29 @@ void DrawNpc(Npc *npc) {
 
 void UnloadNpc(Npc *npc) {
     UnloadTexture(npc->texture);
+}
+//tải npc vào các map cụ thể
+void Npc_LoadForMap(int mapID, Npc *npcList, int *npcCount) {
+    // 1. Reset số lượng NPC
+    *npcCount = 0;
+
+    // 2. Tùy theo Map mà sinh ra NPC tương ứng
+    switch (mapID) {
+        case MAP_THU_VIEN:
+            // NPC 1: Cô Đầu Bếp
+            InitNpc(&npcList[*npcCount], MAP_THU_VIEN, "resources/npc/map_thu_vien/codaubep.png", (Vector2){206, 250}, "Cô đầu bếp", 0);
+            strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
+            (*npcCount)++; // Tăng biến đếm
+
+            // Nếu muốn thêm NPC nữa thì copy đoạn trên paste xuống đây
+            break;
+
+        case MAP_NHA_AN:
+            // Code load NPC nhà ăn...
+            break;
+
+        // Các map khác...
+        default:
+            break;
+    }
 }

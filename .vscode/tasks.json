@@ -22,8 +22,8 @@
                 "${workspaceFolder}/src/settings.c",
                 "${workspaceFolder}/src/dialog_system.c",
                 "${workspaceFolder}/src/camera.c",
-                 "${workspaceFolder}/src/transition.c",
-
+                "${workspaceFolder}/src/transition.c",
+                "${workspaceFolder}/src/gameplay.c",
                 "-o",
                 "${workspaceFolder}/game.exe",
 

@@ -3,7 +3,9 @@
 #include "audio_manager.h"
 #include "camera.h"
 #include "settings.h"
+#include "npc.h"
 #include "menu_system.h"
+#include <stdio.h>
 
 // --- TRẠNG THÁI ---
 typedef enum {
@@ -21,6 +23,7 @@ static float waitTimer = 0.0f;   //Thời gian chờ trong lúc fadein
 static int targetMapID = -1;
 static Vector2 targetPlayerPos = {0};
 static bool isExitingGame = false;
+static bool isGoingToTitle;
 
 // [GIẢI THÍCH]: Hàm kích hoạt quá trình chuyển cảnh.
 void Transition_StartToMap(int mapID, Vector2 newPlayerPos) {
@@ -28,6 +31,14 @@ void Transition_StartToMap(int mapID, Vector2 newPlayerPos) {
     isExitingGame = false;
     targetMapID = mapID;
     targetPlayerPos = newPlayerPos;
+    currentState = TRANS_FADE_IN;
+    alpha = 0.0f;
+    waitTimer = 0.0f;
+}
+void Transition_StartToTitle() {
+    if (currentState != TRANS_OFF) return; // Đang chuyển rồi thì thôi
+
+    isGoingToTitle = true;
     currentState = TRANS_FADE_IN;
     alpha = 0.0f;
     waitTimer = 0.0f;
@@ -45,7 +56,7 @@ void Transition_StartExit() {
     // Có thể fade nhạc nhỏ dần ở đây nếu muốn (nâng cao)
 }
 
-void Transition_Update(GameMap *currentMap, Player *player) {
+void Transition_Update(GameMap *currentMap, Player *player, Npc *npcList, int *npcCount) {
     if (currentState == TRANS_OFF) return;
 
     float dt = GetFrameTime();
@@ -70,10 +81,23 @@ void Transition_Update(GameMap *currentMap, Player *player) {
                 }
                 return; // Không làm gì thêm, chờ vòng lặp main xử lý thoát
             }
+            // ingame to title
+            if (isGoingToTitle) {
+                Menu_SwitchTo(MENU_TITLE);
+                Audio_PlayMusic(MUSIC_TITLE);
+                
+                // Reset cờ
+                isGoingToTitle = false;
+                
+            }
             // --- THỜI KHẮC QUAN TRỌNG: LOAD MAP MỚI ---
             // [GIẢI THÍCH]: Chỉ load map khi màn hình đã tối đen hoàn toàn để người chơi không thấy quá trình load giật lag.
             if (targetMapID != -1) {
                 LoadMap(currentMap, targetMapID);
+                //nạp npc
+                if (npcList != NULL && npcCount != NULL) {
+                    Npc_LoadForMap(targetMapID, npcList, npcCount);
+                }
                 Audio_PlayMusicForMap(targetMapID);
                 
                 // Cập nhật vị trí nhân vật (nếu có yêu cầu)
@@ -115,4 +139,15 @@ void Transition_Draw() {
 
 bool Transition_IsActive() {
     return currentState != TRANS_OFF;
+}
+//hậu kì nhỏ: chuyển cảnh từ intro vào title
+void Transition_IntroDone() {
+    if (currentState != TRANS_OFF) return;
+
+    isGoingToTitle = true;
+    
+    // THAY ĐỔI QUAN TRỌNG Ở ĐÂY:
+    currentState = TRANS_WAIT; // Nhảy thẳng vào giai đoạn chờ (Màn đen)
+    alpha = 1.0f;              // Đặt độ đen là 100% ngay lập tức
+    waitTimer = 0.0f;          // Reset thời gian chờ
 }

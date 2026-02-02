@@ -115,22 +115,45 @@ void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCoun
     DrawRectangleLinesEx(playerHitbox, 1.0f, YELLOW);
 
     // --- B. VẼ HITBOX NPC (TÍM) ---
-    // [SỬA]: Khôi phục logic tính toán dựa trên Texture NPC (giống player.c)
     for (int i = 0; i < npcCount; i++) {
-        if (npcList[i].mapID == map->currentMapID) {
-            float npcW = (float)npcList[i].texture.width / npcList[i].frameCount;
-            float npcH = (float)npcList[i].texture.height;
+       if (npcList[i].mapID == map->currentMapID) {
+            // 1. TÍNH HITBOX VẬT LÝ (Hộp Tím)
+            // Lấy kích thước 1 frame ảnh
+            float npcFrameW = (float)npcList[i].texture.width / npcList[i].frameCount;
+            float npcFrameH = (float)npcList[i].texture.height;
 
-            float offsetX = (npcW - npcList[i].hitWidth) / 2.0f;
+            // Tính toán offset để hitbox nằm giữa chân
+            float offsetX = (npcFrameW - npcList[i].hitWidth) / 2.0f;
+            float offsetY = npcFrameH - npcList[i].hitHeight - npcList[i].paddingBottom;
+
+            // Tạo hình chữ nhật Hitbox
             Rectangle npcHitbox = { 
                 npcList[i].position.x + offsetX,            
-                npcList[i].position.y + npcH - npcList[i].paddingBottom - npcList[i].hitHeight,
+                npcList[i].position.y + offsetY,
                 npcList[i].hitWidth, 
                 npcList[i].hitHeight                       
             };
 
-            DrawRectangleRec(npcHitbox, Fade(PURPLE, 0.5f));
+            // Vẽ Hitbox Tím (Vật lý)
+            DrawRectangleRec(npcHitbox, Fade(PURPLE, 0.7f));
             DrawRectangleLinesEx(npcHitbox, 1.0f, PURPLE);
+
+            // -------------------------------------------------------------
+            // 2. VẼ VÙNG TƯƠNG TÁC (Vòng Tròn Vàng) - CẦN SỬA ĐOẠN NÀY
+            // -------------------------------------------------------------
+            
+            // [QUAN TRỌNG] Tính tâm dựa trên cái Hộp Tím vừa tính ở trên
+            Vector2 hitboxCenter = {
+                npcHitbox.x + (npcHitbox.width / 2.0f),  // Tâm X = Cạnh trái + nửa chiều rộng
+                npcHitbox.y + (npcHitbox.height / 2.0f)  // Tâm Y = Cạnh trên + nửa chiều cao
+            };
+
+            // Vẽ vòng tròn từ Tâm này
+            DrawCircleLines((int)hitboxCenter.x, (int)hitboxCenter.y, INTERACT_DISTANCE, PURPLE);
+            DrawCircleV(hitboxCenter, INTERACT_DISTANCE, Fade(PURPLE, 0.2f));
+            
+            // Vẽ chấm đỏ ngay tâm để kiểm chứng (Nó phải nằm giữa hộp tím)
+            DrawCircle((int)hitboxCenter.x, (int)hitboxCenter.y, 2.0f, RED);
         }
     }
 

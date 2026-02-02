@@ -6,6 +6,7 @@
 #include "settings.h" 
 #include <stdio.h>
 #include "transition.h"
+#include "gameplay.h"
 #include <math.h> 
 
 // Biến này giúp game nhớ xem lúc nãy chuột đang ở đâu
@@ -15,7 +16,14 @@ static MenuType previousMenu = MENU_TITLE;
 static bool shouldCloseGame = false;
 static Texture2D texTitleBG;
 static float clickCooldown = 0.0f; 
-
+//bIẾN CHO MÀN HÌNH CHỌN CLASS
+static Texture2D texChoiceBG;       // Ảnh nền chọn nhân vật
+static int selectedCharIndex = -1;  // -1: Chưa chọn, 0-3: Là các nhân vật
+//làm tí hiệu ứng aura chọn nhân vật cho nó chất
+static Texture2D texAura;       
+static float auraRotation = 0.0f;
+static bool isGameStarting = false;  // Đã bấm nút vào game chưa?
+static float auraScale = 1.0f;       // Độ to của vòng tròn
 // Khai báo trước các hàm (Forward declaration)
 static bool DrawButton(const char* text, Rectangle rec);
 static bool DrawInvisibleButton(const char* debugName, Rectangle rec);
@@ -144,7 +152,14 @@ static bool DrawButton(const char* text, Rectangle rec) {
 }
 
 void Menu_Init() {
-    texTitleBG = LoadTexture("resources/titlescreen.png");
+    texTitleBG = LoadTexture("resources/menu/titlescreen.png");
+    texChoiceBG = LoadTexture("resources/menu/choice_main.png");
+    //load aura
+    texAura = LoadTexture("resources/menu/aura.png"); 
+    isGameStarting = false;
+    auraScale = 1.0f;
+    //Dùng Bilinear để ảnh mịn, không bị răng cưa khi xoay
+    SetTextureFilter(texAura, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(texTitleBG, TEXTURE_FILTER_POINT); 
     SetExitKey(KEY_NULL); 
 }
@@ -191,8 +206,9 @@ void Menu_Draw() {
             // Nút START
             if (DrawInvisibleButton("START", (Rectangle){ 305, 94, 190, 49 })) {
                 Debug_ForceCloseMenuTool(); 
-                Transition_StartToMap(MAP_THU_VIEN, (Vector2){200, 250});
-                Audio_PlayMusic(MUSIC_THU_VIEN);
+                currentMenu = MENU_CHARACTER_SELECT; // Chuyển sang màn chọn
+                selectedCharIndex = -1;              // Reset chưa chọn ai cả
+                Audio_PlaySoundEffect(SFX_UI_CLICK);
             }
 
             // Nút SETTINGS: Sửa 4 số trong ngoặc nhọn này
@@ -207,7 +223,135 @@ void Menu_Draw() {
                 Transition_StartExit();
             }
             break;
+        case MENU_CHARACTER_SELECT:
+            {
+                // 1. Vẽ nền (Ảnh 4 nhân vật)
+                Rectangle sourceRec = { 0.0f, 0.0f, (float)texChoiceBG.width, (float)texChoiceBG.height };
+                Rectangle destRec = { 0.0f, 0.0f, sw, sh }; 
+                DrawTexturePro(texChoiceBG, sourceRec, destRec, (Vector2){0, 0}, 0.0f, WHITE);
 
+                // 2. Vẽ Tiêu Đề
+                DrawText("CHON NHAN VAT", 50, 30, 30, WHITE);
+                if (selectedCharIndex == -1) {
+                    DrawText("Hay chon mot nhan vat...", 50, 70, 20, RED);
+                } else {
+                    DrawText("Da chon! Bam XAC NHAN de choi.", 50, 70, 20, GREEN);
+                }
+
+                // 3. Vẽ 4 nút chọn nhân vật
+                
+                // Class 1
+                Rectangle btnC1 = {72, 100, 150, 220}; 
+                if (DrawInvisibleButton("CLASS 1", btnC1)) {
+                    selectedCharIndex = 0; // Ghim nhân vật 1
+                    Audio_PlaySoundEffect(SFX_UI_CLICK);
+                }
+
+                // Class 2
+                Rectangle btnC2 = {240, 100, 150, 220};
+                if (DrawInvisibleButton("CLASS 2", btnC2)) {
+                    selectedCharIndex = 1; // Ghim nhân vật 2
+                    Audio_PlaySoundEffect(SFX_UI_CLICK);
+                }
+
+                // Class 3
+                Rectangle btnC3 = { 420, 100, 150, 220};
+                if (DrawInvisibleButton("CLASS 3", btnC3)) {
+                    selectedCharIndex = 2; // Ghim nhân vật 3
+                    Audio_PlaySoundEffect(SFX_UI_CLICK);
+                }
+
+                // Class 4
+                Rectangle btnC4 = { 600, 100, 150, 220};
+                if (DrawInvisibleButton("CLASS 4", btnC4)) {
+                    selectedCharIndex = 3; // Ghim nhân vật 4
+                    Audio_PlaySoundEffect(SFX_UI_CLICK);
+                }
+
+                // 4. HIỆU ỨNG "GHIM"
+               Rectangle targetBox = {0};
+                if (selectedCharIndex == 0) targetBox = btnC1;
+                if (selectedCharIndex == 1) targetBox = btnC2;
+                if (selectedCharIndex == 2) targetBox = btnC3;
+                if (selectedCharIndex == 3) targetBox = btnC4;
+
+                if (selectedCharIndex != -1) {
+                    
+                    // A. Tính toán tâm (VÀO GIỮA NGƯỜI)
+                    Vector2 centerPos = {
+                        targetBox.x + targetBox.width / 2.0f,
+                        targetBox.y + targetBox.height / 2.0f 
+                    };
+
+                    // B. Xử lý logic: Đang chọn hay Đang vào game?
+                    if (!isGameStarting) {
+                        // --- TRẠNG THÁI 1: ĐANG CHỌN (Aura xoay nhẹ nhàng) ---
+                        auraRotation += 60.0f * GetFrameTime(); // Xoay đều
+                        auraScale = 1.0f + (sinf((float)GetTime() * 5.0f) * 0.05f); // Nhấp nháy nhẹ (1.0 -> 1.05)
+                    } 
+                    else {
+                        // --- TRẠNG THÁI 2: ĐANG VÀO GAME (Phóng to cực đại) ---
+                        auraRotation += 300.0f * GetFrameTime(); // Xoay tít thò lò
+                        auraScale += 10.0f * GetFrameTime();      // Phóng to rất nhanh
+                    }
+                    if (auraRotation >= 360.0f) auraRotation -= 360.0f;
+
+                    // C. Vẽ Aura
+                    BeginBlendMode(BLEND_ADDITIVE); // Cộng màu cho sáng rực
+                        
+                        Rectangle source = {0, 0, (float)texAura.width, (float)texAura.height};
+                        
+                        // Kích thước vẽ = Kích thước gốc (150) * Tỉ lệ phóng to (auraScale)
+                        float drawSize = 150.0f * auraScale; 
+                        
+                        Rectangle dest = { centerPos.x, centerPos.y, drawSize, drawSize };
+                        Vector2 origin = { drawSize / 2.0f, drawSize / 2.0f }; // Tâm xoay luôn ở giữa
+
+                        // Vẽ lớp chính
+                        DrawTexturePro(texAura, source, dest, origin, auraRotation, Fade(SKYBLUE, 0.8f));
+                        // Vẽ lớp phụ xoay ngược (cho ảo)
+                        DrawTexturePro(texAura, source, dest, origin, -auraRotation * 1.5f, Fade(WHITE, 0.5f));
+
+                    EndBlendMode();
+
+                    // D. Kiểm tra kết thúc hiệu ứng (Chuyển Map)
+                    // Nếu vòng tròn to gấp 20 lần (che kín màn hình) -> Chuyển cảnh
+                    if (isGameStarting && auraScale > 20.0f) {
+                        Gameplay_SetPlayerClass(selectedCharIndex);
+                        Transition_StartToMap(MAP_TOA_ALPHA, (Vector2){400, 300});
+                        Audio_PlayMusic(MUSIC_TOA_ALPHA);
+                        
+                        // Reset lại để lần sau quay lại menu không bị lỗi
+                        isGameStarting = false;
+                        auraScale = 1.0f;
+                    }
+
+                    // E. Vẽ nút "VÀO GAME" 
+                    // (CHỈ HIỆN KHI CHƯA BẤM BẮT ĐẦU - Để tránh bấm trùng)
+                    if (!isGameStarting) {
+                        Rectangle btnStartGame = { sw - 220, sh - 80, 200, 60 }; 
+                        if (DrawButton("VAO GAME", btnStartGame)) {
+                            // KHI BẤM NÚT: Không chuyển map ngay, mà kích hoạt hiệu ứng phóng to
+                            isGameStarting = true;
+                            Audio_PlaySoundEffect(SFX_UI_CLICK); // Hoặc âm thanh phép thuật nếu có
+                        }
+                    }
+                }
+
+                // 6. XỬ LÝ PHÍM ESC (Hủy chọn hoặc Quay lại)
+                if (IsKeyPressed(KEY_ESCAPE)) {
+                    if (selectedCharIndex != -1) {
+                        // Nếu đang chọn -> Hủy chọn
+                        selectedCharIndex = -1;
+                        Audio_PlaySoundEffect(SFX_UI_CLICK);
+                    } else {
+                        // Nếu chưa chọn ai -> Quay về màn hình chính
+                        currentMenu = MENU_TITLE;
+                        Audio_PlaySoundEffect(SFX_UI_CLICK);
+                    }
+                }
+            }
+            break;
         case MENU_PAUSE:
             DrawRectangle(0, 0, (int)sw, (int)sh, Fade(BLACK, 0.5f));
             {
@@ -227,8 +371,7 @@ void Menu_Draw() {
                     Menu_SwitchTo(MENU_SETTINGS);
                 }
                 if (DrawButton("QUIT", (Rectangle){pauseBox.x + 50, pauseBox.y + 200, 200, 40})) {
-                    Menu_SwitchTo(MENU_TITLE); 
-                    Audio_PlayMusic(MUSIC_TITLE);
+                    Transition_StartToTitle();
                 }
             }
             break;
@@ -273,4 +416,6 @@ void Menu_SwitchTo(MenuType type) {
 
 void Menu_Shutdown() {
     UnloadTexture(texTitleBG);
+    UnloadTexture(texChoiceBG);
+    UnloadTexture(texAura);
 }
