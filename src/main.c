@@ -4,89 +4,113 @@
 #include "player.h"
 #include "map.h"
 #include "npc.h"
-#include "debug.h" // <--- Đã thêm file debug vào đây
+#include "debug.h" 
+#include "renderer.h" 
+#include "interact.h"
+#include "ui_style.h"
+#include "intro.h"
+#include "audio_manager.h" 
+#include "menu_system.h" 
 #include <stdio.h> 
+#include <string.h> 
+#include "dialog_system.h"
+#include "camera.h"
+#include "gameplay.h"
+#include "transition.h"
 
 int main() {
-    // 1. SETUP CỬA SỔ
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI); // Hỗ trợ màn hình độ phân giải cao
+    // 1. INIT - Khởi tạo theo thứ tự nghiêm ngặt (Window -> Audio -> Assets)
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT); 
+    
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_TITLE);
-    SetTargetFPS(FPS); // Khóa FPS lại (thường là 60)
+    
+    // Khởi tạo màn hình ảo ngay sau khi tạo cửa sổ
+    // [GIẢI THÍCH]: Giúp game giữ nguyên tỉ lệ pixel khi phóng to cửa sổ.
+    InitScaling(); 
+    
+    InitAudioDevice();   
+    SetWindowMinSize(320, 240); 
+    SetTargetFPS(FPS);   
+    InitUIStyle();       
+    InitRenderer();      
+    Audio_Init();
+    Menu_Init(); 
+    Camera_Init();
+    Dialog_Init("resources/font_dialog/dialogs.txt"); 
+   // 2. SETUP GAMEPLAY
+   //Các biến khởi tạo để hết gameplay.h và gameplay.c nha ae
+    Gameplay_Init();
 
-    // 2. KHỞI TẠO DỮ LIỆU (INIT)
-    // - Tạo Player
-    Player mainCharacter;
-    InitPlayer(&mainCharacter, CLASS_STUDENT); 
+    // 3. INTRO
+    bool showIntro = true;
+    InitIntro("resources/intro/intro.mpg");
 
-    // - Tạo Map
-    GameMap currentMap;
-    currentMap.texture.id = 0; // Đánh dấu ID = 0 (chưa load gì)
-    LoadMap(&currentMap, MAP_THU_VIEN); // Load map đầu tiên
-
-    // - Tạo NPC (Dùng mảng để quản lý nhiều NPC)
-    Npc npcList[MAX_NPCS];
-    int npcCount = 0;
-
-    // NPC 01: Cô Đầu Bếp
-    InitNpc(&npcList[0], MAP_THU_VIEN, "resources/codaubep.png", (Vector2){500, 300}, "Co Dau Bep");
-    npcCount++;
-
-    // 3. VÒNG LẶP GAME (GAME LOOP)
-    while (!WindowShouldClose()) {
-        // --- PHẦN LOGIC (UPDATE) ---
-        // (Tính toán mọi thay đổi trước khi vẽ)
+    // 4. MAIN GAME LOOP
+    while (!WindowShouldClose() && !Menu_ShouldCloseGame()) {
         
-        // Debug: Phím tắt chuyển map nhanh
-        if (IsKeyPressed(KEY_F1)) LoadMap(&currentMap, MAP_THU_VIEN);
-        if (IsKeyPressed(KEY_F2)) LoadMap(&currentMap, MAP_NHA_AN);
+        // [QUAN TRỌNG]: Luôn update audio stream
+        Audio_Update();
 
-        // Upda te Người chơi (Truyền map và npc vào để check va chạm)
-        UpdatePlayer(&mainCharacter, &currentMap, npcList, npcCount);
-
-        // Update NPC: Chỉ update những NPC đang ở cùng map với người chơi
-        for (int i = 0; i < npcCount; i++) {
-            if (npcList[i].mapID == currentMap.currentMapID) {
-                UpdateNpc(&npcList[i]);
+        // Phase Intro - Chạy video mở đầu
+        if (showIntro) {
+            if (UpdateIntro()) {
+                UnloadIntro(); 
+                showIntro = false;
+                Transition_IntroDone();
             }
+            BeginDrawing();
+            ClearBackground(BLACK);
+            DrawIntro();
+            EndDrawing();
+            continue; // Bỏ qua các logic game bên dưới khi đang chiếu intro
         }
 
-        // --- PHẦN VẼ (DRAW) ---
+        // Phase Update Logic
+        Menu_Update();
+
+        if (currentMenu == MENU_NONE || Transition_IsActive()) {
+            Gameplay_Update();
+        }
+
+        // Phase Drawing
         BeginDrawing();
-            ClearBackground(RAYWHITE); // Xóa màn hình cũ
+            ClearBackground(BLACK); 
             
-            // Lớp 1: Vẽ nền Map
-            DrawMap(&currentMap);
-            // (Phần vẽ tường Debug cũ đã được chuyển sang hàm Debug_UpdateAndDraw bên dưới)
-            
-            // Lớp 2: Vẽ NPC
-            for (int i = 0; i < npcCount; i++) {
-                if (npcList[i].mapID == currentMap.currentMapID) {
-                    DrawNpc(&npcList[i]);
+            // [GIẢI THÍCH]: BeginScaling giúp vẽ mọi thứ lên màn hình ảo kích thước thấp, sau đó phóng to ra.
+            BeginScaling(); 
+                ClearBackground(RAYWHITE); 
+                
+                if (currentMenu == MENU_TITLE) {
+                    Menu_Draw(); 
+                    Debug_RunMenuTool();
                 }
-            }
+                else {
+                   Gameplay_Draw(); // Vẽ game
+                    
+                    Menu_Draw();     // Vẽ menu đè lên (nếu đang Pause)
 
-            // Lớp 3: Vẽ Player (Vẽ sau cùng để đè lên trên nền)
-            DrawPlayer(&mainCharacter);
+                    if (currentMenu != MENU_NONE) {
+                        Debug_RunMenuTool();
+                    }
+                }
 
-            // --- [TOOL DEBUG] ---
-            // Gọi hàm này để: 
-            // 1. Ấn phím 0 thì hiện tường đỏ
-            // 2. Kéo chuột thì hiện tường xanh để lấy tọa độ
-            Debug_UpdateAndDraw(&currentMap); 
-
-            // Lớp 4: UI (Giao diện người dùng)
-            DrawText("F1: Thu Vien | F2: Nha An (Trong)", 10, 10, 20, BLACK);
-            DrawText(TextFormat("HP: %d/%d", mainCharacter.stats.hp, mainCharacter.stats.maxHp), 10, 40, 20, RED);
+            EndScaling(); 
+            
+            // [MỚI] Vẽ màn đen chuyển cảnh PHỦ LÊN TẤT CẢ (Trên cùng)
+            Transition_Draw();
 
         EndDrawing();
     }
 
-    // 4. DỌN DẸP (UNLOAD)
-    // Giải phóng RAM trước khi tắt
-    UnloadPlayer(&mainCharacter);
-    UnloadMap(&currentMap);
-    for (int i = 0; i < npcCount; i++) UnloadNpc(&npcList[i]);
-    
+    // 5. CLEANUP
+    if (showIntro) UnloadIntro();
+    Gameplay_Shutdown();
+    UnloadScaling();
+    Menu_Shutdown();
+    Audio_Shutdown();
+    CloseUIStyle(); 
+    CloseAudioDevice();
     CloseWindow();
+
     return 0;
 }
