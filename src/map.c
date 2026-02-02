@@ -3,6 +3,7 @@
 
 void LoadMap(GameMap *map, int mapID) {
     // 1. Cleanup Map Cũ
+    // [GIẢI THÍCH]: Luôn phải unload texture cũ trước khi load map mới để tránh tràn RAM.
     if (map->texture.id > 0) UnloadTexture(map->texture);
 
     // 2. Setup Map Mới
@@ -12,13 +13,30 @@ void LoadMap(GameMap *map, int mapID) {
 
     // 3. Load Data riêng từng Map
     switch (mapID) {
+        case MAP_TOA_ALPHA:
+             map->texture = LoadTexture("resources/game_map/map1/alpha.png");
+             
+            break;
+        case MAP_NHA_VO:
+             map->texture = LoadTexture("resources/game_map/map2/nhavo.png");
+             
+            break;
         case MAP_THU_VIEN:
-            map->texture = LoadTexture("resources/thuvien.png");
+            map->texture = LoadTexture("resources/game_map/map3/thuvien.png");
             
             // [COLLISION DATA]
             // Copy output từ chế độ Debug (Phím 0 -> Vẽ -> Console) dán vào đây.
             // Format: (Rectangle){ x, y, width, height }
             map->walls[map->wallCount++] = (Rectangle){ 472, 113, 189, 118 };
+            map->walls[map->wallCount++] = (Rectangle){ 286, 356, 120, 63 };
+            break;
+        //testMap không sử dụng trong bản chính
+        case MAP_DEN:
+            map->texture = LoadTexture("resources/game_map/test/wibu.png");
+            break;
+
+        case MAP_TRANG:
+            map->texture = LoadTexture("resources/game_map/test/wibu2.png");
             break;
         //testMap không sử dụng trong bản chính
         case MAP_DEN:
@@ -32,6 +50,7 @@ void LoadMap(GameMap *map, int mapID) {
 
         case MAP_NHA_AN:
             // TODO: Load texture nhà ăn và tường
+            // [THỪA]: Hiện tại case này trống, nếu load map Nhà Ăn sẽ lỗi texture (màn hình đen/hồng).
             break;
             
         default:

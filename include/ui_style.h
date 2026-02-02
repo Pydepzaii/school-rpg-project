@@ -12,5 +12,6 @@ void InitUIStyle();
 
 // Hàm giải phóng bộ nhớ khi tắt game
 void CloseUIStyle();
-
+//Vẽ khung hội thoại
+void UI_DrawDialog(const char* name, const char* content);
 #endif

@@ -17,11 +17,14 @@
 
 // --- ID CÁC MAP (DANH SÁCH BẢN ĐỒ) ---
 // Thêm map mới thì thêm số tiếp theo vào đây
-#define MAP_THU_VIEN   0
-#define MAP_NHA_AN     1
-#define MAP_SAN_TRUONG 2
-#define MAP_DEN        3
-#define MAP_TRANG      4
+#define MAP_TOA_ALPHA   0
+#define MAP_NHA_VO     1
+#define MAP_NHA_AN 2
+#define MAP_THU_VIEN 3
+#define MAP_LAB 4
+#define MAP_SAN_TRUONG 5
+#define MAP_DEN        6
+#define MAP_TRANG      7
 // --- [THÊM MỚI] KHAI BÁO CÁC HÀM SCALING ---
 void ToggleGameFullscreen(void);
 void InitScaling(void);

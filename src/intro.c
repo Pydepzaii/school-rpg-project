@@ -38,6 +38,7 @@ void InitIntro(const char* fileName) {
     int w = plm_get_width(plm);
     int h = plm_get_height(plm);
     rgbBuffer = (uint8_t *)malloc(w * h * 3);
+    // [GIẢI THÍCH]: Đăng ký hàm callback để nhận dữ liệu ảnh từ video.
     plm_set_video_decode_callback(plm, OnVideoFrame, rgbBuffer);
 
     // Tạo Texture rỗng để hứng dữ liệu video

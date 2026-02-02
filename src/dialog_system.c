@@ -8,6 +8,8 @@ static DialogEntry dialogDatabase[MAX_DIALOG_ENTRIES];
 static int dialogCount = 0;
 static bool isInitialized = false;
 
+// [GIẢI THÍCH]: Hàm parse (phân tích) file txt. 
+// Định dạng: MapID | NpcID | Key | Content
 void Dialog_Init(const char* filePath) {
     FILE *file = fopen(filePath, "r");
     if (!file) {
@@ -26,7 +28,7 @@ void Dialog_Init(const char* filePath) {
         line[strcspn(line, "\n")] = 0;
 
         // 3. Tách chuỗi dựa trên dấu gạch đứng '|'
-        // Cú pháp: MapID | NpcID | Key | Content
+        // [GIẢI THÍCH]: strtok giúp cắt chuỗi dài thành các mảnh nhỏ.
         char *token = strtok(line, "|");
         if (!token) continue;
         int mapID = atoi(token);
@@ -61,6 +63,7 @@ void Dialog_Init(const char* filePath) {
     printf(">> [DIALOG] Da nap %d cau thoai tu %s\n", dialogCount, filePath);
 }
 
+// [GIẢI THÍCH]: Tìm kiếm tuyến tính (Linear Search). Vì số lượng thoại ít (< vài nghìn) nên không ảnh hưởng hiệu năng.
 const char* Dialog_Get(int mapId, int npcId, const char* key) {
     if (!isInitialized) return "...";
 
@@ -75,6 +78,7 @@ const char* Dialog_Get(int mapId, int npcId, const char* key) {
     }
     
     // Fallback: Nếu không tìm thấy key cụ thể, thử tìm key "DEFAULT"
+    // [GIẢI THÍCH]: Đệ quy 1 lần để tìm câu thoại mặc định nếu key đặc biệt không có.
     if (strcmp(key, "DEFAULT") != 0) {
         return Dialog_Get(mapId, npcId, "DEFAULT");
     }
@@ -84,6 +88,7 @@ const char* Dialog_Get(int mapId, int npcId, const char* key) {
 
 void Dialog_Shutdown() {
     // Nếu dùng malloc thì free ở đây, hiện tại dùng mảng tĩnh nên không cần làm gì
+    // [CÓ THỂ THỪA]: Hàm này hiện tại trống rỗng (No-op), nhưng nên giữ lại để tuân thủ thiết kế Init/Shutdown chuẩn.
     dialogCount = 0;
     isInitialized = false;
 }

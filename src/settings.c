@@ -4,6 +4,8 @@
 #include "raylib.h"
 
 // Biến nội bộ: Màn hình ảo (Render Texture)
+// [GIẢI THÍCH]: Game sẽ vẽ mọi thứ lên tấm ảnh này trước (độ phân giải thấp 800x600).
+// Sau đó tấm ảnh này mới được phóng to ra màn hình thật.
 static RenderTexture2D virtualScreen; 
 static bool isScalingInit = false;
 
@@ -47,6 +49,7 @@ void EndScaling(void) {
     ClearBackground(BLACK); 
 
     // Tính toán tỉ lệ phóng to (Scale)
+    // [GIẢI THÍCH]: Chọn tỉ lệ sao cho hình không bị méo (giữ aspect ratio).
     float scale = Min((float)GetScreenWidth()/SCREEN_WIDTH, (float)GetScreenHeight()/SCREEN_HEIGHT);
 
     // Vẽ màn hình ảo đã phóng to ra giữa màn hình thật
@@ -65,7 +68,10 @@ void EndScaling(void) {
 void UnloadScaling(void) {
     if (isScalingInit) UnloadRenderTexture(virtualScreen);
 }
+
 // [MỚI] Hàm lấy tọa độ chuột đã quy đổi sang màn hình ảo
+// [GIẢI THÍCH]: Vì hình ảnh bị scale và dịch chuyển, tọa độ chuột thật sẽ sai lệch so với tọa độ trong game.
+// Hàm này tính toán ngược lại để lấy đúng tọa độ chuột trong không gian 800x600.
 Vector2 GetVirtualMousePos(void) {
     float scale = Min((float)GetScreenWidth()/SCREEN_WIDTH, (float)GetScreenHeight()/SCREEN_HEIGHT);
     
@@ -84,10 +90,9 @@ Vector2 GetVirtualMousePos(void) {
     };
     
     // Kẹp giá trị chuột (Clamp) để nó không nhận giá trị ngoài vùng game (nếu cần)
+    // [CÓ THỂ THỪA]: Đoạn code bị comment này có thể xóa nếu không dùng tới.
     // if (virtualMouse.x < 0) virtualMouse.x = 0;
-    // if (virtualMouse.y < 0) virtualMouse.y = 0;
-    // if (virtualMouse.x > SCREEN_WIDTH) virtualMouse.x = SCREEN_WIDTH;
-    // if (virtualMouse.y > SCREEN_HEIGHT) virtualMouse.y = SCREEN_HEIGHT;
+    // ...
 
     return virtualMouse;
 }

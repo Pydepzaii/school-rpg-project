@@ -1,7 +1,7 @@
 // FILE: src/renderer.c
 #include "renderer.h"
 #include <stdlib.h> 
-
+#include <player.h>
 // --- TYPE DEFINITIONS ---
 typedef enum {
     TYPE_PLAYER,
@@ -11,6 +11,7 @@ typedef enum {
 
 // [STRUCT] RenderItem
 // Wrapper chứa thông tin cần thiết để sắp xếp thứ tự vẽ
+// [GIẢI THÍCH]: Struct này dùng để gói mọi thứ cần vẽ lại thành 1 cục chung để dễ sắp xếp.
 typedef struct {
     RenderType type;
     void *data;      // Con trỏ void trỏ đến object gốc (Player*, Npc*...)
@@ -33,7 +34,8 @@ void Render_AddPlayer(Player *player) {
     renderList[renderCount].type = TYPE_PLAYER;
     renderList[renderCount].data = (void*)player;
     // Pivot Y: Chân nhân vật (đáy ảnh)
-    renderList[renderCount].sortY = player->position.y + player->spriteHeight;
+    // [GIẢI THÍCH]: Logic quan trọng nhất: Lấy chân làm điểm mốc để so sánh.
+   renderList[renderCount].sortY = player->position.y + player->drawHeight-2.0f;
     renderCount++;
 }
 
@@ -47,9 +49,7 @@ void Render_AddNpc(Npc *npc) {
     // [ADJUSTMENT] NPC Sort Y
     // Đồng bộ logic này với Hitbox trong debug.c và player.c
     // Trừ đi paddingBottom để điểm sort nằm đúng chân "vật lý"
-    float paddingBottom = 17.0f;
-    renderList[renderCount].sortY = npc->position.y + npc->texture.height - paddingBottom;
-    
+    renderList[renderCount].sortY = npc->position.y + npc->texture.height - npc->paddingBottom;
     renderCount++;
 }
 
@@ -66,6 +66,7 @@ void Render_AddProp(GameProp *prop) {
 
 // [ALGORITHM] Comparator for qsort
 // So sánh Y: Y nhỏ (xa, trên cao) vẽ trước. Y lớn (gần, dưới thấp) vẽ sau.
+// [GIẢI THÍCH]: Hàm so sánh dùng cho thuật toán Quick Sort của C.
 int CompareRenderItems(const void *a, const void *b) {
     RenderItem *itemA = (RenderItem *)a;
     RenderItem *itemB = (RenderItem *)b;
@@ -77,9 +78,11 @@ int CompareRenderItems(const void *a, const void *b) {
 
 void Render_DrawAll() {
     // 1. Sorting: Sắp xếp danh sách dựa trên Y
+    // [GIẢI THÍCH]: Gọi hàm qsort có sẵn trong thư viện stdlib.h
     qsort(renderList, renderCount, sizeof(RenderItem), CompareRenderItems);
 
     // 2. Painting: Duyệt danh sách đã sắp xếp và vẽ từ dưới lên trên
+    // Object nào ở xa (Y nhỏ) vẽ trước, object ở gần (Y lớn) vẽ sau đè lên.
     for (int i = 0; i < renderCount; i++) {
         RenderItem item = renderList[i];
 
