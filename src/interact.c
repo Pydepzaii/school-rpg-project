@@ -87,6 +87,7 @@ void Interact_Update(Player *player, Npc *npcList, int npcCount, GameMap *map) {
             }
         } else {
             npcList[i].isTalking = false;
+<<<<<<< Updated upstream
         }
         // Cửa sang Map Trắng
         if (Vector2Distance(player->position, exitToWhite) < INTERACT_DISTANCE) {
@@ -103,6 +104,10 @@ void Interact_Update(Player *player, Npc *npcList, int npcCount, GameMap *map) {
              player->position = (Vector2){ 400, 250 };
          }
     }
+=======
+        }
+    }
+>>>>>>> Stashed changes
     
     Interact_CheckExits(player, map);
 }
@@ -175,4 +180,8 @@ void Interact_DrawDebugExits(GameMap *map) {
         DrawText("EXIT > TRANG", (int)exitToWhite.x - 20, (int)exitToWhite.y - 10, 10, WHITE);
         DrawCircle((int)exitToWhite.x, (int)exitToWhite.y, 3.0f, RED);
     }
+<<<<<<< Updated upstream
 } 
+=======
+} 
+>>>>>>> Stashed changes

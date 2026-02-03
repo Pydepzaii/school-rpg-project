@@ -24,6 +24,10 @@
                 "${workspaceFolder}/src/camera.c",
                 "${workspaceFolder}/src/transition.c",
                 "${workspaceFolder}/src/gameplay.c",
+<<<<<<< Updated upstream
+=======
+                "${workspaceFolder}/src/save_system.c",
+>>>>>>> Stashed changes
                 "-o",
                 "${workspaceFolder}/game.exe",
 

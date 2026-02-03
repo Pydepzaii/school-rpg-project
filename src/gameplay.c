@@ -80,11 +80,24 @@ void Gameplay_Draw() {
         for (int i = 0; i < npcCount; i++) {
             if (npcList[i].mapID == currentMap.currentMapID) Render_AddNpc(&npcList[i]);
         }
+<<<<<<< Updated upstream
+=======
+        // [NEW] Add Props vào Renderer
+        for (int i = 0; i < currentMap.propCount; i++) {
+            // Tính toán sortY: Vị trí Y + Chiều cao (Đáy ảnh)
+            float sortY = currentMap.props[i].position.y + currentMap.props[i].originY;
+            Render_AddProp(&currentMap.props[i]);
+        }
+>>>>>>> Stashed changes
         Render_DrawAll(); 
 
         // Vẽ Debug (Hitbox)
         Debug_UpdateAndDraw(&currentMap, &mainCharacter, npcList, npcCount); 
+<<<<<<< Updated upstream
 
+=======
+        Debug_RunPropTool(&currentMap);
+>>>>>>> Stashed changes
     EndMode2D(); 
 
     // 2. VẼ UI (Không chịu ảnh hưởng Camera)
@@ -101,4 +114,17 @@ void Gameplay_Shutdown() {
     UnloadPlayer(&mainCharacter);
     UnloadMap(&currentMap);
     // Nếu NPC có load texture riêng thì unload ở đây
+<<<<<<< Updated upstream
+=======
+}
+void Gameplay_GetSaveInfo(int *mapID, Vector2 *pos, PlayerStats *stats) {
+    *mapID = currentMap.currentMapID;
+    *pos = mainCharacter.position;
+    *stats = mainCharacter.stats;
+}
+
+// Hàm này nhận stats từ file save và áp dụng vào nhân vật
+void Gameplay_LoadStats(PlayerStats stats) {
+    mainCharacter.stats = stats;
+>>>>>>> Stashed changes
 }

@@ -1,10 +1,20 @@
 // FILE: src/debug.c
+#include "raylib.h"
 #include "debug.h"
+<<<<<<< Updated upstream
 #include "settings.h" 
 #include "camera.h"   
 #include <stdio.h> 
 #include <player.h>
 #include <interact.h>
+=======
+#include "map.h"      // [FIX] Đổi <> thành "" cho chuẩn file nội bộ
+#include "settings.h" 
+#include "camera.h"   
+#include <stdio.h> 
+#include "player.h"   // [FIX] Đổi <> thành ""
+#include "interact.h" // [FIX] Đổi <> thành ""
+>>>>>>> Stashed changes
 #include <stdlib.h> 
 
 // --- STATE QUẢN LÝ RIÊNG BIỆT ---
@@ -12,6 +22,7 @@ static bool showMapDebug = false;
 static bool showMenuDebug = false; 
 static bool showDebugUI = true;    
 static bool showDrawFrame = false;
+<<<<<<< Updated upstream
 // [MAP TOOL DATA]
 #define MAX_TEMP_WALLS 100
 static bool isMapDragging = false;
@@ -28,6 +39,25 @@ static int tempBtnCount = 0;
 
 bool IsMenuDebugActive() { return showMenuDebug; }
 
+=======
+
+// [MAP TOOL DATA]
+#define MAX_TEMP_WALLS 100
+static bool isMapDragging = false;
+static Vector2 mapStartPos = {0};
+static Rectangle tempMapWalls[MAX_TEMP_WALLS]; 
+static int tempMapWallCount = 0;
+
+// [MENU TOOL DATA]
+#define MAX_DEBUG_BUTTONS 100
+static bool isMenuDragging = false;
+static Vector2 menuStartPos = {0};
+static Rectangle tempButtons[MAX_DEBUG_BUTTONS]; 
+static int tempBtnCount = 0;
+
+bool IsMenuDebugActive() { return showMenuDebug; }
+
+>>>>>>> Stashed changes
 void Debug_ForceCloseMenuTool() {
     showMenuDebug = false;
 }
@@ -237,11 +267,99 @@ void Debug_RunMenuTool() {
             
             printf("if (DrawButton(\"NUT\", (Rectangle){ %.0f, %.0f, %.0f, %.0f })) { }\n", 
                    rect.x, rect.y, rect.width, rect.height);
+<<<<<<< Updated upstream
         }
     }
 
     if (IsKeyPressed(KEY_C) && tempBtnCount > 0) {
         tempBtnCount--;
         printf(">> [DEBUG] Undo Last Menu Button.\n");
+=======
+        }
+    }
+
+    if (IsKeyPressed(KEY_C) && tempBtnCount > 0) {
+        tempBtnCount--;
+        printf(">> [DEBUG] Undo Last Menu Button.\n");
+    }
+}
+
+// ---------------------------------------------
+// TOOL 3: PROP CUTTER TOOL (PHÍM P)
+// ---------------------------------------------
+// Biến toàn cục cho Tool Prop
+static bool showPropTool = false;
+static bool isPropDragging = false;
+static Vector2 propStartPos = {0};
+static Rectangle tempProps[50]; 
+static int tempPropCount = 0;
+
+void Debug_RunPropTool(GameMap *map) {
+    if (IsKeyPressed(KEY_P)) {
+        showPropTool = !showPropTool;
+        if (showPropTool) {
+            showMapDebug = false; // Tắt tool Map đi cho đỡ rối
+            printf(">> [DEBUG] PROP TOOL: ON (Keo chuot de cat vat the)\n");
+        }
+    }
+
+    if (!showPropTool) return;
+
+    // Vẽ hướng dẫn
+    DrawDebugInfoBox("PROP TOOL (P)", "Keo chuot trai: Cat Anh", "Nha chuot: Them code");
+
+    // Lấy tọa độ chuột TRONG GAME (đã tính Camera)
+    Vector2 mouseWorldPos = GetScreenToWorld2D(GetVirtualMousePos(), gameCamera);
+
+    // 1. Logic Kéo Thả
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        isPropDragging = true;
+        propStartPos = mouseWorldPos; 
+    }
+
+    if (isPropDragging) {
+        Vector2 currentPos = mouseWorldPos;
+        Rectangle rect = {
+            (propStartPos.x < currentPos.x) ? propStartPos.x : currentPos.x,
+            (propStartPos.y < currentPos.y) ? propStartPos.y : currentPos.y,
+            (float)abs((int)(currentPos.x - propStartPos.x)),
+            (float)abs((int)(currentPos.y - propStartPos.y))
+        };
+        
+        // Vẽ khung nháp màu SKYBLUE (Xanh da trời)
+        DrawRectangleLinesEx(rect, 2.0f, SKYBLUE);
+
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+            isPropDragging = false;
+            if (tempPropCount < 50) tempProps[tempPropCount++] = rect;
+            
+            // IN CODE RA CONSOLE ĐỂ BẠN COPY
+            // Format: sourceX, sourceY, width, height, originY
+            float s = map->scale; 
+            
+            printf("map->props[map->propCount++] = (GameProp){ (Rectangle){%.0f, %.0f, %.0f, %.0f}, (Vector2){%.0f, %.0f}, %.0f, &map->layerTexture };\n", 
+                   rect.x / s, rect.y / s, rect.width / s, rect.height / s, // Source Rec (Chia 2)
+                   rect.x, rect.y,                                          // Position (Giữ nguyên)
+                   rect.height);
+        }
+    } // [FIX] Đã thêm dấu ngoặc đóng ở đây (Lỗi cũ của bạn là thiếu cái này)
+
+    // 2. Vẽ lại các vùng đã cắt tạm thời
+    for (int i = 0; i < tempPropCount; i++) {
+        DrawRectangleLinesEx(tempProps[i], 1.0f, SKYBLUE);
+        DrawLine(tempProps[i].x, tempProps[i].y + tempProps[i].height, 
+                 tempProps[i].x + tempProps[i].width, tempProps[i].y + tempProps[i].height, SKYBLUE); // Vẽ đáy
+    }
+    
+    // 3. Vẽ các Prop ĐÃ CÓ trong map (Màu xanh dương)
+    for (int i=0; i<map->propCount; i++) {
+         DrawRectangleLinesEx(map->props[i].sourceRec, 1.0f, BLUE);
+    }
+    
+    // Undo
+    if (IsKeyPressed(KEY_C) && tempPropCount > 0) {
+        tempPropCount--;
+        printf(">> [DEBUG] Undo Last Prop.\n");
+>>>>>>> Stashed changes
     }
 }

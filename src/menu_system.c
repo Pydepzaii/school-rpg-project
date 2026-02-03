@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include "transition.h"
 #include "gameplay.h"
+<<<<<<< Updated upstream
+=======
+#include "save_system.h"
+>>>>>>> Stashed changes
 #include <math.h> 
 
 // Biến này giúp game nhớ xem lúc nãy chuột đang ở đâu
@@ -210,6 +214,41 @@ void Menu_Draw() {
                 selectedCharIndex = -1;              // Reset chưa chọn ai cả
                 Audio_PlaySoundEffect(SFX_UI_CLICK);
             }
+<<<<<<< Updated upstream
+=======
+            //load GAME BUTTON
+            if (Game_HasSaveFile()) {
+                // Nếu CÓ file save -> Vẽ nút bấm được
+                if (DrawInvisibleButton("CONTINUE", (Rectangle){ 305, 156, 190, 49 })) { 
+                    
+                    
+                    Audio_PlaySoundEffect(SFX_UI_CLICK);
+                    
+                    // Tạo biến tạm để hứng dữ liệu từ file save
+                    int loadedMap;
+                    Vector2 loadedPos;
+                    PlayerStats loadedStats;
+
+                    // Gọi hàm Load
+                    if (Game_Load(&loadedMap, &loadedPos, &loadedStats)) {
+                        printf(">> [MENU] Loading Game...\n");
+
+                        // 1. Tạm thời set class mặc định (Sau này có thể lưu classID vào file save để load chuẩn hơn)
+                        Gameplay_SetPlayerClass(CLASS_STUDENT); 
+                        
+                        // 2. Nạp lại các chỉ số máu me
+                        Gameplay_LoadStats(loadedStats);
+
+                        // 3. Chuyển cảnh sang Map đã lưu và Vị trí đã lưu
+                        Transition_StartToMap(loadedMap, loadedPos);
+                    }
+                }
+            } else {
+                // Nếu KHÔNG có file save -> Vẽ nút mờ hoặc bỏ qua (Ở đây tôi chọn bỏ qua không vẽ để người chơi không bấm nhầm)
+                // Hoặc bạn có thể vẽ một dòng chữ xám:
+                DrawText("NO SAVE DATA", 340, 200, 20, Fade(GRAY, 0.5f));
+            }
+>>>>>>> Stashed changes
 
             // Nút SETTINGS: Sửa 4 số trong ngoặc nhọn này
             // { Tọa độ X, Tọa độ Y, Chiều Rộng, Chiều Cao }
@@ -285,7 +324,11 @@ void Menu_Draw() {
 
                     // B. Xử lý logic: Đang chọn hay Đang vào game?
                     if (!isGameStarting) {
+<<<<<<< Updated upstream
                         // --- TRẠNG THÁI 1: ĐANG CHỌN (Aura xoay nhẹ nhàng) ---
+=======
+                        // --- TRẠNG THÁI 1: ĐANG CHỌN (Aura xoay nhẹ nhàng)
+>>>>>>> Stashed changes
                         auraRotation += 60.0f * GetFrameTime(); // Xoay đều
                         auraScale = 1.0f + (sinf((float)GetTime() * 5.0f) * 0.05f); // Nhấp nháy nhẹ (1.0 -> 1.05)
                     } 
@@ -333,6 +376,10 @@ void Menu_Draw() {
                         if (DrawButton("VAO GAME", btnStartGame)) {
                             // KHI BẤM NÚT: Không chuyển map ngay, mà kích hoạt hiệu ứng phóng to
                             isGameStarting = true;
+<<<<<<< Updated upstream
+=======
+                            //trước khi vào game ta bắt đầu 1 đoạn cútceen 
+>>>>>>> Stashed changes
                             Audio_PlaySoundEffect(SFX_UI_CLICK); // Hoặc âm thanh phép thuật nếu có
                         }
                     }
@@ -358,6 +405,7 @@ void Menu_Draw() {
                 float boxW = 300; float boxH = 300;
                 Rectangle pauseBox = { (sw - boxW)/2, (sh - boxH)/2, boxW, boxH };
                 
+<<<<<<< Updated upstream
                 DrawRectangleRec(pauseBox, DARKBLUE);
                 DrawRectangleLinesEx(pauseBox, 3, WHITE); 
                 int fontSize = 30;
@@ -375,6 +423,48 @@ void Menu_Draw() {
                 }
             }
             break;
+=======
+            DrawRectangleRec(pauseBox, DARKBLUE);
+            DrawRectangleLinesEx(pauseBox, 3, WHITE); 
+            int fontSize = 30;
+            DrawText("PAUSE", (int)(pauseBox.x + 100), (int)(pauseBox.y + 20), fontSize, WHITE);
+
+            // 1. Resume
+            if (DrawButton("RESUME", (Rectangle){pauseBox.x + 50, pauseBox.y + 70, 200, 40})) {
+                Menu_SwitchTo(MENU_NONE);
+            }
+
+            // 2. [NEW] Save Game
+            if (DrawButton("SAVE GAME", (Rectangle){pauseBox.x + 50, pauseBox.y + 130, 200, 40})) {
+                Audio_PlaySoundEffect(SFX_UI_CLICK);
+                
+                // Khai báo biến tạm
+                int mID;
+                Vector2 mPos;
+                PlayerStats mStats;
+                
+                // Lấy dữ liệu thật từ Gameplay (Hàm này bạn phải thêm vào gameplay.c như hướng dẫn trước)
+                Gameplay_GetSaveInfo(&mID, &mPos, &mStats);
+                
+                // Ghi xuống file
+                Game_Save(mID, mPos, mStats);
+                
+                // (Tùy chọn) Hiện thông báo nhỏ hoặc đổi màu nút để báo đã lưu
+            }
+
+            // 3. Settings
+            if (DrawButton("SETTINGS", (Rectangle){pauseBox.x + 50, pauseBox.y + 190, 200, 40})) {
+                previousMenu = MENU_PAUSE; 
+                Menu_SwitchTo(MENU_SETTINGS);
+            }
+
+            // 4. Quit
+            if (DrawButton("QUIT", (Rectangle){pauseBox.x + 50, pauseBox.y + 250, 200, 40})) {
+                Transition_StartToTitle();
+            }
+        }
+        break;
+>>>>>>> Stashed changes
 
         case MENU_UPGRADE:
             // [THỪA]: Menu này hiện chỉ in ra console, chưa có logic game thực tế.
@@ -389,6 +479,7 @@ void Menu_Draw() {
             DrawRectangle(0, 0, (int)sw, (int)sh, Fade(BLACK, 0.9f));
             DrawText("SETTINGS", (int)(sw/2 - 80), 40, 40, YELLOW);
 
+<<<<<<< Updated upstream
             float currentVol = Audio_GetMasterVolume();
             float newVol = DrawVolumeControl("Master Volume", (Rectangle){ 200, 130, 400, 30 }, currentVol);
             if (newVol != currentVol) {
@@ -404,6 +495,45 @@ void Menu_Draw() {
                 Menu_SwitchTo(previousMenu); 
             }
             break;
+=======
+            // [NEW] 1. Nút Mute (Góc phải trên hoặc vị trí tùy chọn)
+        bool isMuted = Audio_IsMuted();
+        const char* muteText = isMuted ? "SOUND: OFF" : "SOUND: ON";
+        // Vẽ nút Mute nhỏ ở góc trên để tiện tắt nhanh
+        if (DrawButton(muteText, (Rectangle){ sw/2 - 75, 80, 150, 30 })) {
+            Audio_ToggleMute();
+        }
+
+        // [NEW] 2. Master Volume (Thanh trượt tổng)
+        float curMaster = Audio_GetMasterVolume();
+        // Đẩy tọa độ Y xuống 130
+        float newMaster = DrawVolumeControl("Master Volume", (Rectangle){ 200, 130, 400, 30 }, curMaster);
+        if (newMaster != curMaster) Audio_SetMasterVolume(newMaster);
+
+        // [NEW] 3. Music Volume (Thanh trượt nhạc nền)
+        float curMusic = Audio_GetMusicVolume();
+        // Đẩy tọa độ Y xuống 200
+        float newMusic = DrawVolumeControl("Music Volume", (Rectangle){ 200, 200, 400, 30 }, curMusic);
+        if (newMusic != curMusic) Audio_SetMusicVolume(newMusic);
+
+        // [NEW] 4. SFX Volume (Thanh trượt tiếng động)
+        float curSFX = Audio_GetSFXVolume();
+        // Đẩy tọa độ Y xuống 270
+        float newSFX = DrawVolumeControl("SFX Volume", (Rectangle){ 200, 270, 400, 30 }, curSFX);
+        if (newSFX != curSFX) Audio_SetSFXVolume(newSFX);
+
+        // Nút Fullscreen (Đẩy xuống 340)
+        const char* modeText = IsWindowFullscreen() ? "Mode: FULLSCREEN" : "Mode: WINDOWED";
+        if (DrawButton(modeText, (Rectangle){ (sw-300)/2, 340, 300, 40 })) {
+            ToggleGameFullscreen();
+        }
+
+        // Nút Back (Đẩy xuống 400)
+        if (DrawButton("BACK", (Rectangle){ (sw-200)/2, 400, 200, 40 })) {
+            Menu_SwitchTo(previousMenu); 
+        }
+        break;
+>>>>>>> Stashed changes
             
         default: break;
     }

@@ -46,10 +46,6 @@ thấy hiện xx.xx.xx là ok còn chưa ra thì lên AI hỏi cách cài. phiê
 
 **B5: tạo 1 file `helloworld.c` và test nếu chạy dc là ok.**
 
-### Cách dùng AI đúng cách:
-+ Trước khi nhờ AI code hãy copy hàng loạt thư mục trong resources và src và .vscode ném lên AI (khuyên dùng gemini vì tải được nhiều file 1 lúc nếu có free 1 năm)
-+ Khi code xong dù bằng tay hay AI cũng nhớ ghi chú để có lỗi biết chỗ mà fix
-+ Nhớ clone ra máy rồi chạy không được làm trên file github chạy ok báo cáo rồi mới up lên
 
 
 ## 2. Cấu trúc chương trình cơ bản
@@ -147,5 +143,26 @@ thấy hiện xx.xx.xx là ok còn chưa ra thì lên AI hỏi cách cài. phiê
 **Đã khắc phục lỗi tính toán phạm vi tương tác bản trước tâm phạm vi tương tác nằm ở góc trên trái ảnh giờ đã sửa công thức tính để tâm vòng tròn rơi vào đúng giữa hitbox của NPC đồng thời cũng sửa tương tự với hitbox của player cho đồng bộ
 ### LƯU Ý QUAN TRONG VỀ CHỌN CLASS
 **Hiện tại trung mới nhận được 2 ảnh main1 và main2 phù hợp tiêu chuẩn đê cho vào class 1 và 2 nếu ae chọn class 3 và 4 thì chưa có ảnh nào load vào đâu nên con main sẽ vô hình nếu chọn class 3 và 4(đây là tính năng không phải lôi). ae tự hỏi sao tôi không copy con main1 ra thì do tôi không thích được chưa! 
+<<<<<<< Updated upstream
 ### Nhắn nhủ team art mọi ảnh trong tương lai đều phải tuyệt đối tuân thủ quy tác tỉ lệ của các ảnh trong thư mục resources kể cả số fflame tôi lười sửa code lắm rồi
 
+=======
+## UPDATE ver 0.2
+### GRAPHIC
+**Đã hoàn thành hệ thống render cho nhân vật, npc và đồ vật trên bản đồ
+### SYSTEM AND FIXBUG
+**Menu setting giờ đây đã có thể mute master volume, tăng giảm BGM và SFX 1 cách riêng biệt
+**Đã thêm tính năng savegame trong menu menu POUSE và tính năng loadgame trong titilescreen. save được lưu trong save_date.bat
+### DEBUG TOOL
+**Nâng cấp debug tool giờ đây đã hỗ trợ chế độ lấy tọa độ render cho vật thể
+### nhắc lại 1 số phím tắt:
+****Phím 0 : Mở chế độ kéo thả lấy tọa độ tường map
+*****Phím C: Undo tường nhap vừa vẽ
+*****Phím X: Bật tắt khung giới hạn 1 flame nhân vật
+*****Phím V: Ẩn hiện bảng thông tin của tool
+****Phím =: Mở chế độ debug menu kéo thả để lấy nút
+*****Phím C: Undo
+*****Phím V: Tắt info tool
+****Phím P: Mở chế độ render debug tool
+*****Phím C: undo
+>>>>>>> Stashed changes

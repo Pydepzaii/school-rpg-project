@@ -2,6 +2,11 @@
 #include "renderer.h"
 #include <stdlib.h> 
 #include <player.h>
+<<<<<<< Updated upstream
+=======
+#include "map.h" // [QUAN TRỌNG] Include map để hiểu GameProp
+
+>>>>>>> Stashed changes
 // --- TYPE DEFINITIONS ---
 typedef enum {
     TYPE_PLAYER,
@@ -35,7 +40,11 @@ void Render_AddPlayer(Player *player) {
     renderList[renderCount].data = (void*)player;
     // Pivot Y: Chân nhân vật (đáy ảnh)
     // [GIẢI THÍCH]: Logic quan trọng nhất: Lấy chân làm điểm mốc để so sánh.
+<<<<<<< Updated upstream
    renderList[renderCount].sortY = player->position.y + player->drawHeight-2.0f;
+=======
+    renderList[renderCount].sortY = player->position.y + player->drawHeight-2.0f;
+>>>>>>> Stashed changes
     renderCount++;
 }
 
@@ -58,9 +67,18 @@ void Render_AddProp(GameProp *prop) {
     if (renderCount >= MAX_RENDER_ITEMS) return;
 
     renderList[renderCount].type = TYPE_PROP;
+<<<<<<< Updated upstream
     renderList[renderCount].data = (void*)prop;
     // Props thường có điểm neo (originY) tùy chỉnh
+=======
+    
+    // Lưu con trỏ trỏ tới vật thể gốc trong Map
+    renderList[renderCount].data = (void*)prop; 
+    
+    // Tính toán độ sâu: Y vị trí + Chiều cao vật thể (Chân đế)
+>>>>>>> Stashed changes
     renderList[renderCount].sortY = prop->position.y + prop->originY;
+    
     renderCount++;
 }
 
@@ -93,8 +111,32 @@ void Render_DrawAll() {
             DrawNpc((Npc*)item.data);
         }
         else if (item.type == TYPE_PROP) {
+            // Bây giờ GameProp đã được hiểu nhờ include map.h
             GameProp *p = (GameProp*)item.data;
-            DrawTextureRec(p->texture, p->sourceRec, p->position, WHITE);
+            
+            if (p->texRef != NULL) {
+                // --- [BẮT ĐẦU SỬA] ---
+                
+                // CODE CŨ (Đã comment lại để backup như yêu cầu):
+                // DrawTextureRec(*p->texRef, p->sourceRec, p->position, WHITE);
+
+                // CODE MỚI (Fix lỗi Scale 2.0):
+                // Sử dụng DrawTexturePro để có thể phóng to ảnh cắt được
+                float scale = 2.0f; // Scale này phải khớp với map->scale bên map.c
+                
+                Rectangle source = p->sourceRec; // Vùng cắt trên ảnh gốc (nhỏ)
+                
+                Rectangle dest = {
+                    p->position.x,
+                    p->position.y,
+                    source.width * scale,   // Phóng to chiều ngang gấp đôi
+                    source.height * scale   // Phóng to chiều dọc gấp đôi
+                };
+                
+                DrawTexturePro(*p->texRef, source, dest, (Vector2){0,0}, 0.0f, WHITE);
+                
+                // --- [KẾT THÚC SỬA] ---
+            }
         }
     }
 }

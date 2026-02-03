@@ -44,8 +44,13 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
     player->textureWalk = LoadTexture(pathWalk);
     player->textureIdle = LoadTexture(pathIdle);
     // 1. Gán kích thước frame thủ công
+<<<<<<< Updated upstream
     player->drawWidth = 40.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
     player->drawHeight = 40.0f;  // Chỉnh ở đây là Debug tự nhận
+=======
+    player->drawWidth = 50.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
+    player->drawHeight = 50.0f;  // Chỉnh ở đây là Debug tự nhận
+>>>>>>> Stashed changes
     player->spriteWidth = FRAME_WIDTH; 
     player->spriteHeight = FRAME_HEIGHT;
     player->position = (Vector2){100, 100}; 

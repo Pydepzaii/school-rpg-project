@@ -18,5 +18,9 @@ bool IsMenuDebugActive();
 
 // [NEW] Hàm cưỡng chế tắt Tool Menu (Dùng khi chuyển cảnh vào game)
 void Debug_ForceCloseMenuTool();
+<<<<<<< Updated upstream
 
+=======
+void Debug_RunPropTool(GameMap *map);
+>>>>>>> Stashed changes
 #endif
