@@ -4,17 +4,8 @@
 
 #include "raylib.h"
 #include "player.h"
+#include "map.h"
 #include "npc.h"
-
-// Chúng ta sẽ cần một cấu trúc để đại diện cho "Vật thể tĩnh" (Cây, Cột, Tủ sách...)
-// Những vật này không di chuyển, nhưng cần vẽ đè lên hoặc bị đè bởi Player
-typedef struct {
-    Texture2D texture;
-    Vector2 position;
-    Rectangle sourceRec; // Phần hình ảnh cắt ra từ texture (nếu cần)
-    float originY;       // Điểm chân của vật thể (để so sánh độ sâu)
-} GameProp;
-
 // Khởi tạo hệ thống vẽ
 void InitRenderer();
 

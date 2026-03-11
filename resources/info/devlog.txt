@@ -1,0 +1,128 @@
+====================================
+      LỊCH SỬ CẬP NHẬT (UPDATE LOG)
+====================================
+
+[Ver 0.0.1 - 0.0.3] KHỞI ĐỘNG
+- Ver 0.0.1: Thiết lập khung, bản đồ "thư viện" test, hệ thống NPC, tool lấy tọa độ cơ bản.
+- Ver 0.0.2: Thêm Intro Logo, font "Roboto" hỗ trợ tiếng Việt.
+- Ver 0.0.3: Update Debug Menu (lấy tọa độ UI), Title Screen cơ bản, nút thoát game.
+
+------------------------------------
+[Ver 0.0.4] BIG UPDATE
+- Đã thêm font tiếng Việt chuẩn và ổn định.
+- Tính năng toàn màn hình (Fullscreen) hoạt động ổn định với scale 100%.
+- Logic chuẩn map dùng cho tương lai.
+- Model đọc file viết thoại hỗ trợ Art team.
+- DEBUG UPDATE: Debug on map/menu hoạt động tốt trên chế độ Window. (Không mở fullscreen để debug vì tọa độ ảo có thể sai lệch).
+- TIP: Để test chuẩn map, đến vùng exit thư viện nhấn "E", muốn về lại nhấn "E".
+
+------------------------------------
+[Ver 0.0.5] BIG UPDATE
+- Menu Setting: Chỉnh Master Volume, chuyển chế độ Window/Fullscreen.
+- Nhạc nền test cho Title Screen và Map Test.
+- Animation chuyển cảnh game.
+- Camera Zoom kéo theo nhân vật (Bấm Y để về chế độ toàn bản đồ - Debug only).
+- Tool lấy tọa độ đã hoạt động tốt trên cả Fullscreen và Window.
+- Fix lỗi màn hình trên các máy có scale > 100%.
+
+------------------------------------
+[Ver 0.0.6]
+- Update Animation: 6 lên 22 frame (chia giai đoạn đứng yên/đi bộ).
+- Tool Debug: Thêm xem cửa ra hitbox với độ chính xác tuyệt đối.
+- Bấm 0 cho Debug Map và = cho Debug Menu.
+- Refactor Code: Áp dụng OOP, sửa biến số linh hoạt hơn.
+
+====================================
+           BETA STAGE
+====================================
+
+[Ver 0.1] BIG UPDATE - GAMEPLAY & FLOWCHART
+* GAMEPLAY:
+- Cập nhật flow: Title -> Start -> Chọn Class -> Xác nhận -> (Cutscene - Dev by Đạt) -> Game.
+- Thêm 3 map: Alpha -> Nhà Vệ Sinh -> Thư Viện. (Dùng F1, F2, F3 để chuyển map).
+- Di chuyển bằng WASD (Nhớ tắt Unikey).
+- Tốc độ di chuyển giảm từ 4.0 về 2.5 theo feedback.
+- Camera Zoom tăng độ zoom để tạo cảm giác map to hơn.
+- Giảm bán kính tương tác NPC/Cửa (phải lại gần mới bấm E được).
+
+* GRAPHIC:
+- Update texture hộp thoại.
+- Hiệu ứng chuyển cảnh Intro -> Title -> Menu Pause mượt mà.
+- Video Intro giảm xuống 480p (tối ưu GPU), chỉnh sửa đoạn kết cho chuyên nghiệp.
+- Hiệu ứng vòng tròn ma thuật "ảo ma Canada" lúc chọn class.
+
+* DEBUG TOOL:
+- Mode Zero (0) hiển thị rõ phạm vi tương tác, thêm chấm đỏ tâm để dễ fix lỗi.
+- Cải thiện độ chính xác, chuẩn bị cho render 2.5D.
+
+* LƯU Ý CHỌN CLASS:
+- Hiện tại chỉ có Class 1 & 2 là có ảnh Main. Chọn Class 3 & 4 sẽ tàng hình (Tính năng, không phải lỗi). Ae tự hỏi sao tôi không copy con main1 ra thì do tôi không thích được chưa!
+
+------------------------------------
+[Ver 0.2] RENDER & SAVE SYSTEM
+* GRAPHIC:
+- Hoàn thành hệ thống render cho nhân vật, NPC, đồ vật (trước/sau).
+* SYSTEM & FIXBUG:
+- Menu Setting: Chỉnh riêng biệt Master Volume, BGM, SFX.
+- Save/Load Game: Save trong Menu Pause, Load ở Title Screen.
+* DEBUG TOOL:
+- Hỗ trợ chế độ lấy tọa độ render (Phím P).
+
+------------------------------------
+[Ver 0.2.1]
+- Thêm túi đồ (Inventory) - Bấm B để mở.
+- Fix lỗi hiển thị infobox tool P trong map.
+
+------------------------------------
+[Ver 0.3] DEBUG TOOL OVERHAUL
+- Chế độ Tường (0): Vẽ tường nháp (Xanh lục) -> Hiện nút Save -> Lưu thẳng vào code. Bấm K để xóa tường đã lưu, C để undo.
+- Chế độ Render (P): Tương tự như chế độ tường.
+- Chế độ UI (=): Vẽ nút và đặt tùy ý, không cần chỉnh tọa độ code.
+
+------------------------------------
+[Ver 0.4.1]
+* DEBUG TOOL:
+- Vẽ menu hỗ trợ thanh trượt (slider) và công tắc (toggle) cho Setting.
+- Sửa lỗi hiển thị.
+* GRAPHIC:
+- Thêm các map còn lại (F1 - F6 để chuyển). Hiện chưa có cửa thông map.
+
+------------------------------------
+[Ver 0.5]
+* GAMEPLAY:
+- Đã thêm hệ thống combat sơ khai.
+
+------------------------------------
+[Ver 0.6]
+* DEBUG TOOL:
+- Thêm tính năng debug cho hội thoại. Thêm thoại trực tiếp vào game trên giao diện UI.
+- Cách sử dụng: Khi nói chuyện với NPC phím 'E', đồng thời nhấn Shift+D để mở giao diện.
+- Trên giao diện có thể chỉnh từng câu thoại, thêm sự kiện mới hoặc xóa (nhớ save lại nhé).
+* GAMEPLAY:
+- Đã thêm hầu hết NPC và Item để test.
+
+------------------------------------
+[Ver 0.6.5]
+* GAMEPLAY:
+- Hoàn thành menu chọn class có kèm animation.
+
+------------------------------------
+[Ver 0.7]
+* GRAPHIC:
+- Hoàn thành main menu cùng với texture nút bấm.
+- Tăng cường aura animation tại selection menu.
+- Đã cài 2 icon animation cho các nút back và next.
+* GAMEPLAY:
+- Nâng cấp hội thoại từ bản liner (tuyến tính) sang bản rẽ nhánh nhiều lựa chọn.
+- Sửa cơ chế đọc thoại thay vì ấn E liên tục giờ có thể thao tác bằng chuột.
+* DEBUG TOOL:
+- Nâng cấp cho chế độ dialog debug tool giờ đây có thể khởi tạo sự kiện rẽ nhánh theo ý muốn.
+
+------------------------------------
+[Ver 0.8]
+* GRAPHIC:
+- Đã nâng UI lên bản chính thức.
+- Thêm rất nhiều icon và animation của UI.
+* MENU:
+- Đã thêm 2 chức năng mute music và mute sfx.
+- Đã thêm menu info để xem thông tin.

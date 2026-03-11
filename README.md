@@ -1,24 +1,25 @@
+# ⚔️ PROJECT GAME OSG - HƯỚNG DẪN & LOG
 
-# Cách dùng file project gameOSG
+## 🛠 1. Thiết lập môi trường Code
 
-## 1. Cách thiết lập môi trường code:
+Sử dụng **VS Code** đã cài môi trường lập trình C.
 
-Sử dụng VS code đã cài môi trường lập trình C:
-
-Để kiểm tra đã cài trình biên dịch chưa hẫy làm như sau, mở cmd:
-
+Để kiểm tra đã cài trình biên dịch chưa, hãy mở terminal (cmd) và gõ:
 ```bash
 gcc --version
 ```
-thấy hiện xx.xx.xx là ok còn chưa ra thì lên AI hỏi cách cài. phiên bản gcc của trung 14.2.0
+> Nếu hiện `xx.xx.xx` là OK. Nếu chưa ra thì lên AI hỏi cách cài.
+> *Note: Phiên bản gcc của Trung là 14.2.0*
 
-**B1: Mở VS code tại giao diện làm việc nhấn tổ hợp CTR+SHIFT+P**
+### Các bước cấu hình VS Code:
 
-**B2: Trên thanh tìm kiếm gõ:"Edit Configurations"**
+**B1:** Mở VS Code. Tại giao diện làm việc nhấn tổ hợp `CTRL + SHIFT + P`.
 
-**B3:Chọn dòng C/C++ edit configuration(json) rồi copy đoạn mã sau vào file c/cpp propoties nếu file không tự mở thì mở bừa 1 folder lên ròi làm lại nó sẽ mở ngay**
+**B2:** Trên thanh tìm kiếm gõ: `Edit Configurations`.
 
-```bash
+**B3:** Chọn dòng **C/C++: Edit Configurations (UI)** hoặc **(JSON)**. Copy đoạn mã sau vào file `c_cpp_properties.json` (nếu file không tự mở thì mở bừa 1 folder lên rồi làm lại nó sẽ mở ngay):
+
+```json
 {
     "configurations": [
         {
@@ -42,110 +43,213 @@ thấy hiện xx.xx.xx là ok còn chưa ra thì lên AI hỏi cách cài. phiê
     "version": 4
 }
 ```
-**B4: Nhấn CRT+S rồi thoát vs code**
 
-**B5: tạo 1 file `helloworld.c` và test nếu chạy dc là ok.**
+**B4:** Nhấn `CTRL + S` rồi thoát VS Code.
 
-### Cách dùng AI đúng cách:
-+ Trước khi nhờ AI code hãy copy hàng loạt thư mục trong resources và src và .vscode ném lên AI (khuyên dùng gemini vì tải được nhiều file 1 lúc nếu có free 1 năm)
-+ Khi code xong dù bằng tay hay AI cũng nhớ ghi chú để có lỗi biết chỗ mà fix
-+ Nhớ clone ra máy rồi chạy không được làm trên file github chạy ok báo cáo rồi mới up lên
+**B5:** Tạo 1 file `helloworld.c` và test, nếu chạy được là OK.
 
+---
 
-## 2. Cấu trúc chương trình cơ bản
-- Mọi hình ảnh âm thanh animetion, vvv đều phải để trong resource
-- Code viết vào các file .C hoạc.h trong thư mục src
-- Khi tạo file mới mà chưa tồn tại trong src thì làm thành cặp .c và .h không tự ý tạo lẻ
-- Khi tạo file mới trong src nhớ khai báo đường dẫn vào file config.jasion trong thư mục .vscode(nếu không file sẽ không chạy)
-- Nếu không biết khai báo thì nhờ AI
+## 📂 2. Cấu trúc chương trình cơ bản
 
-## 3. Sử dụng github desktop để up file
+- Mọi hình ảnh, âm thanh, animation, v.v... đều phải để trong thư mục `resources`.
+- Code viết vào các file `.c` hoặc `.h` trong thư mục `src`.
+- **Quy tắc tạo file:**
+    - Khi tạo file mới chưa tồn tại trong `src`, phải làm thành cặp `.c` và `.h`, **không tự ý tạo lẻ**.
+    - Khi tạo file mới, nhớ khai báo đường dẫn vào file `tasks.json` (hoặc file config build tương ứng) trong thư mục `.vscode`. Nếu không file sẽ không chạy.
+    - *Nếu không biết khai báo thì nhờ AI.*
 
-### a. Cho bên dev
+---
 
-**B1:** Chọn Current branch -> New branch -> đặt tên và tạo nhánh.
+## 🚀 3. Quy trình Github Desktop
+
+### a. Cho Developer (Code)
+
+**B1:** Chọn **Current branch** -> **New branch** -> Đặt tên và tạo nhánh.
 
 **B2:** Sửa hoặc thêm code.
 
-**B3:** Code xong thì ghi commit và push lên nhánh vừa tạo.
+**B3:** Code xong thì ghi **Commit** và **Push** lên nhánh vừa tạo.
 
-**B4:** Lên web vào trang github tìm pull requests -> chọn nút màu xanh New pull requests -> Để base là main và compare là nhánh bạn vừa tạo -> Create pull requests.
+**B4:** Lên trang Github tìm **Pull requests** -> Chọn nút xanh **New pull request**.
+- Để `base: main` và `compare: nhánh-vừa-tạo`.
+- Ấn **Create pull request**.
 
-**B5:** Add title (có thể giữ nguyên), ghi desception là những gì bạn vừa làm vừa fix -> hoàn thiện thì ấn Create pull requests.
+**B5:** Add title (có thể giữ nguyên), ghi **Description** là những gì bạn vừa làm/fix -> Hoàn thiện thì ấn **Create pull request**.
 
-**B6:** Chờ a Trung review và feedback.
+**B6:** Chờ anh Trung review và feedback.
 
-### b. Cho bên design
+### b. Cho Designer (Art)
 
-**B1:** Chọn Current branch -> art -> Fetch origin (tải phần của người trước về).
+**B1:** Chọn **Current branch** -> `art` -> **Fetch origin** (tải phần của người trước về).
 
 **B2:** Sửa hoặc thêm art.
 
-**B3:** Xong thì ghi commit và push lên nhánh art (commit to art -> Push origin).
+**B3:** Xong thì ghi commit và push lên nhánh `art` (Commit to art -> Push origin).
 
-**B4:** Nếu muốn sửa hoặc thêm hoặc bị a Trung đòi art thì làm lại như bước đầu.
+**B4:** Nếu muốn sửa/thêm hoặc bị anh Trung đòi sửa art thì làm lại như bước đầu.
 
-### c. Cho a Trung khi review code và merge vào main
+### c. Cho anh Trung
+- Review code và Merge vào Main.
 
-## 4. Update note
-### Ver 0.0.1
-**Thiết lập khung chương trình cơ bản.
-**Thêm bản đô "thư viện" thử nghiệm.
-**Thêm hệ thống tương tác npc.
-^^Thêm tool lấy tọa độ bằng kéo thả chuột hỗ trợ dev game.
-### Ver 0.0.2
-**Thêm intro logo nhóm khi chạy game
-**Thêm font "roboto" hỗ trợ thoại và giao diện tiếng việt
-### Ver 0.0.3
-**Update debug menu giờ đây đã hỗ trợ cho lấy tọa độ menu UI
-**Thêm title screen cơ bản
-**Thêm nút thoát game và fix 1 số lỗi
-### BIGUPDATE Ver 0.0.4
-**Đa thêm font tiếng việt chuẩn và ổn định
-**Đã thêm tính năng toàn màn hình hoạt động ổn định với scale 100%
-**Đã thêm logic chuẩn map dùng cho tương lai
-**Đã thêm model đọc file viết thoại hỗ trợ artteam viết thoại
-**Debug on map và on menu đã hoạt động tốt trên chế độ window(không mở fullscreen để dubug vì fullscreen là vẽ lên màn hình ảo nên tọa độ lấy được có thể sai lệch vấn đề này sẽ update lại tool sau)
-**Để test chuẩn map đến vùng exit của thư viện sau đó nhấn "E" muốn về thư viện nhấn "E" lần nữa
-### BIGUPDATE ver 0.0.5
-**Thêm menu setting cho phép chỉnh master volume và chuyển chế độ window, fullscreen
-**Thêm nhạc nền test cho tilte screen và map test
-**Thêm animation chuyển cảnh game
-**Thêm camera zoom kéo theo nhân vật(bấm y để về chế độ toàn bản đồ chỉ dành cho debug và tester)
-**Nâng cấp tool lấy tọa độ giờ đây đã hoạt động tốt trên cả chế độ toàn màn hình và chế độ cửa sổ
-**Sửa lỗi màn hình trên cấc máy thiết lập scale>100%
-### ver 0.0.6
-**Animation update 6 lên 22 flame chia thành dai đoạn đứng yên và đi bộ
-**tool debug update giờ đây có thêm xem cửa ra hitbox với độ chính xác tuyệt đối
-***bấm '0' cho debug map và '=' cho debug mmenu.
-**đã sửa 1 số biến số trong code giờ đây đã liên kết linh hoạt hơn giữa các file áp dụng kiến thức OOB sửa 1 chỗ được tất cả.
+---
 
+## 🎮 4. Debug Tool & Developer Guide (Quan trọng)
 
+### ⌨️ Phím tắt Debug cần nhớ
 
-# --------------------BETA--------------------#
-# --bắt đầu code theo flowchar---
-## BIGUPDATE ver 0.1
-### GAMEPLAY:
-**Cập Nhật tiến trình cụ thể theo flowchart: titlescreen->start->chọn class->xác nhận class->(cut scenne đang được phát triển bởi đạt)->vào game
-**Thêm 3 map được sắp xếp theo thứ tự: alpha->nhavo->thuvien. dùng phím F1, F2, F3 để chuyển map(debug only)
-**Cập nhật dùng phím WASD để di chuyển(nhớ tắt unikey hoạc gõ tiếng việt)
-**Theo 1 số phản ánh của tester Trung đã điều chỉnh tốc độ di chuyển từ 4.0 về 2.5
-**camera zoom bám theo main CHÍnh đã được tăng độ zoom để tạo cảm giác map to hơn
-**Tất nhiên có map mới là phải có nhạc mới hẹ hẹ
-**Đã giảm bán kính phạm vi tương tác của npc và cửa ra vào giờ đây phải đến gần hơn mới bấm E tương tác được
-### GRAPHIC
-**Đã cập nhật texture hộp thoại của team art
-**Thêm hiệu ứng chuyển cạnh cho intro vào titlescreen cho mượt với từ menu POUSE về titlescreen
-**Điều chỉnh nhỏ cho video Intro ha độ phân giải từ 720p xuống 480p cho phù hợp với thiệt lập cửa sổ và giảm gánh nặng cho GPU đồng thời chỉnh sửa video một chút để cuối logo và âm thanh dần biên mất nhìn cho chuyên nghiệp
-**Thêm hiệu ứng vòng tròn ma thuật lúc chọn class và chuyển cảnh vào game siêu ảo ma canada
-### DEBUG TOOL
-**Nâng cấp hệ thống DEBUG TOOL mode ZERO(phím 0) giờ đây có thể hiển thị rõ ràng phạm vi tương tấc của npc và cửa ra vào để bấm E đồng thời kèm thêm 1 chấm màu đỏ ở tâm vòng tròn tương tác để sau này dễ fix lỗi tính phạm vi tương tác
-**Tool cũng đã được cải thiện đáng kể vể độ chính xác và đồng bộ với các thông số của src code chuẩn bị cho Đạt vẽ tường va chạm và render 2.5D
-### SYSTEM AND FIXBUG
-**Đã dọn dẹp hàm main tách đa số logic không càn thiết trong main sang file gameplay.c và gameplay.h
-**Đã thiết kế sắp xếp lại folder resources để dễ dàng quản lí tài nguyên đồ họa và âm thanh không còn lẫn lộn như bản trước
-**Đã khắc phục lỗi tính toán phạm vi tương tác bản trước tâm phạm vi tương tác nằm ở góc trên trái ảnh giờ đã sửa công thức tính để tâm vòng tròn rơi vào đúng giữa hitbox của NPC đồng thời cũng sửa tương tự với hitbox của player cho đồng bộ
-### LƯU Ý QUAN TRONG VỀ CHỌN CLASS
-**Hiện tại trung mới nhận được 2 ảnh main1 và main2 phù hợp tiêu chuẩn đê cho vào class 1 và 2 nếu ae chọn class 3 và 4 thì chưa có ảnh nào load vào đâu nên con main sẽ vô hình nếu chọn class 3 và 4(đây là tính năng không phải lôi). ae tự hỏi sao tôi không copy con main1 ra thì do tôi không thích được chưa! 
-### Nhắn nhủ team art mọi ảnh trong tương lai đều phải tuyệt đối tuân thủ quy tác tỉ lệ của các ảnh trong thư mục resources kể cả số fflame tôi lười sửa code lắm rồi
+| Phím | Chức năng | Ghi chú |
+| :--- | :--- | :--- |
+| **0** | Bật/Tắt Tool vẽ tường (Map Tool) | Chế độ tường va chạm |
+| **P** | Bật/Tắt Tool cắt ảnh (Prop Tool) | Chế độ Render vật thể |
+| **=** | Bật/Tắt Tool quản lý Menu | Chế độ chỉnh UI |
+| **S** | **LƯU MỌI THAY ĐỔI** | Lưu vào file data (Wall, Prop, Menu) |
+| **DEL / K** | Bật chế độ XÓA | Click vào đối tượng để xóa |
+| **C** | Undo | Xóa nhanh đối tượng nháp vừa vẽ |
+| **X** | Bật/Tắt khung giới hạn frame | Debug Animation |
+| **V** | Ẩn/Hiện bảng thông tin Tool | |
 
+### 🛠 Hướng dẫn thêm nút chức năng mới (Sync với Debug Tool)
+Để thêm một nút mới (ví dụ: nút "HELP") mà không làm hỏng hệ thống, hãy làm đúng theo 3 bước "Thần chú" sau:
+
+**Bước 1: Khai báo trong Code (Backend)**
+- **Thêm ID:** Mở `menu_system.h`, thêm `ACT_OPEN_HELP` vào enum.
+- **Đăng ký tên:** Vào `menu_system.c`, thêm case cho `ACT_OPEN_HELP` trong hàm `GetActionName` để Tool Debug hiển thị chữ "HELP".
+- **Thêm Logic:** Viết code xử lý trong hàm `ProcessButtonAction` (`menu_system.c`).
+- **Đồng bộ Tool:** Mở `debug.c`, thêm `ACT_OPEN_HELP` vào mảng tương ứng (actionsForPause hoặc actionsForTitle) và tăng `currentValidActionCount`.
+
+**Bước 2: Tạo nút bằng Tool (Frontend)**
+1.  Compile lại code và mở game.
+2.  Đến Menu cần thêm nút -> Bấm **`=`** bật Debug Tool.
+3.  **Tạo nút:** Kéo chuột trái vẽ hình chữ nhật.
+4.  **Gán chức năng:** Click Chuột Phải vào nút vừa vẽ -> Menu Popup hiện ra -> Chọn "HELP".
+
+**Bước 3: Lưu lại**
+- Nhấn **`S`** để Tool tự động ghi tọa độ và ID vào `resources/data/menus.txt`.
+
+> **Lưu ý cho dev:** Khi thêm nút, nhớ dùng hàm `GetVirtualMousePos()` để tọa độ luôn chuẩn xác kể cả khi phóng to/thu nhỏ màn hình.
+
+---
+
+## 📜 5. Update Log (Lịch sử cập nhật)
+
+### Ver 0.0.1 - 0.0.3 (Khởi động)
+**Ver 0.0.1**
+- Thiết lập khung, bản đồ "thư viện" test, hệ thống NPC, tool lấy tọa độ cơ bản.
+
+**Ver 0.0.2**
+- Thêm Intro Logo, font "Roboto" hỗ trợ tiếng Việt.
+
+**Ver 0.0.3**
+- Update Debug Menu (lấy tọa độ UI), Title Screen cơ bản, nút thoát game.
+
+### 🔥 BIG UPDATE Ver 0.0.4
+- Đã thêm font tiếng Việt chuẩn và ổn định.
+- Tính năng toàn màn hình (Fullscreen) hoạt động ổn định với scale 100%.
+- Logic chuẩn map dùng cho tương lai.
+- Model đọc file viết thoại hỗ trợ Art team.
+- **Debug Update:** Debug on map/menu hoạt động tốt trên chế độ Window (Không mở fullscreen để debug vì tọa độ ảo có thể sai lệch).
+- *Tip: Để test chuẩn map, đến vùng exit thư viện nhấn "E", muốn về lại nhấn "E".*
+
+### 🔥 BIG UPDATE Ver 0.0.5
+- Menu Setting: Chỉnh Master Volume, chuyển chế độ Window/Fullscreen.
+- Nhạc nền test cho Title Screen và Map Test.
+- Animation chuyển cảnh game.
+- Camera Zoom kéo theo nhân vật (Bấm **`Y`** để về chế độ toàn bản đồ - Debug only).
+- Tool lấy tọa độ đã hoạt động tốt trên cả Fullscreen và Window.
+- Fix lỗi màn hình trên các máy có scale > 100%.
+
+### Ver 0.0.6
+- Update Animation: 6 lên 22 frame (chia giai đoạn đứng yên/đi bộ).
+- Tool Debug: Thêm xem cửa ra hitbox với độ chính xác tuyệt đối.
+- Bấm **`0`** cho Debug Map và **`=`** cho Debug Menu.
+- Refactor Code: Áp dụng OOP, sửa biến số linh hoạt hơn.
+
+### -------------------- BETA STAGE --------------------
+
+### 🔥 BIG UPDATE Ver 0.1 (Gameplay & Flowchart)
+**GAMEPLAY:**
+- Cập nhật flow: Title -> Start -> Chọn Class -> Xác nhận -> (Cutscene - Dev by Đạt) -> Game.
+- Thêm 3 map: Alpha -> Nhà Vệ Sinh -> Thư Viện. (Dùng F1, F2, F3 để chuyển map - Debug only).
+- Di chuyển bằng WASD (Nhớ tắt Unikey).
+- Tốc độ di chuyển giảm từ 4.0 về 2.5 theo feedback.
+- Camera Zoom tăng độ zoom để tạo cảm giác map to hơn.
+- Giảm bán kính tương tác NPC/Cửa (phải lại gần mới bấm E được).
+
+**GRAPHIC:**
+- Update texture hộp thoại.
+- Hiệu ứng chuyển cảnh Intro -> Title -> Menu Pause mượt mà.
+- Video Intro giảm xuống 480p (tối ưu GPU), chỉnh sửa đoạn kết cho chuyên nghiệp.
+- Hiệu ứng vòng tròn ma thuật "ảo ma Canada" lúc chọn class.
+
+**DEBUG TOOL:**
+- Mode Zero (`0`) hiển thị rõ phạm vi tương tác, thêm chấm đỏ tâm để dễ fix lỗi.
+- Cải thiện độ chính xác, chuẩn bị cho render 2.5D.
+
+**LƯU Ý CHỌN CLASS:**
+- Hiện tại chỉ có Class 1 & 2 là có ảnh Main. Chọn Class 3 & 4 sẽ tàng hình (Tính năng, không phải lỗi). *Ae tự hỏi sao tôi không copy con main1 ra thì do tôi không thích được chưa!*
+
+### Ver 0.2 (Render & Save System)
+**GRAPHIC:**
+- Hoàn thành hệ thống render cho nhân vật, NPC, đồ vật (trước/sau).
+
+**SYSTEM & FIXBUG:**
+- Menu Setting: Chỉnh riêng biệt Master Volume, BGM, SFX.
+- Save/Load Game: Save trong Menu Pause, Load ở Title Screen (file `save_data.dat`).
+
+**DEBUG TOOL:**
+- Hỗ trợ chế độ lấy tọa độ render (Phím `P`).
+
+### Ver 0.2.1
+- Thêm túi đồ (Inventory) - Bấm **`B`** để mở.
+- Fix lỗi hiển thị infobox tool `P` trong map.
+
+### Ver 0.3 (Debug Tool Overhaul)
+**Chế độ Tường (`0`):**
+- Vẽ tường nháp (Xanh lục) -> Hiện nút Save -> Lưu thẳng vào code (không cần copy paste thủ công).
+- Bấm **`K`** để xóa tường đã lưu (Đỏ).
+- Bấm **`C`** để undo tường nháp.
+
+**Chế độ Render (`P`):**
+- Tương tự như chế độ tường.
+
+**Chế độ UI (`=`):**
+- Vẽ nút và đặt tùy ý, không cần chỉnh tọa độ code.
+
+### Ver 0.4.1
+**DEBUG TOOL:**
+- Vẽ menu hỗ trợ thanh trượt (slider) và công tắc (toggle) cho Setting.
+- Sửa lỗi hiển thị.
+
+**GRAPHIC:**
+- Thêm các map còn lại (F1 - F6 để chuyển). Hiện chưa có cửa thông map.
+### Ver 0.5
+ **Gameplay:**
+ -Đã thêm hệ thống combat sơ khai
+### Ver 0.6
+**DEBUG TOOL:**
+-Thêm tính năng debug cho hội thoại. Giờ đây mọi người có thể thêm thoại trực tiếp vào game trên giao diện người dùng
+-Cách sử dụng: khi nói chuyện với NPC phím 'E', dồng thời nhấn shift+d để mở giao diện dialog debug tool
+-trên giao diện mọi người có thể chỉnh từng câu thoại, thêm sự kiện mới hoạc xóa câu thoại đó(nhớ save lại nhé)
+ **Gameplay:**
+ -Đã thêm hầu hết NPC và Item để test
+ ### Ver 0.6.5
+ **Gameplay:**
+ -Hoàn thành menu chọn class có kèm animation
+ ### Ver 0.7
+ **GRAPHIC:**
+ -Hoàn thành main menu cùng với texture nút bấm
+ -tăng cường auraanimation tại selection menu
+ -đã cài 2 icon animation cho các nút back và next
+ **Gameplay:**
+ - nâng cấp hội thoại từ bản liner(tuyến tính 1 dòng chuyện) sang bản rẽ nhánh nhiều lựa chọn
+ - sửa cơ chế đọc thoại thay vì ấn E liên tục giờ có thể thao tác bằng chuột
+ **DEBUG TOOL:**
+ - Nâng cấp cho chế độ dialig debug tool giờ đây có thể khởi tạo sự kiện rẽ nhánh theo ý muốn.
+### Ver 0.8
+**GRAPHIC:**
+-Đã nâng UI lên bản chính thức
+-Thêm rất nhiều icon và animation của UI
+**MENU:**
+-Đẫ thêm 2 chức năng mute music và mute sfx
+-Đã thêm menu info để xem thông tin

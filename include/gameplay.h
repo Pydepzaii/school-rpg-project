@@ -1,5 +1,8 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
+
+#include "raylib.h" 
+#include "player.h"
 //chọn class nhân vật
 void Gameplay_SetPlayerClass(int classID);
 // Hàm khởi tạo toàn bộ dữ liệu game (Player, Map, NPC...)
@@ -13,5 +16,6 @@ void Gameplay_Draw();
 
 // Hàm dọn dẹp bộ nhớ khi thoát game
 void Gameplay_Shutdown();
-
+void Gameplay_SaveGame();
+void Gameplay_LoadGame();
 #endif

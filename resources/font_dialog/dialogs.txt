@@ -1,11 +1,188 @@
-# Cấu trúc: MapID | NpcID | Key (Trạng thái) | Nội dung hội thoại
-# MAP_THU_VIEN (0), NpcID (0 - Cô Bếp)
-3|0|DEFAULT|Cho bố cái địa chỉ đi!
-3|0|NO_MONEY|Em không đủ tiền à? Thôi cô cho nợ nhé.
-
-# MAP_THU_VIEN (0), NpcID (1 - Thầy Giáo)
-0|1|DEFAULT|Em đã làm bài tập về nhà chưa?
-0|1|QUEST_DONE|Tốt lắm, 10 điểm về chỗ!
-
-# MAP_SAN_TRUONG (2), NpcID (0 - Bảo vệ)
-2|0|DEFAULT|Đi đâu đấy? Giờ học không được ra cổng.
+# Dinh dang: NpcID | Key | Speaker(0=NPC, 1=Player) | Noi dung
+0|DEFAULT|0|hello|0
+0|DEFAULT|1|hello bro|0
+0|DEFAULT|0|test thành công|0
+1|COMBAT_WON|0|Xem ra em cũng không tầm thường|0
+1|COMBAT_WON|0|Cô không được phép nói nhiều, nhưng chỗ đó không đơn giản như em nghĩ đâu|2|Thế cô đang làm gì ở đây vậy|COMBAT_WON_2|Vậy cậu ấy đang ở đâu?|CONTINUE
+1|COMBAT_WON|0|Cô chỉ làm việc mà thầy Tuấn giao thôi, thực sự cô không thể nói gì thêm|1|Vậy cậu ấy đang ở đâu?|COMBAT_WON_2
+1|BEFORE_COMBAT|0|Buổi sáng tốt lành.|0
+1|BEFORE_COMBAT|0|Hôm nay nhà trường cho các em nghỉ, em đến đây có việc gì không?|2|Em đến tìm bạn của em |CONTINUE |Không có gì ạ, Chúc cô 1 ngày tốt lành|EXIT_DIALOG
+1|BEFORE_COMBAT|0|Bạn của em? Hmm… |0
+1|BEFORE_COMBAT|0|Nói cho cô biết em đang tìm ai nhỉ, có thể cô giúp được em|1|Bạn Hoàng Đạt MSSV: HE203667|CONTINUE
+1|BEFORE_COMBAT|0|...|0
+1|BEFORE_COMBAT|0|Cô nghĩ cô không biết rồi, xin lỗi em|1|Nhưng cô là người ghi tên trên bảng thành tích|CONTINUE
+1|BEFORE_COMBAT|0|...|0
+1|BEFORE_COMBAT|0|Để cô xem lại danh sách|0
+1|BEFORE_COMBAT|0|...|0
+1|BEFORE_COMBAT|0|Hình như… Bạn đấy không có trong danh sách|0
+1|BEFORE_COMBAT|0|Chắc vậy, làm gì có bạn nào tên như vậy nhỉ|1|Cô đang che giấu một điều gì đó|CONTINUE
+1|BEFORE_COMBAT|0|Không, làm gì có, có lẽ em đã nhầm ai đó rồi|1|Chính cô gạch tên bạn đó trên bảng thành tích|CONTINUE
+1|BEFORE_COMBAT|0|...|0
+1|BEFORE_COMBAT|0|Em muốn biết sự thật ư|1|...|COMBAT_IN
+4|BEFORE_TALK_MR_CHINH|0|Không thấy thầy đang bận sao|0
+3|BEFORE_COMBAT|0|Em không nên vào đây, hãy rời khỏi nơi này càng sớm càng tốt|1|Tại sao ạ|CONTINUE
+3|BEFORE_COMBAT|0|Nơi này không phải nơi để học nữa, có cái gì đó rất kì lạ quanh đây|2|Em tưởng trường mình lúc nào cũng kì lạ|EXIT_DIALOG|Em chỉ muốn tìm bạn em mà thôi|CONTINUE
+3|BEFORE_COMBAT|0|Hả?? Không phải đó là bạn đó đã…|1|Thầy có thông tin gì liên quan đến bạn đấy sao?|CONTINUE
+3|BEFORE_COMBAT|0|Nghe này, có những thứ càng biết nhiều càng nguy hiểm, hãy ở im, đừng để sự tò mò mà làm hại bản thân!|1|Nếu thầy không nói, em sẽ tự đi tìm|CONTINUE
+3|BEFORE_COMBAT|0|Vậy là em thực sự muốn tìm câu trả lời ư|0
+3|BEFORE_COMBAT|0|Sẽ rất khó tiếp cận nếu em không có kĩ năng|0
+3|BEFORE_COMBAT|0|Thầy sẽ dạy em|1|OK THẦY|COMBAT_IN
+4|BEFORE_COMBAT|0|Thầy thấy trong em là một sức mạnh phi thường và sự quyết tâm đến cùng|2|Thầy có biết thêm gì về thông tin bạn em không?|MORE_INFOR|Vậy là em đã đủ sức để đi tiếp?|BEFORE_COMBAT_2
+4|MORE_INFOR|0|Một màn kịch quá hoàn hảo|0
+4|MORE_INFOR|0|Nếu em không biết thầy đã cố cứu bạn|0
+4|MORE_INFOR|0|Cố gắng nhưng chỉ khiến mọi việc tệ đi|0
+4|MORE_INFOR|0|Chỉ có em, mới đủ khả năng để giải quyết đó|1|Vậy là em đã đủ sức để đi tiếp?|BEFORE_COMBAT_2
+1|COMBAT_WON_2|0|...|0
+1|COMBAT_WON_2|1|*cô thư kí đưa mình 1 chiếc thẻ|0
+1|COMBAT_WON_2|0|Gặp TuanVM đi, ông ấy là người duy nhất biết về bạn đó|0
+2|BEFORE_COMBAT|0|Sao em vào được đây|1|Cô thư ký đưa cho em chìa khóa|CONTINUE
+2|BEFORE_COMBAT|0|Vậy là em muốn biết sự thật ư?|1|Thầy nói đi, thầy biết mọi chuyện đúng không?|CONTINUE
+2|BEFORE_COMBAT|0|Biết, nhưng…|0
+2|BEFORE_COMBAT|0|Câu trả lời không đến dễ dàng vậy đâu?|1|Ý thầy là?|CONTINUE
+2|BEFORE_COMBAT|0|Nếu em muốn thực sự biết thì hãy chứng minh rằng em đủ tư cách|1|VÔ LUÔN ĐI THẦY!|COMBAT_IN
+2|COMBAT_WON|0|Thầy nghĩ em có đủ năng lực để biết, nhưng nó sẽ khó khăn hơn em nghĩ đấy!|2|Vậy thầy hãy nói đi|COMBAT_WON_2|Tại sao thầy lại bảo cô thư ký gạch tên?|MORE_INFOR
+2|MORE_INFOR|0|Việc không có trên bảng thành tích coi như họ không tồn tại|0
+2|MORE_INFOR|0|Những con người tài giỏi nhưng chọn nhầm môi trường|0
+2|MORE_INFOR|0|Thật khó để biết họ đã đi đâu|1|Vậy thầy hãy nói đi|COMBAT_WON_2
+3|COMBAT_WON|0|Em đã mạnh hơn trước rất nhiều|1|Thầy còn gì để dạy không ạ|CONTINUE
+3|COMBAT_WON|0|Ta không còn gì để dạy em nữa|0
+3|COMBAT_WON|0|Nhưng trước khi em đi tìm câu trả lời, hãy gặp thầy Hùng, thầy đấy sẽ chỉ em đi đâu tiếp theo|1|Em cảm ơn thầy|EXIT_DIALOG
+2|COMBAT_WON_2|0|Sự thật nó không nằm ở tòa Alpha nữa|0
+2|COMBAT_WON_2|0| Nó xuất phát từ một nơi rèn luyện sức mạnh thực sự|0
+2|COMBAT_WON_2|1|*thầy đưa cho mình cái chìa khóa cũ|0
+4|BEFORE_COMBAT_2|0|Nhưng đó vẫn chưa đủ nếu thiếu đi những kiến thức quan trọng|0
+4|BEFORE_COMBAT_2|0|Ta sẽ dạy em những thứ em còn thiếu để em sẵn sàng với mọi thử thách|1|Vào việc luôn đi thầy|COMBAT_IN
+4|COMBAT_WON|1|*thầy đưa mình chìa khoá vào căng tin|0
+4|COMBAT_WON|0|Con đường tiếp theo sẽ ở căng tin|0
+4|COMBAT_WON|0|Thầy không còn gì để dạy em nữa, em đã trở thành 1 chiến binh thực thụ|0
+4|COMBAT_WON|0|Hãy đi tìm câu trả lời và kết thúc mọi chuyện đi|1|Em hứa không làm thầy thất vọng đâu|EXIT_DIALOG
+6|BEFORE_COMBAT|0|Căng tin đóng rồi về đi cháu|1|Nhưng cháu đang đi tìm bạn cháu|CONTINUE
+6|BEFORE_COMBAT|0|Nơi này không phải nơi để tìm kiếm bạn đâu|0
+6|BEFORE_COMBAT|0|Với lại đóng cửa rồi không tiếp ai nữa |1|Nhưng cháu phải tìm ra bạn cháu|CONTINUE
+6|BEFORE_COMBAT|0|...|0
+6|BEFORE_COMBAT|0|Có những chuyện không nên biết quá sâu|0
+6|BEFORE_COMBAT|0|Biết rồi cũng không quay đầu được đâu|1|VẬY THÌ CHIẾN THÔI!|COMBAT_IN
+6|COMBAT_WON|0|Khá lắm, đồ cứng đầu|0
+6|COMBAT_WON|0|Ta cũng chỉ là phụ bếp không giúp gì được nhiều đâu|0
+6|COMBAT_WON|0|Đi mà hỏi bếp trưởng, ông ta sẽ giải đáp|0
+5|BEFORE_COMBAT|0|Lại thêm một con bò lạc đến đây nữa à|0
+5|BEFORE_COMBAT|0|Những người trước không ai chặn cháu lại sao|2|Cháu đã đánh bại bọn họ|CONTINUE|Họ ủng hộ cháu tiến vào đây thay vì cản chau l|CONTINUE
+5|BEFORE_COMBAT|0|Trước đó đã có 2 người đến đây trước|0
+5|BEFORE_COMBAT|0|Một người quá ngây thơ nên bị tóm rất dễ dàng|0
+5|BEFORE_COMBAT|0|Còn một người nhiều chuyện như cháu nên cũng bị bắt luôn|0
+5|BEFORE_COMBAT|0|Vậy nên nếu cháu đánh bại được ta chưa chắc đã đi đến được cuối đâu|0
+5|BEFORE_COMBAT|0|Chuẩn bị đón nhận đi|1|CHIẾN LUÔN|COMBAT_IN
+5|COMBAT_WON|0|Cháu nghĩ những gì xảy ra trong trường này|0
+5|COMBAT_WON|0|Đều được ghi chép công khai sao?|0
+5|COMBAT_WON|0|Họ đã xoá hết những đoạn camera ghi hình|0
+5|COMBAT_WON|0|Cố giấu hết những tài liệu liên quan|0
+5|COMBAT_WON|0|Những người trong nội bộ thậm chí còn không biết đến|1|Vậy bác biết điều gì không|CONTINUE
+5|COMBAT_WON|0|Sao ta phải nói nhỉ|0
+5|COMBAT_WON|0|Tại ta cũng chả biết gì mấy vì ta chỉ làm bếp ở đây|0
+5|COMBAT_WON|0|Những gì ta biết là những kiện hàng được chuyển đi|0
+5|COMBAT_WON|0|Nó không bình thường và rất nhiều|0
+5|COMBAT_WON|0|Như để chuẩn bị một điều gì mờ ám|0
+5|COMBAT_WON|0| Có một đứa chuyên quản lí việc này|0
+5|COMBAT_WON|0|Cái đêm cuối cùng đó...|0
+5|COMBAT_WON|0|Là nguyên liệu cuối cùng sao?|1|Ý bác là sao ạ|CONTINUE
+5|COMBAT_WON|0|Thôi, ta cũng không muốn ở đây lâu nữa|0
+5|COMBAT_WON|0|Hãy lấy chìa khoá này đến với thư viện đi|0
+5|COMBAT_WON|0|Ở đấy sẽ có câu trả lời hợp lí nhất|1|Cháu cảm ơn ạ|CONTINUE
+5|COMBAT_WON|0|Giờ thì hãy biến đi|0
+7|BEFORE_COMBAT|0|Ta tưởng hôm nay trường cho sinh viên nghỉ mà nhỉ|1|Cháu có việc cần vào đây|CONTINUE
+7|BEFORE_COMBAT|0|Cháu nghĩ đây là cái chợ à mà thích ra vào là được|0
+7|BEFORE_COMBAT|0|Không Dễ Để đi qua vậy đâu|1|Đừng có cản cháu|CONTINUE
+7|BEFORE_COMBAT|0|Ta sẽ không để cháu vào dễ vậy đâu|1|CHÁU LẠI SỢ QUÁ CƠ|COMBAT_IN
+7|COMBAT_WON|0|...|0
+7|COMBAT_WON|0|Thư viện là 1 nơi trau dồi tri thức|0
+7|COMBAT_WON|0|Một nơi thích hợp để tìm đối tượng thích hợp cho dự án lần này|1|Ý bác là bạn cháu...|CONTINUE
+7|COMBAT_WON|0|Vậy là cháu cũng đoán ra, đừng lo chúng ta chăm sóc cho bạn tốt lắm|0
+7|COMBAT_WON|0|Nếu cháu muốn ghé thăm bạn mình hãy hỏi thủ thư|0
+7|COMBAT_WON|0|Bà ta khó tính nhưng biết hầu hết mọi thứ trong trường|1|Cháu cảm ơn|EXIT_DIALOG
+8|BEFORE_COMBAT|0|Em muốn gì?|2|Em đang tìm hồ sơ của một sinh viên|MORE_INFOR|Em chỉ muốn biết sự thật|BEFORE_COMBAT_2
+8|MORE_INFOR|0|Có rất nhiều sự thật|0
+8|MORE_INFOR|0|Sự thật chỉ đến với người có đủ kiến thức và năng lực|0
+8|MORE_INFOR|0|Nhưng khi có đủ rồi liệu em còn muốn biết|1|Em đang tìm hồ sơ của một sinh viên|BEFORE_COMBAT_2
+8|ACCEPT_QUEST|0|Em đã tìm đủ mảnh giấy cô bảo chưa|2|Em tìm đủ rồi|CONTINUE|Em vẫn đang tìm ạ|EXIT_DIALOG
+8|ACCEPT_QUEST|1|BẠN ĐƯA CHO CÔ THỦ THƯ 3 TỜ GIẤY VỪA TÌM ĐƯỢC|0
+8|ACCEPT_QUEST|0|Tốt lắm nhưng vậy là chưa đủ|0
+8|ACCEPT_QUEST|0|Cảm ơn vì lòng tốt của em nhưng nhiệm vụ của ta là cản đường em|0
+8|ACCEPT_QUEST|0|Vì vậy nếu muốn biết thì hãy sẵn sàng đi|1|Em đã sẵn sàng rồi|COMBAT_IN
+8|BEFORE_COMBAT_2|0|Em cần tìm cậu ta làm gì|0
+8|BEFORE_COMBAT_2|0|Cậu ta đúng là đã từng đến đây rất nhiều lần|0
+8|BEFORE_COMBAT_2|0|Nhưng thật đáng tiếc hồ sơ về cậu ta đã biến mất|0
+8|BEFORE_COMBAT_2|0|Cô có thể nói cho em biết nếu em tìm đủ 3 mảnh giấy cô đánh rơi|0
+8|BEFORE_COMBAT_2|0|Thực sự đánh mất trong thư viện to như này thật khó để tìm kiếm|2|Để em tìm ạ|ACCEPT_QUEST|Em bây giờ không rảnh ạ|QUIT_DIALOG
+8|COMBAT_WON|0|Một con người nghị lực khao khát tìm sự thật|0
+8|COMBAT_WON|0|Có lẽ cô không thể cản được em rồi|0
+8|COMBAT_WON|0|Cầm lấy đi trước khi cô lại làm khó em tiếp|0
+8|COMBAT_WON|1|BẠN NHẬN ĐƯỢC CHÌA KHÓA MỞ CỬA TÒA BETA|0
+9|BEFORE_COMBAT|0|Vậy là cũng có người mò đến tận đây được sao|0
+9|BEFORE_COMBAT|0|Để đến được đây chắc chắn cũng không tầm thường|0
+9|BEFORE_COMBAT|0|Dù vậy ta cũng không để cháu qua đâu|1|VẬY THỬ CẢN CHÁU XEM NÀO|COMBAT_IN
+9|COMBAT_WON|0|Ta biết tại sao cháu đi được đến đây rồi|0
+9|COMBAT_WON|0|Vào lớp đi có người muốn nói chuyện với cháu đấy|0
+10|BEFORE_COMBAT|0|Thầy biết em sẽ đến|2|Thầy chủ nhiệm? Thầy làm gì ở đây?|BEFORE_COMBAT_2|Sao thầy biết em sẽ đến đây|MORE_INFOR
+10|BEFORE_COMBAT_2|0|Vậy Là em cũng biết được chút gì rồi phải không|0
+10|BEFORE_COMBAT_2|0|Thầy ngoài dạy học thì thầy còn là trợ lý của thầy hiệu trưởng|0
+10|BEFORE_COMBAT_2|0|Thực ra trước giờ thầy hiệu trưởng đang thực hiện một thí nghiệm|0
+10|BEFORE_COMBAT_2|0|Đã có hai sinh viên được đưa vào làm vật thí nghiệm|0
+10|BEFORE_COMBAT_2|0|Trong Đó người mà em tìm kiếm đó|0
+10|BEFORE_COMBAT_2|0|Họ thông báo về nhà mà cậu ta đi du học|0
+10|BEFORE_COMBAT_2|0|Họ tẩy sạch thông tin hồ sơ về cậu ta|0
+10|BEFORE_COMBAT_2|0|Và cuối cùng làm những việc rất trái với con người|0
+10|BEFORE_COMBAT_2|0|Liệu có thể hồi sinh người sử dụng một con người khác?|1|Thầy đang nói gì vậy???|CONTINUE
+10|BEFORE_COMBAT_2|0|Em đã biết quá nhiều|0
+10|BEFORE_COMBAT_2|0|Giờ đây em phải trả giá cho sự tò mò của bản thân|1|NUỐT EM KHÔNG TRÔI ĐÂU THẦY Ạ!|COMBAT_IN
+10|MORE_INFOR|0|Mọi dấu bết em đi đều được thầy theo giõi hết|0
+10|MORE_INFOR|0|Từ toà alpha - nhà võ -căng tin - thư viện thầy biết hết|1|Vậy sao thầy không cản em từ đầu|CONTINUE
+10|MORE_INFOR|0|Em Sắp Bước Vào 1 nơi em chưa bao giờ được biết|1|Vậy thầy làm gì ở đây?|BEFORE_COMBAT_2
+10|COMBAT_WON|0|Em đã chạm đến một thứ mà không được ai chạm vào|0
+10|COMBAT_WON|0|Thật khó để cản bước em|0
+10|COMBAT_WON|0|Bên dưới đồi thông|0
+10|COMBAT_WON|0|Một phòng thí nghiệm bí ẩn|0
+10|COMBAT_WON|1|*thầy đưa cho mình một cái bản đồ|0
+10|COMBAT_WON|0|Đó chính là nơi cuối cùng em phải đến|0
+10|COMBAT_WON|0|Hãy suy nghĩ trước khi đến, đừng để sự tò mò mà giết chết sự sống|0
+12|BEFORE_COMBAT|0|Ta nhớ em đâu trong danh sách được thí nghiệm đâu|0
+12|BEFORE_COMBAT|0|Chờ lượt sau đi giờ ta có việc rồi|2|Dừng lại ngay, mọi việc cần phải chấm dứt|CONTINUE|Em không đến đây để làm vật thí nghiệm, em đế|CONTINUE
+12|BEFORE_COMBAT|0|Một cậu sinh viên đáng thương|0
+12|BEFORE_COMBAT|0|Em không biết em đang đối diện với ai đâu|0
+12|BEFORE_COMBAT|0|Sao lũ nhân viên của ta lại để 1 thằng nhóc vào đây chứ|1|Đủ rồi, hãy thả mọi người ra nhanh|CONTINUE
+12|BEFORE_COMBAT|0|Đã quá muộn, thí nghiệm đã bắt đầu|0
+12|BEFORE_COMBAT|0|Đừng lo, nó chỉ là quá trình truyền tri thức, sẽ không có ai bị thương cả|1|Tri thức? Thí nghiệm sinh ra để lấy lại tri thức?|CONTINUE
+12|BEFORE_COMBAT|0|Im đi, em sao hiểu được cảm giác của con bé|0
+12|BEFORE_COMBAT|0|Con gái ta từng như bao đứa trẻ khác|0
+12|BEFORE_COMBAT|0|Được học, được vui chơi và đặc biệt được phát triển tài năng|0
+12|BEFORE_COMBAT|0|Có ai sánh được với con gái ta đâu|0
+12|BEFORE_COMBAT|0|Cho đến 1 ngày vụ tai nạn đó xảy ra|0
+12|BEFORE_COMBAT|0|Con bé vẫn được cứu nhưng lại mất đi tất cả những tri thức|0
+12|BEFORE_COMBAT|0|Chỉ còn lại 1 đầu óc của đứa bé 5 tuổi|0
+12|BEFORE_COMBAT|0|Tại sao con bé lại phải chịu những điều đó chứ|0
+12|BEFORE_COMBAT|0|Vì vậy ta sẽ giúp nó bằng cách tạo ra thí nghiệm này|0
+12|BEFORE_COMBAT|0|Ta có thể tác động trực tiếp lên sóng não con người|0
+12|BEFORE_COMBAT|0|Di chuyển những kí ức, tri thức từ người này sang người khác|0
+12|BEFORE_COMBAT|0|Vật thí nghiệm hoàn hào là chị của người bạn thân của em|0
+12|BEFORE_COMBAT|0|Một sinh viên xuất xác ta đã coi như đứa con thứ 2 vậy|0
+12|BEFORE_COMBAT|0|May mắn đã không mỉm cười, thí nghiệm thất bại|0
+12|BEFORE_COMBAT|0|Thất bại là mẹ thành công, bạn thân em trở thành người tiếp theo|0
+12|BEFORE_COMBAT|0|Rất có tiềm năng cho lần này|1|Hoá ra bạn tôi đã nghi ngờ ông từ đầu|CONTINUE
+12|BEFORE_COMBAT|0|Một cái bẫy hoàn hảo được dựng lên|0
+12|BEFORE_COMBAT|0|Sự tò mò khiến cậu ta phải trả 1 cái giá đắt|1|Giờ thí nghiệm tiếp theo sẽ là cậu ấy?|CONTINUE
+12|BEFORE_COMBAT|0|Chính xác, có vẻ em là một người thông minh đó|0
+12|BEFORE_COMBAT|0|Tại sao chúng ta không cùng nhau hợp tác nhỉ|0
+12|BEFORE_COMBAT|0|Thử nghĩ xem chúng ta có thể cứu được rất nhiều người |2|Ông điên thật rồi, tôi sẽ ngăn chặn ông|CONTINUE|Thật phi nhân đạo việc làm ông sẽ phải trả giá|CONTINUE
+12|BEFORE_COMBAT|0|Ranh con, vậy thì ngươi sẽ là đối tượng tiếp theo của ta vậy|1|TÔI LẠI SỢ ÔNG QUÁ CƠ|COMBAT_IN
+12|AFTER_COMBAT|0|Khá đấy nhóc, không như ta tưởng|1|Dừng lại đi, ông không thoát được đâu|CONTINUE
+12|AFTER_COMBAT|0|Đã quá muộn rồi, ngươi không thể làm gì được đâu|0
+12|AFTER_COMBAT|1|hệ thống báo quá trình đã đạt 75%|0
+12|AFTER_COMBAT|1|mình phải nhanh chóng huỷ bỏ lệnh|1|BẮT ĐẦU QUÁ TRÌNH HACK|HACK_START
+12|AFTER_HACKING|0|KHÔNG THỂ VẬY ĐƯỢC|0
+12|AFTER_HACKING|0|NHẤT ĐỊNH NGƯƠI SẼ PHẢI TRẢ GIÁ|0
+12|AFTER_HACKING|1|bạn thân mình đã tỉnh dậy|1|Bạn an toàn rồi, mình sẽ đưa bạn ra khỏi đây|CONTINUE
+12|AFTER_HACKING|1|có tiếng hú của xe cảnh sát, họ nhanh chóng ập vào|0
+12|AFTER_HACKING|1|cảnh sát nhanh chóng bắt thầy hiệu trưởng|0
+12|AFTER_HACKING|1|mình được minh oan và được giải cứu|0
+12|AFTER_HACKING|1|phòng thí nghiệm nhanh chóng tự sụp đổ, mọi người đã chạy hết ra ngoài|0
+8|BEFORE_EVENT|0|Em làm gì ở đây vậy? ra khỏi đây đi|0
+8|FAKE_COMPULATE|0|Đừng có lừa cô, em vẫn chưa tìm đủ đâu!|0

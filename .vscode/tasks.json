@@ -24,6 +24,12 @@
                 "${workspaceFolder}/src/camera.c",
                 "${workspaceFolder}/src/transition.c",
                 "${workspaceFolder}/src/gameplay.c",
+                "${workspaceFolder}/src/save_system.c",
+                "${workspaceFolder}/src/inventory.c",
+                "${workspaceFolder}/src/combat.c",
+                 "${workspaceFolder}/src/info.c",
+                 "${workspaceFolder}/src/combatbychatting.c",
+                  "${workspaceFolder}/src/story_manager.c",
                 "-o",
                 "${workspaceFolder}/game.exe",
 

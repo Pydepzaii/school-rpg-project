@@ -29,6 +29,9 @@ void InitUIStyle() {
     // Lưu ý: Font phải hỗ trợ Unicode. Size 28 là base size, khi vẽ có thể scale.
     // [GIẢI THÍCH]: Load font với bộ ký tự tùy chỉnh để nhẹ RAM hơn là load full bộ Unicode.
     globalFont = LoadFontEx("resources/font_dialog/game_font.ttf", 28, codepoints, codepointCount);
+    SetTextureFilter(globalFont.texture, TEXTURE_FILTER_POINT);
+
+    GuiSetFont(globalFont);
     //LOAD UI dailog
     texDialogBox = LoadTexture("resources/font_dialog/dialog_box.png");
     SetTextureFilter(texDialogBox, TEXTURE_FILTER_BILINEAR);

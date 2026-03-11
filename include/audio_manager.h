@@ -1,3 +1,4 @@
+// FILE: src/audio_manager.h
 #ifndef AUDIO_MANAGER_H
 #define AUDIO_MANAGER_H
 
@@ -11,9 +12,12 @@ typedef enum {
     MUSIC_NHA_VO,
     MUSIC_THU_VIEN,
     MUSIC_NHA_AN,
+     MUSIC_BETA,
+      MUSIC_LAB,
     MUSic_MAP_TRANG,
     MUSIC_MAP_DEN,
-    MUSIC_COUNT // Tổng số bài nhạc
+    MUSIC_BATTLE,
+    MUSIC_COUNT 
 } MusicType;
 
 // Định danh cho Hiệu ứng (Sound)
@@ -22,18 +26,45 @@ typedef enum {
     SFX_TALK,
     SFX_UI_HOVER,
     SFX_UI_CLICK,
-    SFX_COUNT // Tổng số hiệu ứng
+    SFX_ATTACK, // Tiếng đánh
+    SFX_HIT,     // Tiếng trúng đòn
+    SFX_COUNT 
 } SoundType;
 
-// Các hàm chức năng
+// Core Functions
 void Audio_Init();                          
 void Audio_Update();                        
+void Audio_Shutdown();   
+
+// Playback
 void Audio_PlayMusic(MusicType type);       
 void Audio_StopMusic(MusicType type);       
 void Audio_PlaySoundEffect(SoundType type); 
-void Audio_Shutdown();   
+void Audio_PlayMusicForMap(int mapID);      
+
+// --- VOLUME CONTROL SYSTEM ---
+
+// [NEW] 1. Master Volume (Tổng): Ảnh hưởng tất cả
 void Audio_SetMasterVolume(float volume); 
 float Audio_GetMasterVolume(void); 
-void Audio_PlayMusicForMap(int mapID);                  
 
+// 2. Music Volume (Nhạc nền)
+void Audio_SetMusicVolume(float volume);
+float Audio_GetMusicVolume(void);
+
+// 3. SFX Volume (Tiếng động)
+void Audio_SetSFXVolume(float volume);
+float Audio_GetSFXVolume(void);
+
+// 4. Mute (Tắt tiếng)
+void Audio_ToggleMute(void);
+bool Audio_IsMuted(void);
+
+// [NEW] 5. Mute Music (Tắt nhạc nền riêng)
+void Audio_ToggleMusicMute(void);
+bool Audio_IsMusicMuted(void);
+
+// [NEW] 6. Mute SFX (Tắt tiếng động riêng)
+void Audio_ToggleSFXMute(void);
+bool Audio_IsSFXMuted(void);
 #endif

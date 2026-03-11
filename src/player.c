@@ -1,5 +1,7 @@
 #include "player.h"
 #include "settings.h"
+#include "npc.h" // [FIX 1] BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ HIỂU STRUCT NPC
+#include <string.h>
 
 // [CONFIG] KÍCH THƯỚC CẮT TỪ ẢNH GỐC (Sprite Sheet)
 #define FRAME_WIDTH  80  
@@ -22,19 +24,23 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
 
     // Chọn đường dẫn ảnh dựa trên class được truyền vào
     switch (chosenClass) {
-        case 0: // Class 1
+
+        case 0: case CLASS_DAU_GAU:// Class 1
             pathWalk = "resources/player/class_1/main1walk.png";
             pathIdle = "resources/player/class_1/main1idle.png";
             break;
-        case 1: // Class 2
+
+        case 1: case CLASS_HOC_BA: // Class 2
             pathWalk = "resources/player/class_2/main2walk.png"; 
             pathIdle = "resources/player/class_2/main2idle.png";
             break;
-        case 2: // Class 3
+
+        case 2: case CLASS_SOAI_CA: // Class 3
             pathWalk = "resources/player/class_3/main3walk.png"; 
             pathIdle = "resources/player/class_3/main3idle.png";
             break;
-        case 3: // Class 4
+
+        case 3: case CLASS_PHU_NHI_DAI: // Class 4
             pathWalk = "resources/player/class_4/main4walk.png"; 
             pathIdle = "resources/player/class_4/main4idle.png";
             break;
@@ -43,21 +49,76 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
     // Load ảnh thật từ đường dẫn đã chọn ở trên
     player->textureWalk = LoadTexture(pathWalk);
     player->textureIdle = LoadTexture(pathIdle);
+
     // 1. Gán kích thước frame thủ công
-    player->drawWidth = 40.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
-    player->drawHeight = 40.0f;  // Chỉnh ở đây là Debug tự nhận
+    player->drawWidth = 50.0f;   // Muốn vẽ to nhỏ thì chỉnh ở đây
+    player->drawHeight = 50.0f;  // Chỉnh ở đây là Debug tự nhận
     player->spriteWidth = FRAME_WIDTH; 
     player->spriteHeight = FRAME_HEIGHT;
-    player->position = (Vector2){100, 100}; 
+    player->position = (Vector2){100, 100};
+
     //set mặc định đứng yên
     player->currentTexture = &player->textureIdle;
     player->maxFrames = MAX_FRAME_IDLE;
-    // 2. Cấu hình chỉ số RPG
+
+    // 2. Cấu hình chỉ số RPG và Hỏi Đáp (Gộp chung Cũ và Mới)
     switch (chosenClass) {
-        case CLASS_WARRIOR: player->stats = (PlayerStats){150, 150, 20, 20, 0, 2.5f}; break;
+        
+        // CẶP 1: Đầu gấu / Student (Máu 7, 3 Skill)
         case CLASS_STUDENT:
-        default:            player->stats = (PlayerStats){100, 100, 50, 10, 10, 2.5f}; break;
-    }        
+        case CLASS_DAU_GAU: 
+            player->stats = (PlayerStats){150, 150, 100, 20, 0, 2.5f, 5, 20, 0}; 
+            player->cbcStats = (CBC_Stats){7, 7, 3, 0, 0, false, false}; 
+            break;
+
+        // CẶP 2: Học bá / Warrior (Máu 3, 2 Skill, Nội tại chọn lại)
+        case CLASS_WARRIOR:
+        case CLASS_HOC_BA:
+            player->stats = (PlayerStats){100, 100, 100, 10, 0, 2.5f, 5, 20, 0}; 
+            player->cbcStats = (CBC_Stats){3, 3, 2, 0, 0, true, false};  
+            break;
+
+        // CẶP 3: Soái ca / Mage (Máu 4, 3 Skill)
+        case CLASS_MAGE:
+        case CLASS_SOAI_CA:
+            player->stats = (PlayerStats){120, 120, 100, 15, 0, 2.5f, 5, 20, 0}; 
+            player->cbcStats = (CBC_Stats){4, 4, 3, 0, 0, false, false}; 
+            break;
+
+        // CẶP 4: Phú nhị đại / Archer (Máu 5, 2 Skill)
+        case CLASS_ARCHER:
+        case CLASS_PHU_NHI_DAI:
+        default:
+            player->stats = (PlayerStats){130, 130, 100, 12, 0, 2.5f, 5, 20,0}; 
+            player->cbcStats = (CBC_Stats){5, 5, 2, 0, 0, false, false}; 
+            break;
+    }       
+    
+    player->textureWalk = LoadTexture(pathWalk);
+    player->textureIdle = LoadTexture(pathIdle);
+    player->currentTexture = &player->textureIdle;
+    player->pClass = chosenClass;
+
+    // 2. [CẤU HÌNH LẠI CHỈ SỐ VẬT LÝ]
+    // Máu 100, Stamina 100 (Thể lực dồi dào), Dame 10
+    //player->stats = (PlayerStats){100, 100, 100, 10, 0, 2.5f, 5, 20}; 
+
+    // --- CẤU HÌNH KỸ NĂNG VÕ THUẬT ---
+    
+    // Skill 1 (Q): Đấm Thường (Nhẹ, không tốn sức)
+    strcpy(player->skills[0].name, "Dam Thuong");
+    player->skills[0].damage = 15;
+    player->skills[0].staminaCost = 0;
+
+    // Skill 2 (W): Đấm Móc (Mạnh hơn, tốn ít sức)
+    strcpy(player->skills[1].name, "Dam Moc");
+    player->skills[1].damage = 30;
+    player->skills[1].staminaCost = 15; // Tốn 15 Thể lực
+
+    // Skill 3 (E): Liên Hoàn Cước (Rất mạnh, tốn nhiều sức)
+    strcpy(player->skills[2].name, "Lien Hoan");
+    player->skills[2].damage = 50;
+    player->skills[2].staminaCost = 40; // Tốn 40 Thể lực
 
     // 3. Khởi tạo Animation
     player->currentFrame = 0;
@@ -110,7 +171,7 @@ bool CheckCollisionFuture(Rectangle hitbox, GameMap *map, Npc *npcList, int npcC
 
 void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount) {
     bool isMoving = false;
-    Vector2 nextPos = player->position; // Biến tạm để tính toán vị trí tương lai
+    Vector2 nextPos = player->position; 
     
     int targetRow = ROW_DOWN; 
     if (!isMoving) {
@@ -118,32 +179,42 @@ void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount) {
         else if (player->currentDir == FACE_LEFT || player->currentDir == FACE_RIGHT) targetRow = ROW_RIGHT;
         else targetRow = ROW_DOWN;
     }
+    bool isAnyNpcTalking = false;
+    for (int i = 0; i < npcCount; i++) {
+        if (npcList[i].mapID == map->currentMapID && npcList[i].isTalking) {
+            isAnyNpcTalking = true;
+            break;
+        }
+    }
+    // Nếu KHÔNG có ai đang nói chuyện thì mới cho phép bấm phím di chuyển
+    if (!isAnyNpcTalking) {
 
-    // --- 1. XỬ LÝ PHÍM BẤM (INPUT) ---
-    //DI chuyển
-    if (IsKeyDown(KEY_A)) { 
-        nextPos.x -= player->stats.moveSpeed; 
-        player->currentDir = FACE_LEFT; 
-        targetRow = ROW_RIGHT; // Mẹo: Đi trái dùng ảnh hàng PHẢI
-        isMoving = true;
-    }
-    else if (IsKeyDown(KEY_D)) { 
-        nextPos.x += player->stats.moveSpeed; 
-        player->currentDir = FACE_RIGHT;
-        targetRow = ROW_RIGHT; 
-        isMoving = true;
-    }
-    else if (IsKeyDown(KEY_W)) { 
-        nextPos.y -= player->stats.moveSpeed; 
-        player->currentDir = FACE_UP;
-        targetRow = ROW_UP;   
-        isMoving = true;
-    }
-    else if (IsKeyDown(KEY_S)) { 
-        nextPos.y += player->stats.moveSpeed; 
-        player->currentDir = FACE_DOWN;
-        targetRow = ROW_DOWN; 
-        isMoving = true;
+        // --- 1. XỬ LÝ PHÍM BẤM (INPUT) ---
+        //DI chuyển
+        if (IsKeyDown(KEY_A)) { 
+            nextPos.x -= player->stats.moveSpeed; 
+            player->currentDir = FACE_LEFT; 
+            targetRow = ROW_RIGHT; // Mẹo: Đi trái dùng ảnh hàng PHẢI
+            isMoving = true;
+        }
+        else if (IsKeyDown(KEY_D)) { 
+            nextPos.x += player->stats.moveSpeed; 
+            player->currentDir = FACE_RIGHT;
+            targetRow = ROW_RIGHT; 
+            isMoving = true;
+        }
+        else if (IsKeyDown(KEY_W)) { 
+            nextPos.y -= player->stats.moveSpeed; 
+            player->currentDir = FACE_UP;
+            targetRow = ROW_UP;   
+            isMoving = true;
+        }
+        else if (IsKeyDown(KEY_S)) { 
+            nextPos.y += player->stats.moveSpeed; 
+            player->currentDir = FACE_DOWN;
+            targetRow = ROW_DOWN; 
+            isMoving = true;
+        }
     }
 
 
@@ -204,7 +275,8 @@ void UpdatePlayer(Player *player, GameMap *map, Npc *npcList, int npcCount) {
         }
     }
     
-    // --- 5.  CẬP NHẬT VÙNG CẮT ---
+    // --- 5.  CẬP NHẬT VÙNG CẮT ;
+    
     player->frameRec.x = (float)(player->currentFrame * player->spriteWidth); 
     player->frameRec.y = (float)(targetRow * player->spriteHeight);
     player->frameRec.width = (float)player->spriteWidth - 0.5f;
@@ -235,12 +307,12 @@ void DrawPlayer(Player *player) {
     int barHeight = 4;
     
     // Căn giữa thanh máu trên đầu
-   int barX = (int)(player->position.x + (player->drawWidth - barWidth) / 2.0f);
+    int barX = (int)(player->position.x + (player->drawWidth - barWidth) / 2.0f);
     int barY = (int)player->position.y - 8;
 
     DrawRectangle(barX, barY, barWidth, barHeight, Fade(RED, 0.6f)); // Nền
     
-    float hpPercent = (float)player->stats.hp / player->stats.maxHp;
+    float hpPercent = (float)player->stats.currentHp / player->stats.maxHp;
     DrawRectangle(barX, barY, (int)(barWidth * hpPercent), barHeight, LIME); // Máu hiện tại
 }
 

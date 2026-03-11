@@ -3,15 +3,23 @@
 
 #include "raylib.h"
 #include "map.h"
-#include "npc.h"
+
+typedef struct Npc Npc;
 
 // Phân loại nghề nghiệp nhân vật (Dễ mở rộng sau này)
 typedef enum {
     CLASS_STUDENT = 0,
     CLASS_WARRIOR,     
     CLASS_MAGE,        
-    CLASS_ARCHER       
+    CLASS_ARCHER,
+
+    //Combat bang mom
+    CLASS_DAU_GAU,
+    CLASS_HOC_BA,     
+    CLASS_SOAI_CA,        
+    CLASS_PHU_NHI_DAI       
 } PlayerClass;
+
 //hướng nhìn của player
 typedef enum {
     FACE_DOWN = 0,
@@ -19,20 +27,36 @@ typedef enum {
     FACE_LEFT,
     FACE_RIGHT
 } Direction;
-// Chứa toàn bộ chỉ số sức mạnh
-typedef struct {
-    int hp;            // Máu
+
+// [MỚI] Chỉ số độc quyền cho hệ thống Hỏi Đáp (CBC)
+typedef struct CBC_Stats {
+    int hp;             // Máu (Lượt sai tối đa)
+    int maxHp;          // Máu tối đa của hệ phái
+    int skillUses;      // Số lượt dùng kỹ năng còn lại
+    int comboCorrect;   // Đếm chuỗi trả lời đúng liên tiếp
+    int comboWrong;     // Đếm chuỗi trả lời sai liên tiếp
+    bool canRetry;      // Nội tại Học bá: Sai được chọn lại
+    bool skipNext;      // Nội tại: Bỏ qua câu hỏi tiếp theo
+} CBC_Stats;
+
+// [QUAN TRỌNG] Giữ nguyên tên PlayerStats để gameplay.h không lỗi
+typedef struct PlayerStats {
+    int currentHp;     
     int maxHp;         
-    int mana;          
+    int stamina;       // <--- [ĐỔI TÊN] Thể lực thay vì Mana
     int damage;        
-    int magicPower;    
-    float moveSpeed;   // Tốc độ chạy (Pixel/Frame)
+    int magicPower;    // (Có thể bỏ qua biến này nếu không dùng)
+    float moveSpeed;   
+    int defense;       
+    int expReward; 
+    int storyProgress;    
 } PlayerStats;
 
 // Struct chưa skill (Dự phòng)
 typedef struct {
     char name[30];
-    int manaCost;
+    int damage;    
+    int staminaCost;   // <--- [ĐỔI TÊN]
     int cooldown;
 } Skill;
 
@@ -45,6 +69,9 @@ typedef struct {
     
     PlayerClass pClass;   // Nghề nghiệp
     PlayerStats stats;    // Chỉ số
+
+    CBC_Stats cbcStats;   // Combat bang mom
+    
     Skill skills[4]; 
     Direction currentDir;// lưu hướng hiện tại    
     //Vẽ ảnh toàn cục
