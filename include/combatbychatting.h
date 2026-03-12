@@ -37,4 +37,6 @@ void CBC_Draw();
 // Kiểm tra trạng thái để chặn Player di chuyển khi đang thi cử
 bool CBC_IsActive();
 
+bool CBC_IsJustLost(void);
+
 #endif

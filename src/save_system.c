@@ -2,19 +2,28 @@
 #include "save_system.h"
 #include <stdio.h>
 
+// Kéo 2 hàm thao tác file từ inventory.c sang
+extern void Inventory_SaveToFile(FILE *file);
+extern void Inventory_LoadFromFile(FILE *file);
+
 void Game_Save(int mapID, Vector2 pos, Player *player) {
     SaveData data;
     data.mapID = mapID;
     data.playerPos = pos;
     
-    // Copy toàn bộ thông tin quan trọng của Player vào gói Data
+    // Lấy thông tin Player
     data.pClass = player->pClass;
     data.stats = player->stats;
     data.cbcStats = player->cbcStats;
 
     FILE *file = fopen(SAVE_FILE_NAME, "wb"); // wb = write binary
     if (file) {
+        // 1. Ghi dữ liệu cơ bản của nhân vật và Cốt truyện
         fwrite(&data, sizeof(SaveData), 1, file);
+        
+        // 2. Ghi nối dữ liệu Túi đồ và Đồ đang rớt dưới đất vào đuôi file
+        Inventory_SaveToFile(file);
+        
         fclose(file);
         printf(">> [SYSTEM] Game Saved successfully to %s\n", SAVE_FILE_NAME);
     } else {
@@ -27,7 +36,6 @@ bool Game_Load(int *mapID, Vector2 *pos, Player *player) {
     if (file) {
         SaveData data;
         size_t readCount = fread(&data, sizeof(SaveData), 1, file);
-        fclose(file);
 
         if (readCount > 0) {
             *mapID = data.mapID;
@@ -38,9 +46,14 @@ bool Game_Load(int *mapID, Vector2 *pos, Player *player) {
             player->stats = data.stats;
             player->cbcStats = data.cbcStats;
             
+            // Đọc nối dữ liệu Túi đồ từ file để khôi phục
+            Inventory_LoadFromFile(file);
+
+            fclose(file);
             printf(">> [SYSTEM] Game Loaded! Map: %d, Progress: %d\n", *mapID, player->stats.storyProgress);
             return true;
         }
+        fclose(file);
     }
     printf(">> [ERROR] Save file not found or corrupted.\n");
     return false;

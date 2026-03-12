@@ -496,3 +496,33 @@ const char* Inventory_GetItemName(ItemID id) {
     if (id >= 0 && id < ITEM_COUNT) return itemDatabase[id].name;
     return "Unknown";
 }
+// ========================================================
+// HỆ THỐNG LƯU TRỮ TÚI ĐỒ & ĐỒ RỚT (SAVE/LOAD)
+// ========================================================
+void Inventory_SaveToFile(FILE *file) {
+    if (file) {
+        // Ghi mảng chứa các món đồ trong túi
+        fwrite(inventory, sizeof(InventorySlot), MAX_INVENTORY_SLOTS, file);
+        // Ghi mảng chứa các món đồ đang rớt trên mặt đất
+        fwrite(droppedItems, sizeof(ItemEntity), MAX_ITEMS_ON_MAP, file);
+    }
+}
+
+void Inventory_LoadFromFile(FILE *file) {
+    if (file) {
+        // Đọc lại mảng túi đồ
+        fread(inventory, sizeof(InventorySlot), MAX_INVENTORY_SLOTS, file);
+        // Đọc lại mảng đồ rớt trên mặt đất
+        fread(droppedItems, sizeof(ItemEntity), MAX_ITEMS_ON_MAP, file);
+    }
+}
+// [MỚI] Hàm đếm tổng số lượng của 1 loại Item trong túi
+int Inventory_GetItemCount(ItemID id) {
+    int total = 0;
+    for (int i = 0; i < MAX_INVENTORY_SLOTS; i++) {
+        if (inventory[i].itemID == id) {
+            total += inventory[i].quantity;
+        }
+    }
+    return total;
+}

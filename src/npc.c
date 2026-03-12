@@ -27,6 +27,7 @@ void InitNpc(Npc *npc, int mapID, char *texturePath, Vector2 pos, char *name, in
     npc->frameTimer = 0.0f;
     npc->frameSpeed = 0.2f;     // Tốc độ chuyển frame (giây) -> Càng nhỏ càng nhanh
     npc->isTalking = false;
+    npc->isDead = false;
     npc->currentDialogLine = 0;
     //dữ liệu hitbox npc
     npc->hitWidth = 24.0f;      // Chiều rộng

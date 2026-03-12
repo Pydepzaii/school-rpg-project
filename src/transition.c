@@ -151,3 +151,17 @@ void Transition_IntroDone() {
     alpha = 1.0f;              // Đặt độ đen là 100% ngay lập tức
     waitTimer = 0.0f;          // Reset thời gian chờ
 }
+// [MỚI] CHUYỂN CẢNH MƯỢT TỪ ENDING SANG INTRO (KHÔNG BỊ NHÁY MENU)
+void Transition_EndingToIntro() {
+    if (currentState != TRANS_OFF) return;
+
+    extern bool playIntroAgain;
+    playIntroAgain = true; // Kích hoạt Intro ở frame tiếp theo
+    
+    Menu_SwitchTo(MENU_TITLE); // Chuyển ngầm hệ thống về Menu Title
+    
+    // Ép hệ thống chuyển cảnh ngay lập tức vào trạng thái MÀN ĐEN ĐẶC
+    currentState = TRANS_WAIT; 
+    alpha = 1.0f;
+    waitTimer = 0.0f;
+}

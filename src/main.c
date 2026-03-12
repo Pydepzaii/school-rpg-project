@@ -60,17 +60,37 @@ int main() {
         
         // Luôn update audio stream
         Audio_Update();
+        // [MỚI] CHECK LỆNH PHÁT LẠI INTRO TỪ ENDING
+        extern bool playIntroAgain;
+        if (playIntroAgain) {
+            playIntroAgain = false;
+            showIntro = true; // Bật lại cờ Intro
+            InitIntro("resources/intro/intro.mpg"); // Load lại video
+        }
 
         // --- PHASE INTRO ---
+       // --- PHASE INTRO ---
         if (showIntro) {
             if (UpdateIntro()) {
                 UnloadIntro(); 
                 showIntro = false;
                 Transition_IntroDone();
             }
+            
+            // [MỚI] Update hiệu ứng chuyển cảnh ngay cả khi đang chạy Video
+            if (Transition_IsActive()) {
+                // Truyền NULL vì lúc này ta không load map hay nhân vật
+                Transition_Update(NULL, NULL, NULL, NULL); 
+            }
+
             BeginDrawing();
             ClearBackground(BLACK);
-            DrawIntro();
+            
+            DrawIntro(); // Vẽ Video
+            
+            // [MỚI] Vẽ màn đen Fade Out đè lên mặt Video
+            Transition_Draw();
+            
             EndDrawing();
             continue; 
         }
@@ -140,6 +160,9 @@ int main() {
                 Debug_RunDialogTool();
                 // [MỚI] VẼ BẢN ĐỒ BÍ MẬT LÊN TRÊN CÙNG
                  Inventory_DrawSecretMap();
+                 // [MỚI] VẼ MÀN HÌNH ENDING TRÊN CÙNG CỦA SCALING
+                 extern void Gameplay_DrawEnding();
+                 Gameplay_DrawEnding();
 
             EndScaling(); 
             

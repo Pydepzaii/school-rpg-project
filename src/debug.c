@@ -1,4 +1,4 @@
-// FILE: src/debug.c
+    // FILE: src/debug.c
 #include "raylib.h"
 #include "debug.h"
 #include "map.h"

@@ -75,7 +75,7 @@ void Info_Init(void) {
     float pageWidth = (bookWidth - (paddingX * 2) - gap) / 2.0f;
     
     // Lề an toàn: Cách mép phải của trang giấy đúng 30 pixel
-    float safeTextWidth = pageWidth - 30.0f; 
+    float safeTextWidth = pageWidth - 40.0f; 
 
     // Đọc file Text từ ổ cứng
     char* rawDevlog = LoadFileText("resources/info/devlog.txt");

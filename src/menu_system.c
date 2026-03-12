@@ -595,11 +595,11 @@ void ProcessButtonAction(int actionID) {
 // --- UPDATE ---
 void Menu_Update() {
     if (IsKeyPressed(KEY_F11)) ToggleGameFullscreen();
-
+    extern bool Gameplay_IsEnding();
    if (currentMenu == MENU_NONE) {
         if (Inventory_IsActive()) return;
         // Bấm ESC trong game -> Mở Menu Pause, Sách rơi xuống
-        if (IsKeyPressed(KEY_ESCAPE)) {
+        if (IsKeyPressed(KEY_ESCAPE) && !Gameplay_IsEnding()) {
             Menu_SwitchTo(MENU_PAUSE);
             bookState = BOOK_DROPPING; 
             bookDropYOffset = -((float)SCREEN_HEIGHT + 200.0f);
