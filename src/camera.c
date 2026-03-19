@@ -16,12 +16,18 @@ void Camera_Init() {
 }
 
 void Camera_Update(Player *player, GameMap *map) {
-    // 1. Xử lý phím tắt bật/tắt Camera (Phím Y)
+   // 1. Xử lý phím tắt bật/tắt Camera (Phím Y)
+    extern bool isDarkEndingCutscene; // Lấy biến Cutscene từ gameplay.c sang
     
-    if (IsKeyPressed(KEY_Y)) {
-        isCameraActive = !isCameraActive;
+    if (!isDarkEndingCutscene) {
+        // Bình thường thì cho phép bấm Y để đổi góc nhìn
+        if (IsKeyPressed(KEY_Y)) {
+            isCameraActive = !isCameraActive;
+        }
+    } else {
+        // ĐANG XEM ENDING -> ÉP BUỘC CHẾ ĐỘ TOÀN CẢNH (Chế độ 2)
+        isCameraActive = false; 
     }
-
     // Lấy kích thước thật của Map
     float mapWorldWidth = map->texture.width * map->scale;
     float mapWorldHeight = map->texture.height * map->scale;

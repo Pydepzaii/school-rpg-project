@@ -4,6 +4,7 @@
 #include "settings.h"
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "npc.h"
 
 #define MAX_SETS 13
@@ -40,6 +41,26 @@ static bool showHint = false;
 static float fullHpMsgTimer = 0.0f;
 static bool skillUsedThisQuestion = false;
 static float skillBlockMsgTimer = 0.0f;
+static bool waitForRelease = false;
+
+// --- PARTICLE SYSTEM ---
+#define MAX_CBC_PARTICLES 120
+typedef struct {
+    Vector2 pos, vel;
+    float life, maxLife, size;
+    float rotation, rotSpeed;
+    Color color;
+    int shape; // 0=square, 1=circle
+} CBCParticle;
+
+static CBCParticle particles[MAX_CBC_PARTICLES];
+static int particleCount = 0;
+static float finalAnimTimer = 0.0f;
+static bool finalAnimInit = false;
+static float screenFlash = 0.0f;
+static float shakeTimer = 0.0f;
+static float shakeX = 0.0f;
+static float shakeY = 0.0f;
 
 static Rectangle answerRecs[4] = {
     { 110, 190, 580, 40 },
@@ -75,7 +96,7 @@ void CBC_Init() {
     strcpy(quizBank[0].qList[2].answers[3], u8"Phép Chia");
     quizBank[0].qList[2].correctAnswer = 0;
 
-    // --- BỘ 1: CÔ LỄ TÂN (Chapter 1 - 3 câu) ---
+    // --- BỘ 1: CÔ LỄ TÂN (Chapter 1 - 3 câu FPT) ---
     quizBank[1].count = 3;
     quizBank[1].passRate = 0.6f;
 
@@ -526,7 +547,7 @@ void CBC_Init() {
     quizBank[11].qList[0].correctAnswer = 1;
 
     strcpy(quizBank[11].qList[1].question, u8"Độ phức tạp thời gian của thuật toán Quick Sort (trung bình) là?");
-    strcpy(quizBank[11].qList[1].answers[0], u8"O(n²)");
+    strcpy(quizBank[11].qList[1].answers[0], u8"O(n mũ 2)");
     strcpy(quizBank[11].qList[1].answers[1], u8"O(n)");
     strcpy(quizBank[11].qList[1].answers[2], u8"O(n log n)");
     strcpy(quizBank[11].qList[1].answers[3], u8"O(log n)");
@@ -604,6 +625,14 @@ void CBC_Start(Player *playerPtr, Npc *enemyPtr) {
     skillUsedThisQuestion = false;
     fullHpMsgTimer = 0.0f;
     skillBlockMsgTimer = 0.0f;
+    waitForRelease = false;
+    particleCount = 0;
+    finalAnimTimer = 0.0f;
+    finalAnimInit = false;
+    screenFlash = 0.0f;
+    shakeTimer = 0.0f;
+    shakeX = 0.0f;
+    shakeY = 0.0f;
 
     if (pPlayer != NULL) {
         if (pPlayer->cbcStats.maxHp <= 0) pPlayer->cbcStats.maxHp = 5;
@@ -643,6 +672,24 @@ void CBC_Start(Player *playerPtr, Npc *enemyPtr) {
     else if (enemyPtr->id == NPC_THAY_CHU_NHIEM)   currentSetID = 10;
     else if (enemyPtr->id == NPC_THAY_HIEU_TRUONG) currentSetID = 11;
     else currentSetID = 0;
+
+    // Shuffle đáp án ngẫu nhiên cho từng câu trong bộ hiện tại
+    for (int q = 0; q < quizBank[currentSetID].count; q++) {
+        Question *qs = &quizBank[currentSetID].qList[q];
+        // Fisher-Yates shuffle
+        for (int i = 3; i > 0; i--) {
+            int j = GetRandomValue(0, i);
+            if (i == j) continue;
+            // Swap đáp án i và j
+            char tmp[128];
+            strcpy(tmp, qs->answers[i]);
+            strcpy(qs->answers[i], qs->answers[j]);
+            strcpy(qs->answers[j], tmp);
+            // Cập nhật correctAnswer nếu cần
+            if (qs->correctAnswer == i) qs->correctAnswer = j;
+            else if (qs->correctAnswer == j) qs->correctAnswer = i;
+        }
+    }
 }
 
 void CBC_Update() {
@@ -657,6 +704,7 @@ void CBC_Update() {
             if (IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 cbcState = CBC_STATE_QUESTION;
                 stateTimer = 0.0f;
+                waitForRelease = true;
             }
             break;
 
@@ -667,10 +715,10 @@ void CBC_Update() {
 
             // --- 1. XỬ LÝ NÚT BẤM SKILL ---
             bool blockSkill = (pClass == CLASS_ARCHER || pClass == CLASS_PHU_NHI_DAI) && skillUsedThisQuestion;
+            bool blockHint  = (pClass == CLASS_WARRIOR || pClass == CLASS_HOC_BA) && showHint;
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mPos, skillBtnRec)) {
-                if (blockSkill) {
-                    // [FIX] Phú Nhị Đại đã dùng skill câu này rồi
+                if (blockSkill || blockHint) {
                     skillBlockMsgTimer = 2.0f;
                 } else if (pPlayer->cbcStats.skillUses > 0) {
                     if ((pClass == CLASS_MAGE || pClass == CLASS_SOAI_CA) && pPlayer->cbcStats.hp >= pPlayer->cbcStats.maxHp) {
@@ -709,9 +757,15 @@ void CBC_Update() {
             }
 
             // --- 2. XỬ LÝ CHỌN ĐÁP ÁN ---
-            for (int i = 0; i < 4; i++) {
-                if (!hiddenAnswers[i] && CheckCollisionPointRec(mPos, answerRecs[i]) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    selectedAnswer = i;
+            if (waitForRelease) {
+                if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) waitForRelease = false;
+            } else {
+                for (int i = 0; i < 4; i++) {
+                    if (!hiddenAnswers[i] &&
+                        CheckCollisionPointRec(mPos, answerRecs[i]) &&
+                        IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        selectedAnswer = i;
+                    }
                 }
             }
             if (IsKeyPressed(KEY_ONE)   && !hiddenAnswers[0]) selectedAnswer = 0;
@@ -738,10 +792,6 @@ void CBC_Update() {
                             if (pPlayer->cbcStats.hp < pPlayer->cbcStats.maxHp) pPlayer->cbcStats.hp++;
                             pPlayer->cbcStats.comboCorrect = 0;
                         }
-                        if ((pClass == CLASS_MAGE || pClass == CLASS_SOAI_CA) && pPlayer->cbcStats.comboCorrect == 3) {
-                            pPlayer->cbcStats.skipNext = true;
-                            pPlayer->cbcStats.comboCorrect = 0;
-                        }
                     } else {
                         pPlayer->cbcStats.hp--;
                         pPlayer->cbcStats.comboWrong++;
@@ -760,7 +810,7 @@ void CBC_Update() {
         }
 
         case CBC_STATE_RESULT:
-            if (stateTimer > 1.2f || IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        if (stateTimer > 1.2f || IsKeyPressed(KEY_ENTER) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (pPlayer->cbcStats.hp <= 0) {
                     pPlayer->cbcStats.hp = 1;
                     isPass = false;
@@ -784,22 +834,100 @@ void CBC_Update() {
 
                     if (currentQuestion >= quizBank[currentSetID].count) {
                         isPass = true;
+                        // Thắng -> hồi 1 máu
+                        if (pPlayer->cbcStats.hp < pPlayer->cbcStats.maxHp)
+                            pPlayer->cbcStats.hp++;
                         cbcState = CBC_STATE_FINAL;
                     } else {
                         cbcState = CBC_STATE_QUESTION;
+                        waitForRelease = true;
                     }
                 }
                 stateTimer = 0.0f;
             }
             break;
 
-        case CBC_STATE_FINAL:
-            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_E) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        case CBC_STATE_FINAL: {
+            float dt2 = GetFrameTime();
+            finalAnimTimer += dt2;
+            if (screenFlash > 0.0f) screenFlash -= dt2 * 3.0f;
+
+            if (!finalAnimInit) {
+                finalAnimInit = true;
+                particleCount = 0;
+                screenFlash = 0.6f;
+
+                if (!isPass) {
+                    // Thua: rung màn hình
+                    shakeTimer = 0.6f;
+                }
+
+                for (int i = 0; i < MAX_CBC_PARTICLES; i++) {
+                    float angle = (float)GetRandomValue(0, 360) * 3.14159f / 180.0f;
+                    float speed = (float)GetRandomValue(60, 220);
+                    particles[i].pos = (Vector2){
+                        400 + (float)GetRandomValue(-20, 20),
+                        220 + (float)GetRandomValue(-10, 10)
+                    };
+                    particles[i].vel     = (Vector2){ cosf(angle)*speed, sinf(angle)*speed - 40.0f };
+                    particles[i].maxLife = particles[i].life = (float)GetRandomValue(8, 22) * 0.1f;
+                    particles[i].size    = (float)GetRandomValue(3, 9);
+                    particles[i].rotation  = 0.0f;
+                    particles[i].rotSpeed  = (float)GetRandomValue(-180, 180);
+                    particles[i].shape     = 0;
+
+                    if (isPass) {
+                        Color cols[] = {
+                            (Color){255,220,60,255},
+                            (Color){255,165,30,255},
+                            (Color){255,240,180,255},
+                            (Color){255,200,100,255},
+                            WHITE
+                        };
+                        particles[i].color = cols[GetRandomValue(0, 4)];
+                    } else {
+                        Color cols[] = {
+                            (Color){200,30,20,255},
+                            (Color){150,20,15,255},
+                            (Color){220,60,40,255},
+                            (Color){180,40,30,255},
+                            (Color){255,80,60,255}
+                        };
+                        particles[i].color = cols[GetRandomValue(0, 4)];
+                    }
+                    particleCount++;
+                }
+            }
+
+            // Update shake
+            if (shakeTimer > 0.0f) {
+                shakeTimer -= dt2;
+                float mag = shakeTimer * 12.0f;
+                shakeX = (float)(GetRandomValue(-100, 100)) / 100.0f * mag;
+                shakeY = (float)(GetRandomValue(-100, 100)) / 100.0f * mag;
+            } else {
+                shakeX = 0.0f;
+                shakeY = 0.0f;
+            }
+
+            for (int i = 0; i < particleCount; i++) {
+                if (particles[i].life <= 0) continue;
+                particles[i].pos.x   += particles[i].vel.x * dt2;
+                particles[i].pos.y   += particles[i].vel.y * dt2;
+                particles[i].vel.x  *= 0.98f;
+                particles[i].vel.y  += 200.0f * dt2;
+                particles[i].rotation += particles[i].rotSpeed * dt2;
+                particles[i].life   -= dt2;
+            }
+
+            if (IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_E) ||
+                (finalAnimTimer > 0.5f && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))) {
                 cbcActive = false;
                 if (isPass && pEnemy) pEnemy->isDead = true;
                 if (!isPass) cbcJustLost = true;
             }
             break;
+        }
     }
 }
 
@@ -897,14 +1025,160 @@ void CBC_Draw() {
         DrawTextEx(globalFont, u8"(Bấm để tiếp tục)", (Vector2){ 320, 320 }, 20, 1, darkBorder);
     }
     else if (cbcState == CBC_STATE_FINAL) {
-        DrawTextEx(globalFont, isPass ? u8"- VƯỢT ẢI THÀNH CÔNG -" : u8"- THẤT BẠI -",
-                   (Vector2){ 250, 160 }, 30, 1, isPass ? (Color){ 20, 100, 20, 255 } : RED);
+        bool win = isPass;
 
-        char scoreText[50];
-        sprintf(scoreText, u8"Bạn trả lời đúng: %d / %d", correctCount, quizBank[currentSetID].count);
-        DrawTextEx(globalFont, scoreText, (Vector2){ 270, 240 }, 24, 1, textColor);
+        // Dùng đúng bộ màu của bảng câu hỏi
+        Color bgParch  = (Color){238, 195, 134, 255}; // kem vàng ấm
+        Color woodCol  = (Color){186, 104,  34, 255}; // cam nâu
+        Color darkCol  = (Color){105,  50,  15, 255}; // nâu tối
+        Color btnCol   = (Color){220, 145,  40, 255}; // cam vàng
+        Color btnHov   = (Color){245, 175,  70, 255}; // cam sáng
+        Color textCol  = (Color){ 60,  30,  10, 255}; // nâu đậm
+        Color greenCol = (Color){ 80, 140,  30, 255}; // xanh lá thắng
+        Color redCol   = (Color){160,  30,  20, 255}; // đỏ thua
+        Color starCol  = win ? (Color){255,200, 30,255} : (Color){140,100, 60,255};
 
-        DrawTextEx(globalFont, u8"(Bấm để thoát)", (Vector2){ 330, 330 }, 20, 1, darkBorder);
+        // 1. Nền tối mờ
+        float fadeIn = finalAnimTimer < 0.4f ? finalAnimTimer / 0.4f : 1.0f;
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Fade(BLACK, 0.6f * fadeIn));
+
+        // 2. Ngôi sao ✦ bắn ra
+        for (int i = 0; i < particleCount; i++) {
+            if (particles[i].life <= 0) continue;
+            float lr = particles[i].life / particles[i].maxLife;
+            float s  = particles[i].size * lr;
+            float px = particles[i].pos.x;
+            float py = particles[i].pos.y;
+            Color c  = particles[i].color; c.a = (unsigned char)(220 * lr);
+
+            if (win) {
+                // Thắng: ngôi sao 4 cánh đầy đủ + điểm sáng
+                DrawLineEx((Vector2){px-s,      py},        (Vector2){px+s,      py},        s*0.6f+1.0f, c);
+                DrawLineEx((Vector2){px,        py-s},      (Vector2){px,        py+s},      s*0.6f+1.0f, c);
+                DrawLineEx((Vector2){px-s*0.6f, py-s*0.6f},(Vector2){px+s*0.6f, py+s*0.6f},s*0.35f+0.5f, c);
+                DrawLineEx((Vector2){px+s*0.6f, py-s*0.6f},(Vector2){px-s*0.6f, py+s*0.6f},s*0.35f+0.5f, c);
+                // Điểm sáng giữa
+                DrawCircle((int)px, (int)py, s*0.3f, (Color){255,250,220,c.a});
+            } else {
+                // Thua: mảnh vỡ tròn đơn giản
+                DrawCircle((int)px, (int)py, s*0.5f, c);
+                DrawCircle((int)px, (int)py, s*0.2f, (Color){255,200,180,c.a});
+            }
+        }
+
+        // Overlay đỏ mờ khi thua (tồn tại lâu hơn shake)
+        if (!win) {
+            float redFade = finalAnimTimer < 0.3f ? finalAnimTimer / 0.3f : 1.0f;
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(),
+                          (Color){120, 0, 0, (unsigned char)(25 * redFade)});
+        }
+
+        // 3. Hộp chính - giống hệt style bảng câu hỏi
+        float boxY = finalAnimTimer < 0.3f
+            ? 520.0f - (finalAnimTimer / 0.3f) * 460.0f
+            : finalAnimTimer < 0.42f
+                ? 60.0f + (finalAnimTimer - 0.3f) / 0.12f * 18.0f
+                : 78.0f;
+
+        // Áp dụng shake vào hộp khi thua
+        boxY += shakeY;
+        float shakeOffX = shakeX;
+
+        float cx  = 400.0f + shakeOffX;
+        float bW = 360.0f;
+        float bH = 170.0f;
+        float bX = cx - bW / 2.0f;
+
+        // Hiệu ứng vignette đỏ khi thua
+        if (!win && shakeTimer > 0.0f) {
+            float redAlpha = (shakeTimer / 0.6f) * 120.0f;
+            // 4 cạnh đỏ tối
+            DrawRectangle(0, 0, GetScreenWidth(), 60, (Color){180,0,0,(unsigned char)redAlpha});
+            DrawRectangle(0, GetScreenHeight()-60, GetScreenWidth(), 60, (Color){180,0,0,(unsigned char)redAlpha});
+            DrawRectangle(0, 0, 60, GetScreenHeight(), (Color){180,0,0,(unsigned char)redAlpha});
+            DrawRectangle(GetScreenWidth()-60, 0, 60, GetScreenHeight(), (Color){180,0,0,(unsigned char)redAlpha});
+        }
+
+        // Bóng đổ
+        DrawRectangle((int)(bX+4), (int)(boxY+4), (int)bW, (int)bH, (Color){0,0,0,80});
+
+        // Viền ngoài cùng darkBorder (lớp 1)
+        DrawRectangleRec((Rectangle){bX-4, boxY-4, bW+8, bH+8}, darkCol);
+        // Viền giữa woodBorder (lớp 2)
+        DrawRectangleRec((Rectangle){bX-2, boxY-2, bW+4, bH+4}, woodCol);
+        // Nền bgParchment (lớp 3)
+        DrawRectangleRec((Rectangle){bX, boxY, bW, bH}, bgParch);
+        // Viền trang trí bên trong
+        DrawRectangleLinesEx((Rectangle){bX+4, boxY+4, bW-8, bH-8}, 2, woodCol);
+
+        // 4. Đường kẻ ngang chia tiêu đề
+        DrawLineEx((Vector2){bX+12, boxY+62}, (Vector2){bX+bW-12, boxY+62}, 2.0f, woodCol);
+
+        // 5. Ngôi sao trang trí 2 bên tiêu đề - màu btnCol
+        float sY = boxY + 36.0f;
+        for (int side = -1; side <= 1; side += 2) {
+            float sx = cx + side * 140.0f;
+            DrawLineEx((Vector2){sx-8, sY},   (Vector2){sx+8, sY},   3.5f, starCol);
+            DrawLineEx((Vector2){sx,   sY-8}, (Vector2){sx,   sY+8}, 3.5f, starCol);
+            DrawCircle((int)sx, (int)sY, 3.0f, (Color){255,240,200,255});
+        }
+
+        // 6. CHỮ CHÍNH - màu xanh thắng / đỏ thua giống RESULT
+        const char* resultText = win ? u8"CHIẾN THẮNG!" : u8"THẤT BẠI...";
+        Color titleCol = win ? greenCol : redCol;
+        // Shadow
+        DrawTextEx(globalFont, resultText, (Vector2){cx-108+2, boxY+16+2}, 36, 1, (Color){0,0,0,100});
+        // Chữ
+        DrawTextEx(globalFont, resultText, (Vector2){cx-108, boxY+16}, 36, 1, titleCol);
+
+        // 7. Score + thông điệp (fade in sau 0.45s)
+        if (finalAnimTimer > 0.45f) {
+            float fi = (finalAnimTimer - 0.45f) / 0.35f;
+            if (fi > 1.0f) fi = 1.0f;
+            Color fc = textCol; fc.a = (unsigned char)(255 * fi);
+
+            char scoreText[60];
+            sprintf(scoreText, u8"Trả lời đúng: %d / %d câu",
+                    correctCount, quizBank[currentSetID].count);
+            DrawTextEx(globalFont, scoreText, (Vector2){cx - 105, boxY + 75}, 22, 1, fc);
+
+            Color mc = textCol; mc.a = (unsigned char)(180 * fi);
+            const char* msg = win ? u8"Xuất sắc! Bạn đã vượt qua thử thách!"
+                                  : u8"Đừng bỏ cuộc, hãy thử lại nhé!";
+            DrawTextEx(globalFont, msg, (Vector2){cx - 135, boxY + 108}, 18, 1, mc);
+        }
+
+        // 8. Nút TIẾP TỤC - giống nút đáp án
+        if (finalAnimTimer > 0.8f) {
+            float fi2 = (finalAnimTimer - 0.8f) / 0.3f;
+            if (fi2 > 1.0f) fi2 = 1.0f;
+
+            Rectangle btnR = {cx - 80, boxY + bH + 18, 160, 40};
+            // Bóng nút
+            DrawRectangle((int)btnR.x+3, (int)btnR.y+3,
+                          (int)btnR.width, (int)btnR.height, (Color){0,0,0,(unsigned char)(60*fi2)});
+            // Viền darkBorder
+            DrawRectangleRec((Rectangle){btnR.x-3, btnR.y-3, btnR.width+6, btnR.height+6},
+                             (Color){darkCol.r,darkCol.g,darkCol.b,(unsigned char)(255*fi2)});
+            // Viền woodBorder
+            DrawRectangleRec((Rectangle){btnR.x-1, btnR.y-1, btnR.width+2, btnR.height+2},
+                             (Color){woodCol.r,woodCol.g,woodCol.b,(unsigned char)(255*fi2)});
+            // Nền nút
+            Vector2 mPos = GetVirtualMousePos();
+            bool hover = CheckCollisionPointRec(mPos, btnR);
+            Color nb = hover ? btnHov : btnCol;
+            nb.a = (unsigned char)(255*fi2);
+            DrawRectangleRec(btnR, nb);
+            // Chữ nút
+            Color bt = textCol; bt.a = (unsigned char)(255*fi2);
+            DrawTextEx(globalFont, u8"Tiếp tục", (Vector2){cx-44, boxY+bH+28}, 22, 1, bt);
+        }
+
+        // 9. Flash nhẹ vàng ấm
+        if (screenFlash > 0.0f) {
+            Color fc = (Color){woodCol.r, woodCol.g, woodCol.b, (unsigned char)(screenFlash * 70)};
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), fc);
+        }
     }
 }
 

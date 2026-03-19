@@ -88,15 +88,6 @@ void LoadMap(GameMap *map, int mapID) {
              map->layerTexture = LoadTexture("resources/game_map/map6/layer.png");
             LoadMapDataFromFile(map, "resources/map_data/map_6.txt");
             break;
-        //testMap không sử dụng trong bản chính
-        case MAP_DEN:
-            map->texture = LoadTexture("resources/game_map/test/wibu.png");
-            break;
-
-        case MAP_TRANG:
-            map->texture = LoadTexture("resources/game_map/test/wibu2.png");
-            break;
-            
         default:
             break;
     }

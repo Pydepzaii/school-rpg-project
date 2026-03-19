@@ -21,9 +21,10 @@
 1|BEFORE_COMBAT|0|Em muốn biết sự thật ư|1|...|COMBAT_IN
 4|BEFORE_TALK_MR_CHINH|0|Không thấy thầy đang bận sao|0
 3|BEFORE_COMBAT|0|Em không nên vào đây, hãy rời khỏi nơi này càng sớm càng tốt|1|Tại sao ạ|CONTINUE
-3|BEFORE_COMBAT|0|Nơi này không phải nơi để học nữa, có cái gì đó rất kì lạ quanh đây|2|Em tưởng trường mình lúc nào cũng kì lạ|EXIT_DIALOG|Em chỉ muốn tìm bạn em mà thôi|CONTINUE
+3|BEFORE_COMBAT|0|Nơi này không phải nơi để học nữa, có cái gì đó rất kì lạ|2|Em tưởng trường mình lúc nào cũng kì lạ|EXIT_DIALOG|Em chỉ muốn tìm bạn em mà thôi|CONTINUE
 3|BEFORE_COMBAT|0|Hả?? Không phải đó là bạn đó đã…|1|Thầy có thông tin gì liên quan đến bạn đấy sao?|CONTINUE
-3|BEFORE_COMBAT|0|Nghe này, có những thứ càng biết nhiều càng nguy hiểm, hãy ở im, đừng để sự tò mò mà làm hại bản thân!|1|Nếu thầy không nói, em sẽ tự đi tìm|CONTINUE
+3|BEFORE_COMBAT|0||1|Nếu thầy không nói, em sẽ tự đi tìm|CONTINUE
+3|BEFORE_COMBAT|1|Có những thứ càng biết nhiều càng nguy hiểm.|1|Nếu thầy không nói, em sẽ tự đi tìm|CONTINUE
 3|BEFORE_COMBAT|0|Vậy là em thực sự muốn tìm câu trả lời ư|0
 3|BEFORE_COMBAT|0|Sẽ rất khó tiếp cận nếu em không có kĩ năng|0
 3|BEFORE_COMBAT|0|Thầy sẽ dạy em|1|OK THẦY|COMBAT_IN
@@ -46,7 +47,7 @@
 2|MORE_INFOR|0|Thật khó để biết họ đã đi đâu|1|Vậy thầy hãy nói đi|COMBAT_WON_2
 3|COMBAT_WON|0|Em đã mạnh hơn trước rất nhiều|1|Thầy còn gì để dạy không ạ|CONTINUE
 3|COMBAT_WON|0|Ta không còn gì để dạy em nữa|0
-3|COMBAT_WON|0|Nhưng trước khi em đi tìm câu trả lời, hãy gặp thầy Hùng, thầy đấy sẽ chỉ em đi đâu tiếp theo|1|Em cảm ơn thầy|EXIT_DIALOG
+3|COMBAT_WON|0|Hãy đi gặp thầy Hùng|1|Em cảm ơn thầy|EXIT_DIALOG
 2|COMBAT_WON_2|0|Sự thật nó không nằm ở tòa Alpha nữa|0
 2|COMBAT_WON_2|0| Nó xuất phát từ một nơi rèn luyện sức mạnh thực sự|0
 2|COMBAT_WON_2|1|*thầy đưa cho mình cái chìa khóa cũ|0
@@ -54,7 +55,7 @@
 4|BEFORE_COMBAT_2|0|Ta sẽ dạy em những thứ em còn thiếu để em sẵn sàng với mọi thử thách|1|Vào việc luôn đi thầy|COMBAT_IN
 4|COMBAT_WON|1|*thầy đưa mình chìa khoá vào căng tin|0
 4|COMBAT_WON|0|Con đường tiếp theo sẽ ở căng tin|0
-4|COMBAT_WON|0|Thầy không còn gì để dạy em nữa, em đã trở thành 1 chiến binh thực thụ|0
+4|COMBAT_WON|0|Thầy không còn gì để dạy em nữa.|0
 4|COMBAT_WON|0|Hãy đi tìm câu trả lời và kết thúc mọi chuyện đi|1|Em hứa không làm thầy thất vọng đâu|EXIT_DIALOG
 6|BEFORE_COMBAT|0|Căng tin đóng rồi về đi cháu|1|Nhưng cháu đang đi tìm bạn cháu|CONTINUE
 6|BEFORE_COMBAT|0|Nơi này không phải nơi để tìm kiếm bạn đâu|0
@@ -66,11 +67,11 @@
 6|COMBAT_WON|0|Ta cũng chỉ là phụ bếp không giúp gì được nhiều đâu|0
 6|COMBAT_WON|0|Đi mà hỏi bếp trưởng, ông ta sẽ giải đáp|0
 5|BEFORE_COMBAT|0|Lại thêm một con bò lạc đến đây nữa à|0
-5|BEFORE_COMBAT|0|Những người trước không ai chặn cháu lại sao|2|Cháu đã đánh bại bọn họ|CONTINUE|Họ ủng hộ cháu tiến vào đây thay vì cản chau l|CONTINUE
+5|BEFORE_COMBAT|0|Những người trước không ai chặn cháu lại sao|2|Cháu đã đánh bại bọn họ|CONTINUE|Họ ủng hộ cháu tiến vào đây thay vì cản cháu lại|CONTINUE
 5|BEFORE_COMBAT|0|Trước đó đã có 2 người đến đây trước|0
 5|BEFORE_COMBAT|0|Một người quá ngây thơ nên bị tóm rất dễ dàng|0
 5|BEFORE_COMBAT|0|Còn một người nhiều chuyện như cháu nên cũng bị bắt luôn|0
-5|BEFORE_COMBAT|0|Vậy nên nếu cháu đánh bại được ta chưa chắc đã đi đến được cuối đâu|0
+5|BEFORE_COMBAT|0|Dù cháu đánh bại được ta chưa chắc đã đi đến được cuối đâu|0
 5|BEFORE_COMBAT|0|Chuẩn bị đón nhận đi|1|CHIẾN LUÔN|COMBAT_IN
 5|COMBAT_WON|0|Cháu nghĩ những gì xảy ra trong trường này|0
 5|COMBAT_WON|0|Đều được ghi chép công khai sao?|0
@@ -96,7 +97,7 @@
 7|COMBAT_WON|0|...|0
 7|COMBAT_WON|0|Thư viện là 1 nơi trau dồi tri thức|0
 7|COMBAT_WON|0|Một nơi thích hợp để tìm đối tượng thích hợp cho dự án lần này|1|Ý bác là bạn cháu...|CONTINUE
-7|COMBAT_WON|0|Vậy là cháu cũng đoán ra, đừng lo chúng ta chăm sóc cho bạn tốt lắm|0
+7|COMBAT_WON|0|Cháu cũng đoán ra, đừng lo chúng ta chăm sóc cho bạn tốt lắm|0
 7|COMBAT_WON|0|Nếu cháu muốn ghé thăm bạn mình hãy hỏi thủ thư|0
 7|COMBAT_WON|0|Bà ta khó tính nhưng biết hầu hết mọi thứ trong trường|1|Cháu cảm ơn|EXIT_DIALOG
 8|BEFORE_COMBAT|0|Em muốn gì?|2|Em đang tìm hồ sơ của một sinh viên|MORE_INFOR|Em chỉ muốn biết sự thật|BEFORE_COMBAT_2
@@ -134,7 +135,7 @@
 10|BEFORE_COMBAT_2|0|Liệu có thể hồi sinh người sử dụng một con người khác?|1|Thầy đang nói gì vậy???|CONTINUE
 10|BEFORE_COMBAT_2|0|Em đã biết quá nhiều|0
 10|BEFORE_COMBAT_2|0|Giờ đây em phải trả giá cho sự tò mò của bản thân|1|NUỐT EM KHÔNG TRÔI ĐÂU THẦY Ạ!|COMBAT_IN
-10|MORE_INFOR|0|Mọi dấu bết em đi đều được thầy theo giõi hết|0
+10|MORE_INFOR|0|Mọi dấu vết em đi đều được thầy theo dõi hết|0
 10|MORE_INFOR|0|Từ toà alpha - nhà võ -căng tin - thư viện thầy biết hết|1|Vậy sao thầy không cản em từ đầu|CONTINUE
 10|MORE_INFOR|0|Em Sắp Bước Vào 1 nơi em chưa bao giờ được biết|1|Vậy thầy làm gì ở đây?|BEFORE_COMBAT_2
 10|COMBAT_WON|0|Em đã chạm đến một thứ mà không được ai chạm vào|0
@@ -145,7 +146,7 @@
 10|COMBAT_WON|0|Đó chính là nơi cuối cùng em phải đến|0
 10|COMBAT_WON|0|Hãy suy nghĩ trước khi đến, đừng để sự tò mò mà giết chết sự sống|0
 12|BEFORE_COMBAT|0|Ta nhớ em đâu trong danh sách được thí nghiệm đâu|0
-12|BEFORE_COMBAT|0|Chờ lượt sau đi giờ ta có việc rồi|2|Dừng lại ngay, mọi việc cần phải chấm dứt|CONTINUE|Em không đến đây để làm vật thí nghiệm, em đế|CONTINUE
+12|BEFORE_COMBAT|0|Chờ lượt sau đi giờ ta có việc rồi|2|Dừng lại ngay, mọi việc cần phải chấm dứt|CONTINUE|Em không đến đây để làm vật thí nghiệm|CONTINUE
 12|BEFORE_COMBAT|0|Một cậu sinh viên đáng thương|0
 12|BEFORE_COMBAT|0|Em không biết em đang đối diện với ai đâu|0
 12|BEFORE_COMBAT|0|Sao lũ nhân viên của ta lại để 1 thằng nhóc vào đây chứ|1|Đủ rồi, hãy thả mọi người ra nhanh|CONTINUE
@@ -162,8 +163,8 @@
 12|BEFORE_COMBAT|0|Vì vậy ta sẽ giúp nó bằng cách tạo ra thí nghiệm này|0
 12|BEFORE_COMBAT|0|Ta có thể tác động trực tiếp lên sóng não con người|0
 12|BEFORE_COMBAT|0|Di chuyển những kí ức, tri thức từ người này sang người khác|0
-12|BEFORE_COMBAT|0|Vật thí nghiệm hoàn hào là chị của người bạn thân của em|0
-12|BEFORE_COMBAT|0|Một sinh viên xuất xác ta đã coi như đứa con thứ 2 vậy|0
+12|BEFORE_COMBAT|0|Vật thí nghiệm hoàn hảo là chị của người bạn thân của em|0
+12|BEFORE_COMBAT|0|Một sinh viên xuất sắc ta đã coi như đứa con thứ 2 vậy|0
 12|BEFORE_COMBAT|0|May mắn đã không mỉm cười, thí nghiệm thất bại|0
 12|BEFORE_COMBAT|0|Thất bại là mẹ thành công, bạn thân em trở thành người tiếp theo|0
 12|BEFORE_COMBAT|0|Rất có tiềm năng cho lần này|1|Hoá ra bạn tôi đã nghi ngờ ông từ đầu|CONTINUE
@@ -186,3 +187,133 @@
 12|AFTER_HACKING|1|phòng thí nghiệm nhanh chóng tự sụp đổ, mọi người đã chạy hết ra ngoài|0
 8|BEFORE_EVENT|0|Em làm gì ở đây vậy? ra khỏi đây đi|0
 8|FAKE_COMPULATE|0|Đừng có lừa cô, em vẫn chưa tìm đủ đâu!|0
+11|BEGIN_ENDING_2|0|Hẹ hẹ hẹ|0
+11|BEGIN_ENDING_2|0|Đúng là lão già vô dụng|0
+11|BEGIN_ENDING_2|0|Cuối cùng vẫn phải để ta giải quyết hậu kì sao|1|...Ngươi! Ngươi là ai|CONTINUE
+11|BEGIN_ENDING_2|0|Tao là Quốc Trung|0
+11|BEGIN_ENDING_2|0|Và đó là 1 bí mật không thể được tiết lộ|0
+11|BEGIN_ENDING_2|0|hahahahahahahahahahahahahahah....|1|đó là cái tên ghi trên bảng thành tích|CONTINUE
+11|BEGIN_ENDING_2|1|Là sinh viên trường sao|0
+11|BEGIN_ENDING_2|1|Nhưng sao cậu ta lại trong hình dạng đó|0
+11|BEGIN_ENDING_2|0|Chết thật! lại lỡ khai tên rồi:))|1|Hắn ta bị sao vậy|MOVE_TO_BAOVE
+14|MOVE_TO_BAOVE|0|Tổng Trưởng ngài lại thế nữa rồi!|1|...|MOVE_TO_BAOVE2
+15|MOVE_TO_BAOVE2|0|...Haiz Tổng trưởng lúc nào cũng vui tính như vậy nhỉ|0
+15|MOVE_TO_BAOVE2|0|Mà tên này là ai vậy thưa ngài|1|..Sao các bác bảo vệ lại ở đây|MOVE_TO_TRUNG
+11|MOVE_TO_TRUNG|0|Kaka! Tên này chỉ là một kẻ đen đủi mà thôi|0
+11|MOVE_TO_TRUNG|0|Cũng khá khen vì mày đã đánh bại được lão già đó|1|Sao ngươi lại trong hình dạng đó|CONTINUE
+11|MOVE_TO_TRUNG|0|HAHAHA ĐÂY CHỈ LÀ CÁI VỎ BỌC THÔI MÀ HAHA|1|Vỏ bọc ư. Ý ngươi là sao|CONTINUE
+11|MOVE_TO_TRUNG|0|Trước kia cũng có 1 đứa như mày|0
+11|MOVE_TO_TRUNG|0|Lo chuyện bao đồng|0
+11|MOVE_TO_TRUNG|0|Hỏi nhiều và cái kết|0
+11|MOVE_TO_TRUNG|0|Để tao nhớ xem nào....|0
+11|MOVE_TO_TRUNG|0|Hình như là....|0
+11|MOVE_TO_TRUNG|0|Đạt gì đó thì phải hahahahaha|0
+11|MOVE_TO_TRUNG|0|À nó đang nằm trong phòng thí nghiệm này này:))))|1|THẰNG KHỐN|CONTINUE
+11|MOVE_TO_TRUNG|1|Mày đã làm gì bạn tao|0
+11|MOVE_TO_TRUNG|0|Hả? Em biết gì đâu em mới lên mà :)))|0
+11|MOVE_TO_TRUNG|0|Đùa chút thôi haha|0
+11|MOVE_TO_TRUNG|0|Ta nghe ông ta bảo gì đó về hồi sinh ý thức cho con gái lão|0
+11|MOVE_TO_TRUNG|0|Nghe khá thú vị|0
+11|MOVE_TO_TRUNG|0|Nên ta và tổ chức đã đầu tư cho lão|2|Tổ chức ư? Chúng mày là ai?|MORE_INFO|Mục đích của chúng mày là gì?|CONTINUE
+11|MOVE_TO_TRUNG|0|Mục đích hả....|0
+11|MOVE_TO_TRUNG|0|Có nên nói không nhỉ|0
+11|MOVE_TO_TRUNG|0|Ok đằng nào mày cũng ngủm để anh cho chú mày biết luôn|1|NÓI MAU|MORE_INFO
+11|MORE_INFO|0|... BỌN TAO LÀ ECHO|1|Elite Council of Human Optimization|CONTINUE
+11|MORE_INFO|0|Đúng vậy mày có thẻ gọi bọn tao là|0
+11|MORE_INFO|0|Hội đồng Tinh anh Tối ưu hóa Nhân loại.|0
+11|MORE_INFO|0|Hay những người đem lại tương lai tươi sáng cho nhân loại|1|CÁI QUÁI GÌ MÀ TƯƠNG LAI CHỨ|CONTINUE
+11|MORE_INFO|1|CHÚNG MÀY BẮT CÓC SINH VIÊN|0
+11|MORE_INFO|1|CHÚNG MÀY CÒN TRÍCH XUẤT Ý THỨC CỦA HỌ|0
+11|MORE_INFO|1|VÀ CUỐI CÙNG VỨT BỎ HỌ NHƯ NHỮNG CON RỐI|0
+11|MORE_INFO|1|THẾ THÌ TƯƠNG LAI CÁI QUÁI GÌ|0
+11|MORE_INFO|0|HAHAHAHAHAHAHahaha|0
+11|MORE_INFO|0|Thành công nào mà chả đánh đổi bằng hi sinh|0
+11|MORE_INFO|0|Mày nghĩ mấy cái cổng dịch chuyển trong trường|0
+11|MORE_INFO|0|từ đâu mà có|1|CÁI QUÁI GÌ CƠ|CONTINUE
+11|MORE_INFO|0|Nếu là 1 sinh viên yêu khoa học|0
+11|MORE_INFO|0|Chắc hẳn mày đã nghe|0
+11|MORE_INFO|0|Nghịch lí Dịch chuyển phân rã|1|Lẽ nào chúng mày đang|CONTINUE
+11|MORE_INFO|0|Đúng vậy! bọn ta đã hoàn thành nó|0
+11|MORE_INFO|0|Một cỗ máy phá hủy nghịch lí này|0
+11|MORE_INFO|0|Bọn ta đã thực sự tạo ra được LỖ SÂU|0
+11|MORE_INFO|0|Tuy khoảng cách vẫn bị giới hạn nhưng sớm thôi|0
+11|MORE_INFO|0|Loài người sẽ đặt được đỉnh cao thật sự|0
+11|MORE_INFO|0|Trong tương lai. khoảng cách sẽ không còn là giới hạn nữa|1|Vậy là các ngươi thí nghiệm lên người|CONTINUE
+11|MORE_INFO|0|Tất nhiên rồi hahahaha|1|MÀY ĐÚNG LÀ"NHÀ KHOA HỌC ĐIÊN"|CONTINUE
+11|MORE_INFO|0|hahahahah nói hay đấy haha|0
+11|MORE_INFO|0|I am a mad scientist!|0
+11|MORE_INFO|0|hahahahaha|1|CHÚNG MÀY THỰC SỰ TẠO RA LỖ SÂU VÌ NHÂN LOẠI Ư|CONTINUE
+11|MORE_INFO|1|CÓ CHÓ NÓ TIN NHÁ|1|NÓI MAU! MỤC ĐÍCH CỦA CHÚNG MÀY LÀ GÌ|CONTINUE
+11|MORE_INFO|0|HAHAHAHAHAHAH!|0
+11|MORE_INFO|0|TẦM NHÌN CỦA MÀY CÒN HẠN HẸP LẮM|0
+11|MORE_INFO|0|Mày nghĩ 1 nhà khoa học điên sẽ làm gì với phát minh của mình|1|...|CONTINUE
+11|MORE_INFO|0|VÌ NHÂN LOẠI|0
+11|MORE_INFO|0|VÌ TRÁI ĐẤT|0
+11|MORE_INFO|0|HAY VÌ KHOA HỌC|0
+11|MORE_INFO|0|HAHAHAHAHAHAHA|1|...|CONTINUE
+11|MORE_INFO|0|CÂU TRẢ LẠI LẠI ĐƠN GIẢN HƠN MÀY NGHĨ NHIỀU|0
+11|MORE_INFO|0|ĐÓ LÀ CHẲNG VÌ CÁI GÌ CẢ|0
+11|MORE_INFO|0|VI BÀN THÂN TAO THÍCH THẾ THÔI|0
+11|MORE_INFO|0|KAKAKAKAKAKAKAKA!!!!|0
+11|MORE_INFO|0|ĐAM MÊ KHÁM PHÁ VÀ PHÁT MINH THÌ CÓ GÌ SAI|0
+11|MORE_INFO|0|THÌ CÓ GÌ SAI HẢ. THÌ CÓ GÌ SAI HẢ|0
+11|MORE_INFO|0|MẤY LÃO GIÀ CHẾT TIỆT TRONG VIỆN NGHIÊN CỨU|0
+11|MORE_INFO|0|LÚC NÀO MỞ MỒM RA LÀ ĐẠO ĐỨC CÁC THỨ|0
+11|MORE_INFO|0|THẬT LÀ PHÁT TỞM|0
+11|MORE_INFO|0|Mày thực sự nghĩ bọn tao chỉ chế tạo LỖ SÂU thôi sao|1|Chúng mày còn làm gì nữa|CONTINUE
+11|MORE_INFO|0|Thấy lão già lúc nãy không|0
+11|MORE_INFO|0|BÙMMMMMMMMMM!|0
+11|MORE_INFO|0|1 nút bấm là không còn lại 1 mảnh vụn nào cả|0
+11|MORE_INFO|0|Tao gọi nó là"Pháo hố đen"|0
+11|MORE_INFO|0|NẾU THÀNH CÔNG THÌ CẢ THẾ GIỚI NÀY SẼ PHẢI QUY PHỤC ECHO|0
+11|MORE_INFO|0|CHỈ CÒN 1 BƯỚC CUỐI LÀ TĂNG CƯỜNG PHẠM VI HỦY DIỆT|1|MÀY ĐIÊN THẬT RỒI|CONTINUE
+11|MORE_INFO|0|Vì tao là NHÀ KHOA HỌC ĐIÊN MÀ"haha|0
+11|MORE_INFO|0|Mày đã rất cố gắng khi vào được tận đây|0
+11|MORE_INFO|0|tao có lời khen cho mày|0
+11|MORE_INFO|0|Nhưng giờ thì ý thức của mày|0
+11|MORE_INFO|0|Sẽ trở thành 1 phần trong thí nghiệm của tao|0
+11|MORE_INFO|0|Ngoan ngoãn không phản kháng|0
+11|MORE_INFO|0|Thì mọi chuyện sẽ xong nhanh thôi hihi|1|Chết tiệt tao sẽ cản mày lại|COMBAT_IN_WITH_BOSS
+14|COMBAT_IN_WITH_BOSS|0|Bắt lấy nó|1|...|COMBAT_IN_WITH_BOSS_2
+15|COMBAT_IN_WITH_BOSS_2|0|Lên luôn|1|CHIẾN THÔI!|COMBAT_IN_1
+11|BAD_ENDING|0|hahahahaha|0
+11|BAD_ENDING|0|Cái giá phải trả cho sự ngoan cố|1|CHẾT TIỆT! CHẾT TIỆT! CHẾT TIỆT|CONTINUE
+11|BAD_ENDING|0|GIỜ THÌ MÀY SẼ TRỞ THÀNH 1 PHẦN TRONG NGHIÊN CỨU CỦA TAO|1|KHÔNG!!!!!!!!!!!!!!!!|AFTER_BAD_ENDING
+11|BOSSPHASE_2|0|MÀY NGHĨ MÀY ĐÃ THẮNG RỒI SAO|0
+11|BOSSPHASE_2|0|MỌI THỨ CHƯA KẾT THÚC ĐÂU|1|Ống dung dịch trên tay hắn là gì vậy???|CONTINUE
+11|BOSSPHASE_2|0|HAHAHAHAHAHA|0
+11|BOSSPHASE_2|0|CẢM GIÁC NÀY THẬT TUYỆT|0
+11|BOSSPHASE_2|0|ATX10 huyết thanh cực mạnh|0
+11|BOSSPHASE_2|0|Loại thuốc này do ECHO bọn ta phát triển|0
+11|BOSSPHASE_2|0|Chúng được sử dụng nhằm mục đích tăng cường sức chịu đựng|0
+11|BOSSPHASE_2|0|để giảm thiểu tác động lên cơ thể trong quá trình nghiên cứu LỖ SÂU|0
+11|BOSSPHASE_2|0|Thứ này đúng ra phải được dùng trên những vật thí nghiệm|0
+11|BOSSPHASE_2|0|Thật không ngờ ta lại là người đầu tiên thử bản cải tiến này|0
+11|BOSSPHASE_2|0|GIỜ THÌ|1|...|KILL_BAOVE
+11|BOSSPHASE_2_2|0|HAHA|0
+11|BOSSPHASE_2_2|0|SỨC MẠNH NÀY QUÁ ĐỈNH|1|THẰNG KHỐN|CONTINUE
+11|BOSSPHASE_2_2|1|MÀY TÀN SÁT CẢ ĐỒNG ĐỘI SAO|0
+11|BOSSPHASE_2_2|0|HAHAHA THÌ SAO NÀO|0
+11|BOSSPHASE_2_2|0|GIỜ THÌ ĐẾN LƯỢT MÀY|1|THẰNG NÀY ĐIÊN THẬT RỒI...|COMBAT_IN
+14|KILL_BAOVE|0|Tổng trưởng! ngài đang làm gì vậy|0
+14|KILL_BAOVE|0|ÁHHHHHHHHHHHHHHHH!!!|1|...|KILL_BAOVE2
+15|KILL_BAOVE2|0|KHOAN ĐÃ|0
+15|KILL_BAOVE2|0|Ai đó cứu với...|0
+15|KILL_BAOVE2|0|KHÔNG!!!!!!!!!!!!!!!!!!!!!!!!!!|1|...|BOSSPHASE_2_2
+11|TRUE_ENDING|0|CHẾT TIỆT|0
+11|TRUE_ENDING|0|CHUYỆN GÌ ĐANG XẢY RA VẬY|0
+11|TRUE_ENDING|0|KHÔNG THỂ NHƯ THẾ ĐƯỢC|1|ĐẦU HÀNG ĐI MÀY KHÔNG THOÁT ĐƯỢC ĐÂU|CONTINUE
+11|TRUE_ENDING|1|HÌNH NHƯ CÓ TIẾNG GÌ ĐÓ|0
+11|TRUE_ENDING|0|CHẾT TIỆT LÒ PHẢN ỨNG CÓ VẤN ĐỀ RỒI|0
+11|TRUE_ENDING|0|LẼ NÀO LÃO GIÀ ĐÓ ĐÃ TÍNH TRƯỚC|0
+11|TRUE_ENDING|0|Cơ sở này coi như bỏ rồi|1|Đứng lại đó|CONTINUE
+11|TRUE_ENDING|0|Mày đừng nghĩ mọi chuyện dừng ở đây|0
+11|TRUE_ENDING|0|ECHO SẼ KHÔNG BAO GIỜ SỤP ĐỔ|0
+11|TRUE_ENDING|1|Hắn ta dùng thiết bị dịch chuyển chạy trốn|1|Mình cần đưa Đạt rời khỏi đây trước|CONTINUE
+11|TRUE_ENDING|1|CẬU TỈNH RỒI MÌNH RỜI KHỎI ĐÂY THÔI|1|đưa đạt rời khỏi phòng lab|TRUE_END
+12|HACK_FAIL|0|Động vào vị đó là ngươi tới số rồi|0
+12|HACK_FAIL|0|ECHO NHẤT ĐỊNH KHÔNG THA CHO NGƯƠI ĐÂU|1|ECHO ???|CONTINUE
+12|HACK_FAIL|0|Tổng trưởng ngài đến rồi!|0
+12|HACK_FAIL|0|SAO VẬY! Chuyện gì đang xảy ra|0
+12|HACK_FAIL|0|kyaaaaaaa|0
+12|HACK_FAIL|1|MỘT HỐ ĐEN ĐÃ HÚT THẦY HIỆU TRƯỞNG ĐI|1|Hình như có ai đó sắp tới|BEGIN_ENDING_2

@@ -24,8 +24,6 @@
 #define MAP_BETA 7
 #define MAP_LAB 4
 #define MAP_SAN_TRUONG 5
-#define MAP_DEN        9
-#define MAP_TRANG      10
 // --- [THÊM MỚI] KHAI BÁO CÁC HÀM SCALING ---
 void ToggleGameFullscreen(void);
 void InitScaling(void);

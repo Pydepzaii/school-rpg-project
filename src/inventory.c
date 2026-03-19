@@ -18,6 +18,12 @@ bool isShowingSecretMap = false;
 static Texture2D texSecretMap = {0};
 static float mapShowTimer = 0.0f; // [MỚI] Biến đếm thời gian chống "Click Ma"
 
+// Thêm vào inventory.c
+bool isReadingBook = false;
+const char* currentBookText = "";
+static float bookReadTimer = 0.0f; // Chống click đúp y hệt bản đồ
+
+
 void Inventory_ShowSecretMap() {
     isShowingSecretMap = true;
     mapShowTimer = 0.5f; // [MỚI] Khóa click chuột trong 0.5 giây đầu tiên
@@ -179,6 +185,75 @@ void Inventory_UseSelected() {
         printf(">> [ACTION] Su dung Ban Do!\n");
         Inventory_ShowSecretMap(); 
     } 
+    else if (id >= ITEM_BOOK_1 && id <= ITEM_BOOK_6) {
+       isReadingBook = true;
+        bookReadTimer = 0.5f; // Khóa click trong nửa giây đầu
+        Audio_PlaySoundEffect(SFX_UI_CLICK);
+
+        // Nạp nội dung tương ứng với từng cuốn
+       switch(id) {
+            case ITEM_BOOK_1: 
+                currentBookText = 
+                    u8"Day 1: Ngày đầu tiên trong kỳ học này,\n"
+                    u8"thật háo hức khi mình được thầy hiệu trưởng\n"
+                    u8"mời tham gia một dự án lớn. Đây sẽ là bước\n"
+                    u8"tiến lớn trong con đường học tập của mình,\n"
+                    u8"bao công sức mình học giờ sẽ được sử dụng.\n\nECHO CODE 3"; 
+                break;
+                
+            case ITEM_BOOK_2: 
+                currentBookText = 
+                    u8"Day 5: Học võ chưa bao giờ khiến mình chán.\n"
+                    u8"Đến nay mình đã học được 2 năm và lên đai\n"
+                    u8"vàng. Cũng nhờ các thầy võ đã quan tâm chỉ\n"
+                    u8"bảo mà giờ đây mình trưởng thành hơn nhiều.\n\n"
+                    u8"(Có vẻ dạo này thầy cô để ý mình nhiều hơn,\n"
+                    u8"chắc là sắp được cử đi thi đấu đây hihi).\n\nECHO CODE 6"; 
+                break;
+                
+            case ITEM_BOOK_3: 
+                currentBookText = 
+                    u8"Day 11: Dự án lớn cần những khoản đầu tư lớn,\n"
+                    u8"mà sao họ không thuê những nhân viên khác mà\n"
+                    u8"hay gọi mình vậy? Mình còn những deadline\n"
+                    u8"trên lớp nữa, không thể nào thở nổi luôn.\n\nECHO CODE 7"; 
+                break;
+                
+            case ITEM_BOOK_4: 
+                currentBookText = 
+                    u8"Day 17: Dự án này thực sự lớn, mình cần phải\n"
+                    u8"nghiên cứu nhiều thứ, từ vật lý đến thần\n"
+                    u8"kinh học. Chắc thầy hiệu trưởng đầu tư nhiều\n"
+                    u8"lắm, cũng may thư viện trường có đủ kiến thức.\n\n"
+                    u8"(Mình nhận ra dự án này chỉ có mình và các\n"
+                    u8"thầy cô, họ không để tâm nhiều lắm, toàn\n"
+                    u8"giao nhiệm vụ và bắt mình làm).\n\nECHO CODE 1"; 
+                break;
+                
+            case ITEM_BOOK_5: 
+                currentBookText = 
+                    u8"Day 25: Buổi tối hôm nay thật âm u như có\n"
+                    u8"điều không lành. Thật xui xẻo làm sao mà thầy\n"
+                    u8"gọi mình đến trường gấp, chắc có điều gì\n"
+                    u8"quan trọng lắm. Mình đã dồn rất nhiều tâm\n"
+                    u8"huyết vào dự án, chịu khó chút chắc cũng được.\n\nECHO CODE 8"; 
+                break;
+                
+            case ITEM_BOOK_6: 
+                currentBookText = 
+                    u8"Day 31: Mình không chịu nổi được nữa! Họ đã\n"
+                    u8"lừa mình, lợi dụng kiến thức của mình, và giờ\n"
+                    u8"đây họ biến mình thành vật thí nghiệm luôn.\n\n"
+                    u8"Mình đã bị nhốt và bị theo dõi 6 ngày rồi,\n"
+                    u8"không biết ngoài kia như nào. Mình cần thoát\n"
+                    u8"khỏi đây, cảnh báo cho mọi người!\n\nECHO CODE 3"; 
+                break;
+                
+            default: 
+                currentBookText = u8"Trang sách trống rỗng..."; 
+                break;
+        }
+    }
     else {
         printf(">> [ACTION] Item nay khong su dung duoc!\n");
     }
@@ -200,6 +275,33 @@ void Inventory_Draw() {
     float bookHeight = sh * 0.75f;    
     float startX = (sw - bookWidth) / 2.0f;
     float startY = (sh - bookHeight) / 2.0f + 20.0f; 
+
+    if (isReadingBook) {
+        if (bookReadTimer > 0.0f) bookReadTimer -= GetFrameTime();
+
+        // Tọa độ vẽ chữ lên trang giấy bên TRÁI
+        float leftPageX = startX + 60.0f; 
+        float leftPageY = startY + 50.0f;
+
+        // Vẽ nội dung cuốn sách bằng màu xanh đậm giống mực bút máy
+        DrawTextEx(globalFont, currentBookText, (Vector2){ leftPageX, leftPageY }, 22, 1, DARKBLUE);
+
+        // Vẽ chữ hướng dẫn tắt ở dưới cùng màn hình (giữa quyển sách)
+        float textW = MeasureTextEx(globalFont, u8"[ CLICK CHUỘT HOẶC ESC ĐỂ GẤP SÁCH ]", 20, 1).x;
+        DrawTextEx(globalFont, u8"[ CLICK CHUỘT HOẶC ESC ĐỂ GẤP SÁCH ]", 
+                  (Vector2){ startX + (bookWidth - textW) / 2.0f, startY + bookHeight - 50.0f }, 
+                  20, 1, MAROON);
+
+        // Lệnh đóng sách
+        if (bookReadTimer <= 0.0f) {
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_ENTER)) {
+                isReadingBook = false;
+                Audio_PlaySoundEffect(SFX_UI_CLICK);
+            }
+        }
+        
+        return; // DỪNG TẠI ĐÂY! Không chạy xuống code vẽ Grid và chi tiết Item bên dưới nữa
+    }
 
     // ==========================================
     // 1. VẼ TRANG TRÁI (LƯỚI ITEM)
@@ -525,4 +627,18 @@ int Inventory_GetItemCount(ItemID id) {
         }
     }
     return total;
+}
+// [FIX]: Hàm dọn dẹp toàn bộ dữ liệu khi tạo New Game
+void Inventory_Reset() {
+    for (int i = 0; i < MAX_INVENTORY_SLOTS; i++) {
+        inventory[i].itemID = ITEM_NONE;
+        inventory[i].quantity = 0;
+    }
+    for (int i = 0; i < MAX_ITEMS_ON_MAP; i++) {
+        droppedItems[i].active = false;
+    }
+    for (int i = 0; i < MAX_NOTIFICATIONS; i++) {
+        notifications[i].active = false;
+    }
+    printf(">> [INVENTORY] Cleared for New Game.\n");
 }

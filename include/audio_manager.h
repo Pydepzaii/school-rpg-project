@@ -14,9 +14,8 @@ typedef enum {
     MUSIC_NHA_AN,
      MUSIC_BETA,
       MUSIC_LAB,
-    MUSic_MAP_TRANG,
-    MUSIC_MAP_DEN,
     MUSIC_BATTLE,
+    MUSIC_BATTLE_PHASE2,
     MUSIC_COUNT 
 } MusicType;
 
@@ -27,7 +26,32 @@ typedef enum {
     SFX_UI_HOVER,
     SFX_UI_CLICK,
     SFX_ATTACK, // Tiếng đánh
+    SFX_DAUGAU_DANHTHUONG, // [MỚI] File đà (0.5s - 3.0s)
+    SFX_EXPLOSION_3S,      // [MỚI] File nổ (3.0s)
     SFX_HIT,     // Tiếng trúng đòn
+    SFX_KECHIUDON,
+    SFX_CUDAMSAMSET_PREP,  // [MỚI] Lấy đà sấm sét (0.5s - 3.0s)
+    SFX_CUDAMSAMSET_BOOM,  // [MỚI] Nổ sấm sét (3.0s)
+    SFX_RUNGCHAN_PREP,
+    SFX_GIAPGAI,
+    SFX_PHANUNGHOAHOC,
+    SFX_TAPTRUNGCAODO,
+    SFX_CAUTUTRUONG_PREP,
+    SFX_DINHLICUOICUNG_PREP,
+    SFX_BOSS_LAZER,
+    SFX_BOSS_TELEGATE,
+    SFX_BOSS_PHAOHODEN,
+    SFX_BOSS_DOTKICHPHANRA,
+    SFX_BOSS_QUATAIHUYETTHANH,
+    SFX_SOAICA_HUYETTIEN,  // [MỚI] Huyết Tiễn (Chỉ dùng ở mốc 3s)
+    SFX_SOAICA_HAOQUANG,   // [MỚI] Hào Quang Huyết Sắc (0.2s)
+    SFX_SOAICA_DAUAN,      // [MỚI] Dấu Ấn Ký Sinh (0.2s)
+    SFX_SOAICA_GIAOKEO,    // [MỚI] Giao Kèo Ác Quỷ (0.2s)
+    SFX_SOAICA_SINGLE_ARROW,
+    SFX_PHUNHIDAI_COINSPIN,   // [MỚI] Tiếng xu xoay (Đánh thường)
+    SFX_PHUNHIDAI_DOTIM_PREP, // [MỚI] Dò Tìm Con Mồi (0.5s)
+    SFX_PHUNHIDAI_DOTIM_BOOM, // [MỚI] Dò Tìm Con Mồi (3.0s)
+    SFX_PHUNHIDAI_TRIETHA,    // [MỚI] Triệt Hạ Con Mồi (0.2s)
     SFX_COUNT 
 } SoundType;
 

@@ -121,44 +121,13 @@ void Npc_LoadForMap(int mapID, Npc *npcList, int *npcCount) {
             (*npcCount)++;
             break;
         case MAP_THU_VIEN:
-            // --- 1. CÔ ĐẦU BẾP (NPC THƯỜNG) ---
-            InitNpc(&npcList[*npcCount], MAP_THU_VIEN, "resources/npc/map_thu_vien/codaubep.png", (Vector2){206, 250}, "Cô đầu bếp", 0);
-            strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
-            
-            // Chỉ số bình thường (không phải Boss)
-            npcList[*npcCount].stats.maxHp = 100;
-            npcList[*npcCount].stats.currentHp = 100;
-            npcList[*npcCount].stats.damage = 10; 
-            (*npcCount)++; 
-
-            // --- 2. NGƯỜI RƠM (TRAINING DUMMY) ---
-            InitNpc(&npcList[*npcCount], MAP_THU_VIEN, "resources/npc/map_thu_vien/dummy.png", (Vector2){617, 256}, "Người Rơm", 99);
-            
-            // Cấu hình cắt ảnh:
-            
-            npcList[*npcCount].frameCount = 1; 
-            
-            // Tốc độ (0 = đứng im)
-            npcList[*npcCount].frameSpeed = 0.0f; 
-
-            // XÓA DÒNG SCALE ĐI (VÌ STRUCT CHƯA CÓ)
-            // npcList[*npcCount].scale = 1.0f; <--- Xóa hoặc comment dòng này
-
-            npcList[*npcCount].currentFrame = 0;
-
-            // Stats Training: Máu trâu, Dame 0
-            npcList[*npcCount].stats.maxHp = 10000;    
-            npcList[*npcCount].stats.currentHp = 10000;
-            npcList[*npcCount].stats.damage = 0;       
-            npcList[*npcCount].frameSpeed = 9999.0f; // Đứng yên
-            (*npcCount)++;
-            // --- 3. CHÚ LAO CÔNG (BOSS CHẶN CỬA - ID 7) ---
+            // --- 1. CHÚ LAO CÔNG (BOSS CHẶN CỬA - ID 7) ---
             // Tạm để tọa độ (400, 300) ở giữa phòng, bạn dùng Chuột phải để đo và sửa lại nhé
             InitNpc(&npcList[*npcCount], MAP_THU_VIEN, "resources/npc/map_thu_vien/laocongdelta.png", (Vector2){370, 200}, "Chú Lao Công", 7);
             strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
             (*npcCount)++;
 
-            // --- 4. CÔ THỦ THƯ (BOSS GIAO QUEST - ID 8) ---
+            // --- 2. CÔ THỦ THƯ (BOSS GIAO QUEST - ID 8) ---
             // Tạm để tọa độ (250, 420) ở quầy góc dưới trái
             InitNpc(&npcList[*npcCount], MAP_THU_VIEN, "resources/npc/map_thu_vien/cothuthu.png", (Vector2){180, 345}, "Cô Thủ Thư", 8);
             strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
@@ -183,59 +152,6 @@ void Npc_LoadForMap(int mapID, Npc *npcList, int *npcCount) {
             InitNpc(&npcList[*npcCount], MAP_LAB, "resources/npc/map_lab/hieu_truong.png", (Vector2){ 396, 231 }, "Thầy Hiệu Trưởng", 12);
             strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
             (*npcCount)++;
-            break;
-        case MAP_TRANG:
-           {
-            // Danh sách ID 13 NPC quan trọng theo kịch bản cốt truyện
-            int plotNpcs[] = {
-                NPC_CO_THU_KY, NPC_THAY_TUAN_VM, NPC_THAY_CHINH, NPC_THAY_HUNG, 
-                NPC_CHU_PHU_BEP, NPC_CO_BEP_TRUONG, NPC_LAO_CONG_MAP4, NPC_CO_THU_THU, 
-                NPC_LAO_CONG_MAP5, NPC_THAY_CHU_NHIEM, NPC_TRO_LY_HT, NPC_THAY_HIEU_TRUONG, 
-                NPC_BA_GIA_CO_DON
-            };
-            
-            // [ĐÃ FIX] Trả lại dấu tiếng Việt chuẩn xác cho hiển thị (DrawText)
-            char* npcNames[] = {
-                "Cô lễ tân", "Thầy Tuấn VM", "Thầy Chính", "Thầy Hùng",
-                "Chú Phụ Bếp", "Cô Bếp Trưởng", "Chú Lao Công", "Cô Thủ Thư",
-                "Chú Lao Công", "Thầy Chủ Nhiệm", "Trợ Lý HT", "Thầy Hiệu Trưởng",
-                "Bà Già Cô Đơn"
-            };
-
-            // [ĐÃ FIX] Đồng bộ clone chuẩn đường dẫn Cô Bếp Trưởng của bạn.
-            // (Các nhân vật khác tôi chia sẵn theo thư mục map tương ứng, bạn có thể tự đổi tên file sau khi Art vẽ xong)
-            char* texturePaths[] = {
-                "resources/npc/map_alpha/coletan.png",
-                "resources/npc/map_lab/thaytuanvm.png",
-                "resources/npc/map_nha_vo/thaychinh.png",
-                "resources/npc/map_nha_vo/thayhung.png",
-                "resources/npc/map_nha_an/chudaubep.png",
-                "resources/npc/map_nha_an/codaubep.png",    // <--- Chuẩn đường dẫn bạn đang dùng
-                "resources/npc/map_thu_vien/laocongdelta.png",
-                "resources/npc/map_thu_vien/cothuthu.png",
-                "resources/npc/map_beta/chulaocong.png",
-                "resources/npc/map_beta/thayanh.png",
-                "resources/npc/map_lab/tro_ly.png",
-                "resources/npc/map_lab/hieu_truong.png",
-                "resources/npc/map_easter_egg/ba_gia.png"
-            };
-
-            int totalNpcs = 13;
-
-            for (int i = 0; i < totalNpcs; i++) {
-                // Xếp 7 người 1 hàng, cách nhau 100px. Hàng dưới cách hàng trên 150px.
-                float posX = 100.0f + (i % 7) * 100.0f;
-                float posY = 200.0f + (i / 7) * 150.0f;
-                
-                // Gọi hàm InitNpc CỦA CHÍNH BẠN để setup mọi thứ
-                InitNpc(&npcList[*npcCount], MAP_TRANG, texturePaths[i], (Vector2){posX, posY}, npcNames[i], plotNpcs[i]);
-                
-                // Set default Key thoại
-                strcpy(npcList[*npcCount].dialogKey, "DEFAULT"); 
-                
-                (*npcCount)++;
-            }
-        }
             break;
         default:
             break;

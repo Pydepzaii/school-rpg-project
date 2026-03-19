@@ -9,6 +9,7 @@
 
 // Cấu trúc dữ liệu sẽ được ghi xuống ổ cứng
 typedef struct {
+    int version; 
     int mapID;              // Đang ở map nào?
     Vector2 playerPos;      // Đang đứng ở đâu?
     
@@ -16,7 +17,7 @@ typedef struct {
     PlayerClass pClass;     // Nghề nghiệp (Dùng để load lại đúng hình ảnh)
     PlayerStats stats;      // Máu, Thể lực, Tốc độ, storyProgress...
     CBC_Stats cbcStats;     // Chỉ số Hỏi Đáp
-    
+    Skill skills[4];
     // (Sau này nếu làm chức năng lưu túi đồ, ta sẽ thêm mảng Inventory vào đây)
 } SaveData;
 

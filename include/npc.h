@@ -17,6 +17,8 @@
 #define NPC_TRO_LY_HT        11 // Boss phụ (Phòng Lab)
 #define NPC_THAY_HIEU_TRUONG 12 // Boss cuối (Phòng Lab)
 #define NPC_BA_GIA_CO_DON    13 // Easter Egg (Nhiệm vụ phụ)
+#define NPC_BAO_VE_1         14 // [MỚI] Bảo vệ cổng số 1
+#define NPC_BAO_VE_2         15 // [MỚI] Bảo vệ cổng số 2
 
 typedef struct Npc {
     int id;               

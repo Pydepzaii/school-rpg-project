@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #define MAX_DIALOG_EVENTS 200      // Tối đa 200 sự kiện trong game
-#define MAX_LINES_PER_EVENT 50     // Mỗi sự kiện tối đa 20 câu thoại qua lại
+#define MAX_LINES_PER_EVENT 200     // Mỗi sự kiện tối đa 20 câu thoại qua lại
 #define MAX_DIALOG_LENGTH 256      // Độ dài tối đa 1 câu thoại
 #define MAX_CHOICES 10 // Tối đa 10 lựa chọn cho 1 câu thoại
 // Cấu trúc 1 dòng thoại

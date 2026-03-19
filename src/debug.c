@@ -241,7 +241,7 @@ void DrawDebugInfoBox(const char* title, const char* line1, const char* line2) {
 // ---------------------------------------------
 void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCount) {
     if (Inventory_IsActive() || Menu_IsActive()) return;
-    if (IsKeyPressed(KEY_ZERO)) {
+    if (IsKeyDown(KEY_A) && IsKeyDown(KEY_D) && IsKeyDown(KEY_M) && IsKeyPressed(KEY_ONE)) {
         showMapDebug = !showMapDebug;
         if (showMapDebug) {
             showMenuDebug = false; 
@@ -488,7 +488,7 @@ void Debug_UpdateAndDraw(GameMap *map, Player *player, Npc *npcList, int npcCoun
 // ---------------------------------------------
 void Debug_RunMenuTool() {
     // 1. Bật Tắt Tool
-    if (IsKeyPressed(KEY_EQUAL)) {
+    if (IsKeyDown(KEY_A) && IsKeyDown(KEY_D) && IsKeyDown(KEY_M) && IsKeyPressed(KEY_TWO)) {
         showMenuDebug = !showMenuDebug;
         Menu_SetDebugMode(showMenuDebug); 
         if (showMenuDebug) {
@@ -688,7 +688,7 @@ void Debug_RunMenuTool() {
 
 void Debug_RunPropTool(GameMap *map) {
     if (Inventory_IsActive() || Menu_IsActive()) return;
-    if (IsKeyPressed(KEY_P)) {
+    if (IsKeyDown(KEY_A) && IsKeyDown(KEY_D) && IsKeyDown(KEY_M) && IsKeyPressed(KEY_THREE)) {
         showPropTool = !showPropTool;
         if (showPropTool) {
             showMapDebug = false; // Tắt tool Map đi cho đỡ rối

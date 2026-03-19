@@ -6,7 +6,6 @@
 #include "npc.h"
 #include "menu_system.h"
 #include <stdio.h>
-
 // --- TRẠNG THÁI ---
 typedef enum {
     TRANS_OFF = 0, // Không làm gì cả

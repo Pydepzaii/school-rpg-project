@@ -31,7 +31,7 @@
                  "${workspaceFolder}/src/combatbychatting.c",
                   "${workspaceFolder}/src/story_manager.c",
                 "-o",
-                "${workspaceFolder}/game.exe",
+                "${workspaceFolder}/coc_thach_dau.exe",
 
                 // 2. CHỈ ĐỊNH NƠI TÌM FILE HEADER (.h)
                 "-I", "${workspaceFolder}/src",      
@@ -42,7 +42,8 @@
                 "-lraylib",
                 "-lopengl32",
                 "-lgdi32",
-                "-lwinmm"
+                "-lwinmm",
+                "-mwindows"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

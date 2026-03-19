@@ -253,3 +253,15 @@ gcc --version
 **MENU:**
 -Đẫ thêm 2 chức năng mute music và mute sfx
 -Đã thêm menu info để xem thông tin
+### Ver 0.9 BIUUPDATE
+**GRAPHIC:**
+-Đã nâng cấp một số animation dịch chuyển và hiệu ứng nhặt đồ
+**GAMEPLAY**
+-Đã cập nhật hoàn tất cốt truyện
+-đã nâng cấp giao diện và bộ cấu hỏi combatbychatting
+-Đã thêm ending game outro
+**System**
+-Đã nâng cấp hệ thống save gamme giờ đây có thể lưu trạng thái cốt truyện khi save và load
+**Fix bug**
+-khắc phục 1 số lỗi khi loadgame
+-khắc phục các sự cố về hiển thị menu

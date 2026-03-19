@@ -77,4 +77,5 @@ const char* Inventory_GetItemName(ItemID id);
 extern bool isShowingSecretMap;
 void Inventory_ShowSecretMap();
 void Inventory_DrawSecretMap();
+void Inventory_Reset();
 #endif

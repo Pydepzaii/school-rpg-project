@@ -6,6 +6,8 @@
 #include "raymath.h"
 #include "audio_manager.h"
 #include "combatbychatting.h"
+#include "combat.h"
+#include "gameplay.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -14,7 +16,7 @@ extern int Inventory_GetItemCount(ItemID id);
 // --- BIẾN DÙNG CHO MINIGAME HACKING (CHAPTER 6) ---
 char hackInput[7] = {0};
 int hackInputLen = 0;
-
+bool isPointOfNoReturn = false; // [MỚI] Cờ khóa vĩnh viễn nút ESC
 void Story_Update(Player *player, GameMap *map, Npc *npcList, int npcCount)
 {
     // ==============================================================
@@ -475,6 +477,7 @@ void Story_Update(Player *player, GameMap *map, Npc *npcList, int npcCount)
             // --- MINIGAME HACKING (Giữ nguyên) ---
             if (strcmp(thayHieuTruong->dialogKey, "HACK_START") == 0) {
                 thayHieuTruong->isTalking = false;
+               isPointOfNoReturn = true; // [MỚI] BẬT KHÓA ESC VĨNH VIỄN TỪ GIÂY PHÚT NÀY
 
                 int key = GetCharPressed();
                 while (key > 0) {
@@ -495,7 +498,8 @@ void Story_Update(Player *player, GameMap *map, Npc *npcList, int npcCount)
                 }
 
                 if (hackInputLen == 6) {
-                    if (strcmp(hackInput, "123456") == 0) {
+                    if (strcmp(hackInput, "367183") == 0) {
+                        
                         player->stats.storyProgress = 12;
                         strcpy(thayHieuTruong->dialogKey, "AFTER_HACKING");
                         thayHieuTruong->currentDialogLine = 0;
@@ -503,7 +507,15 @@ void Story_Update(Player *player, GameMap *map, Npc *npcList, int npcCount)
                         hackInputLen = 0; memset(hackInput, 0, sizeof(hackInput));
                         Audio_PlaySoundEffect(SFX_UI_CLICK);
                     } else {
+                        // [MỚI] NHẬP SAI -> CHUYỂN SANG ENDING HẮC ÁM (PROGRESS = 20)
+                        player->stats.storyProgress = 20;
+                        // ĐÓNG BĂNG CAMERA TẠI CHỖ ĐỂ XEM TOÀN CẢNH
+                        extern bool isDarkEndingCutscene;
+                        isDarkEndingCutscene = true; 
+                        strcpy(thayHieuTruong->dialogKey, "HACK_ERROR"); // Kích hoạt màn hình Đỏ
+                        thayHieuTruong->currentDialogLine = 0;
                         hackInputLen = 0; memset(hackInput, 0, sizeof(hackInput));
+                        Audio_PlaySoundEffect(SFX_UI_CLICK);
                     }
                 }
             }
@@ -533,12 +545,256 @@ void Story_Update(Player *player, GameMap *map, Npc *npcList, int npcCount)
                             thayHieuTruong->isTalking = true;
                         } else {
                             // Đã đọc xong thoại AFTER_HACKING -> PHÁ ĐẢO GAME!
-                            extern void Gameplay_StartEnding();
-                            Gameplay_StartEnding();
-                            player->stats.storyProgress = 13; // Khóa mạch truyện lại
+                           // Đã đọc xong thoại AFTER_HACKING -> PHÁ ĐẢO GAME!
+                            Gameplay_StartEnding(ENDING_TRUE);
+                            player->stats.storyProgress = 13;
+                             // Khóa mạch truyện lại
+                           
                         }
                     }
                     break;
+                // ... (Các case 10, 11, 12 cũ giữ nguyên)
+
+            case 13: // TRUE ENDING ĐÃ HOÀN THÀNH
+            case 20: // DARK ENDING ĐÃ HOÀN THÀNH
+            {
+                // Kéo 2 cờ trạng thái Ending từ file gameplay.c sang
+                extern bool isDarkEndingCutscene;
+                extern bool Gameplay_IsEnding();
+
+                // [FIX LỖI KẸT GAME]: CHỈ dọn dẹp NPC khi KHÔNG PHẢI đang chiếu Cutscene.
+                // Điều này đảm bảo khi vừa Hack xong, NPC vẫn ở lại để diễn nốt kịch bản.
+                // Khi bạn thoát game và Load Save lại, cờ Cutscene = false, NPC mới bị xóa.
+                if (!isDarkEndingCutscene && !Gameplay_IsEnding()) {
+                    for (int i = 0; i < npcCount; i++) {
+                        if (npcList[i].id == 12 || npcList[i].id == 11 || npcList[i].id == 14 || npcList[i].id == 15) {
+                            npcList[i].mapID = -1; // Tống cổ khỏi phòng
+                            npcList[i].position = (Vector2){-1000, -1000};
+                            npcList[i].isTalking = false;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+           // ==============================================================
+            // [MỚI] GỌI COMBAT THẬT (ATB) VÀ NHẬN KẾT QUẢ
+            // ==============================================================
+            if (map->currentMapID == MAP_LAB) {
+                // 1. KIỂM TRA ĐỂ BẬT COMBAT
+                for (int i = 0; i < npcCount; i++) {
+                    if (npcList[i].isTalking) {
+                        // Phase 1: Đánh 3 người
+                        if (strcmp(npcList[i].dialogKey, "COMBAT_IN_1") == 0) {
+                            npcList[i].isTalking = false; // Tắt thoại để nhường màn hình
+                            Combat_Start(player, &npcList[i], 1);
+                        }
+                        // Phase 2: Đánh Quốc Trung Hóa Điên
+                        else if (npcList[i].id == 11 && strcmp(npcList[i].dialogKey, "COMBAT_IN") == 0) {
+                            npcList[i].isTalking = false;
+                            Combat_Start(player, &npcList[i], 2);
+                        }
+                        // Đánh Thầy Hiệu Trưởng
+                        else if (npcList[i].id == 12 && strcmp(npcList[i].dialogKey, "COMBAT_IN") == 0) {
+                            npcList[i].isTalking = false;
+                            Combat_Start(player, &npcList[i], 0);
+                        }
+                    }
+                }
+
+               // 2. NHẬN KẾT QUẢ TỪ COMBAT THẬT TRẢ VỀ
+                int res = Combat_GetResult();
+                if (res != 0) {
+                    for (int i = 0; i < npcCount; i++) {
+                        
+                        // --- Boss Quốc Trung Phase 1 ---
+                        // [ĐÃ SỬA LỖI ĐỨT MẠCH]: Nhận diện cả Bảo Vệ 2 (ID 15) hoặc Quốc Trung (ID 11) đang cầm Key
+                        if ((npcList[i].id == 11 || npcList[i].id == 15) && strcmp(npcList[i].dialogKey, "COMBAT_IN_1") == 0) {
+                            
+                            // 1. Tịch thu toàn bộ Key của 2 thằng bảo vệ để chống kẹt
+                            for (int k=0; k<npcCount; k++) {
+                                if (npcList[k].id == 14 || npcList[k].id == 15) {
+                                    npcList[k].isTalking = false;
+                                    strcpy(npcList[k].dialogKey, "DEFAULT");
+                                }
+                            }
+                            
+                            // 2. Nhét Mic lại vào tay Quốc Trung (ID 11) để nó nói tiếp
+                            for (int k=0; k<npcCount; k++) {
+                                if (npcList[k].id == 11) {
+                                    if (res == 1) strcpy(npcList[k].dialogKey, "BOSSPHASE_2"); // Thắng
+                                    else strcpy(npcList[k].dialogKey, "BAD_ENDING");           // Thua
+                                    
+                                    npcList[k].currentDialogLine = 0;
+                                    npcList[k].isTalking = true;
+                                }
+                            }
+                        }
+                        // --- Boss Quốc Trung Phase 2 ---
+                        else if (npcList[i].id == 11 && strcmp(npcList[i].dialogKey, "COMBAT_IN") == 0) {
+                            if (res == 1) strcpy(npcList[i].dialogKey, "TRUE_ENDING");
+                            else strcpy(npcList[i].dialogKey, "BAD_ENDING");
+                            
+                            npcList[i].currentDialogLine = 0;
+                            npcList[i].isTalking = true;
+                        }
+                        // --- Thầy Hiệu Trưởng ---
+                        else if (npcList[i].id == 12 && strcmp(npcList[i].dialogKey, "COMBAT_IN") == 0) {
+                            if (res == 1) strcpy(npcList[i].dialogKey, "AFTER_COMBAT");
+                            else strcpy(npcList[i].dialogKey, "BEFORE_COMBAT"); // Thua bắt đánh lại
+                            
+                            npcList[i].currentDialogLine = 0;
+                            npcList[i].isTalking = true;
+                        }
+                    }
+                    Combat_ResetResult(); // Quan trọng: Đã nhận kết quả xong thì phải Reset
+                }
+
+                // 3. BẮT CỜ ENDING TỪ FILE DIALOGS.TXT
+                for (int i = 0; i < npcCount; i++) {
+                    if (npcList[i].id == 11 && npcList[i].isTalking) {
+                      if (strcmp(npcList[i].dialogKey, "TRUE_END") == 0) {
+                            npcList[i].isTalking = false; 
+                            Gameplay_StartEnding(ENDING_DARK); // [MỚI] Phát True Ending
+                        }
+                        else if (strcmp(npcList[i].dialogKey, "AFTER_BAD_ENDING") == 0) {
+                            npcList[i].isTalking = false; 
+                            Gameplay_StartEnding(ENDING_BAD); // [MỚI] Phát Bad Ending
+                        }
+                    }
+                }
+            }
+          // =========================================================
+            // [MỚI] ĐIỀU PHỐI KỸ XẢO DARK ENDING (TỰ ĐỘNG THEO THOẠI)
+            // =========================================================
+            extern bool isSpawningDarkBoss;
+            extern bool isBlackholeActive;
+            extern float blackholeTimer;
+            
+            static bool hasTriggeredAura = false;
+            static bool hasTriggeredBlackhole = false;
+            static bool hasPassedMic = false; // [MỚI] Khóa chuyền mic tự động
+            // [THÊM ĐOẠN NÀY VÀO NGAY BÊN DƯỚI]
+            // Nếu không phải đang chiếu Cutscene (do vừa Load Save), ép toàn bộ biến về False!
+            extern bool isDarkEndingCutscene;
+            if (!isDarkEndingCutscene) {
+                hasTriggeredAura = false;
+                hasTriggeredBlackhole = false;
+                hasPassedMic = false;
+            }
+            if (thayHieuTruong->isTalking && strcmp(thayHieuTruong->dialogKey, "HACK_FAIL") == 0) {
+                // Dòng 2: Bật Aura
+                if (thayHieuTruong->currentDialogLine == 2 && !hasTriggeredAura) {
+                    hasTriggeredAura = true;
+                    isSpawningDarkBoss = true; 
+                    extern float darkBossSpawnTimer;
+                    darkBossSpawnTimer = 0.0f;
+                }
+                // Dòng 4: Bật Hố Đen
+                else if (thayHieuTruong->currentDialogLine == 4 && !hasTriggeredBlackhole) {
+                    hasTriggeredBlackhole = true;
+                    isBlackholeActive = true;
+                    blackholeTimer = 0.0f;
+                }
+            }
+
+            // [SỬA LỖI TÀN DƯ]: TỰ ĐỘNG XÓA THẦY VÀ CHUYỀN MIC SAU KHI NỔ HỐ ĐEN (2.5 Giây)
+            if (hasTriggeredBlackhole && !isBlackholeActive && blackholeTimer > 2.5f && !hasPassedMic) {
+                hasPassedMic = true; // Chốt lại, chỉ chạy 1 lần
+                
+                // 1. Tiêu diệt Hiệu Trưởng lập tức, không chờ bấm phím
+                thayHieuTruong->mapID = -1; 
+                thayHieuTruong->position = (Vector2){-1000, -1000};
+                thayHieuTruong->isTalking = false; 
+
+                // 2. Tự động bật Mic cho Boss Quốc Trung (ID 11) nhảy vào thoại luôn
+                for (int i = 0; i < npcCount; i++) {
+                    if (npcList[i].id == 11) {
+                        strcpy(npcList[i].dialogKey, "BEGIN_ENDING_2");
+                        npcList[i].currentDialogLine = 0;
+                        npcList[i].isTalking = true;
+                        break;
+                    }
+                }
+            }
+
+            // CHỐT CHẶN CHUYỂN PHASE: Fix lỗi hiện dấu "..." và đứng game
+            // Khi người chơi bấm vào lựa chọn "Hình như có ai đó sắp tới|BEGIN_ENDING_2"
+            if (strcmp(thayHieuTruong->dialogKey, "BEGIN_ENDING_2") == 0 && thayHieuTruong->mapID != -1) {
+                
+                // 1. Thủ tiêu hoàn toàn xác của Thầy Hiệu Trưởng
+                thayHieuTruong->mapID = -1; 
+                thayHieuTruong->position = (Vector2){-1000, -1000};
+                thayHieuTruong->isTalking = false; 
+
+                // 2. Chuyển quyền phát ngôn (Mở mic) cho Boss Quốc Trung (ID 11)
+                for (int i = 0; i < npcCount; i++) {
+                    if (npcList[i].id == 11) {
+                        strcpy(npcList[i].dialogKey, "BEGIN_ENDING_2");
+                        npcList[i].currentDialogLine = 0;
+                        npcList[i].isTalking = true;
+                        break;
+                    }
+                }
+            }
+            // ==============================================================
+            // [QUAN TRỌNG] TRẠM TRUNG CHUYỂN MIC (SỬA LỖI KẸT THOẠI QUỐC TRUNG)
+            // ==============================================================
+            int currentSpeakerID = -1;
+            char currentKey[32] = "";
+            
+            for (int i = 0; i < npcCount; i++) {
+                if (npcList[i].isTalking) {
+                    currentSpeakerID = npcList[i].id;
+                    strcpy(currentKey, npcList[i].dialogKey);
+                    break;
+                }
+            }
+            
+            // 1. Quốc Trung (11) -> Bảo vệ 1 (14)
+            if (currentSpeakerID == 11 && strcmp(currentKey, "MOVE_TO_BAOVE") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "MOVE_TO_BAOVE"); npcList[i].currentDialogLine = 0; }
+            }
+            // 2. Bảo vệ 1 (14) -> Bảo vệ 2 (15)
+            else if (currentSpeakerID == 14 && strcmp(currentKey, "MOVE_TO_BAOVE2") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "MOVE_TO_BAOVE2"); npcList[i].currentDialogLine = 0; }
+            }
+            // 3. Bảo vệ 2 (15) -> Quốc Trung (11)
+            else if (currentSpeakerID == 15 && strcmp(currentKey, "MOVE_TO_TRUNG") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "MOVE_TO_TRUNG"); npcList[i].currentDialogLine = 0; }
+            }
+            // 4. Quốc Trung (11) -> Bảo vệ 1 (Bắt lấy nó)
+            else if (currentSpeakerID == 11 && strcmp(currentKey, "COMBAT_IN_WITH_BOSS") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "COMBAT_IN_WITH_BOSS"); npcList[i].currentDialogLine = 0; }
+            }
+            // 5. Bảo vệ 1 (14) -> Bảo vệ 2 (Lên luôn)
+            else if (currentSpeakerID == 14 && strcmp(currentKey, "COMBAT_IN_WITH_BOSS_2") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "COMBAT_IN_WITH_BOSS_2"); npcList[i].currentDialogLine = 0; }
+            }
+            // 5.5 Bảo vệ 2 (15) -> Quốc Trung (11) (Nhường mic để bật Fake Combat Phase 1)
+            else if (currentSpeakerID == 15 && strcmp(currentKey, "COMBAT_IN_1") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "COMBAT_IN_1"); npcList[i].currentDialogLine = 0; }
+            }
+            // 6. Quốc Trung (11) -> Bảo vệ 1 (Giết bảo vệ 1)
+            else if (currentSpeakerID == 11 && strcmp(currentKey, "KILL_BAOVE") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "KILL_BAOVE"); npcList[i].currentDialogLine = 0; }
+            }
+            // 7. Bảo vệ 1 (14) -> Bảo vệ 2 (15) (Bảo vệ 2 hét lên)
+            else if (currentSpeakerID == 14 && strcmp(currentKey, "KILL_BAOVE2") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 14) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "KILL_BAOVE2"); npcList[i].currentDialogLine = 0; }
+            }
+            // 8. Bảo vệ 2 (15) -> Quốc Trung (11) (Bảo vệ 2 chết, Trung cười)
+            else if (currentSpeakerID == 15 && strcmp(currentKey, "BOSSPHASE_2_2") == 0) {
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 15) npcList[i].isTalking = false;
+                for (int i=0; i<npcCount; i++) if (npcList[i].id == 11) { npcList[i].isTalking = true; strcpy(npcList[i].dialogKey, "BOSSPHASE_2_2"); npcList[i].currentDialogLine = 0; }
             }
         }
     }

@@ -67,21 +67,21 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
         // CẶP 1: Đầu gấu / Student (Máu 7, 3 Skill)
         case CLASS_STUDENT:
         case CLASS_DAU_GAU: 
-            player->stats = (PlayerStats){150, 150, 100, 20, 0, 2.5f, 5, 20, 0}; 
+            player->stats = (PlayerStats){1200, 1200, 100, 100, 0, 2.5f, 90, 20, 0}; 
             player->cbcStats = (CBC_Stats){7, 7, 3, 0, 0, false, false}; 
             break;
 
         // CẶP 2: Học bá / Warrior (Máu 3, 2 Skill, Nội tại chọn lại)
         case CLASS_WARRIOR:
         case CLASS_HOC_BA:
-            player->stats = (PlayerStats){100, 100, 100, 10, 0, 2.5f, 5, 20, 0}; 
+            player->stats = (PlayerStats){1100, 1100, 120, 130, 0, 2.5f, 55, 40, 0};     
             player->cbcStats = (CBC_Stats){3, 3, 2, 0, 0, true, false};  
             break;
 
         // CẶP 3: Soái ca / Mage (Máu 4, 3 Skill)
         case CLASS_MAGE:
         case CLASS_SOAI_CA:
-            player->stats = (PlayerStats){120, 120, 100, 15, 0, 2.5f, 5, 20, 0}; 
+            player->stats = (PlayerStats){1600, 1600, 100, 110, 0, 2.5f, 45, 20, 0}; 
             player->cbcStats = (CBC_Stats){4, 4, 3, 0, 0, false, false}; 
             break;
 
@@ -89,7 +89,7 @@ void InitPlayer(Player *player, PlayerClass chosenClass) {
         case CLASS_ARCHER:
         case CLASS_PHU_NHI_DAI:
         default:
-            player->stats = (PlayerStats){130, 130, 100, 12, 0, 2.5f, 5, 20,0}; 
+            player->stats = (PlayerStats){700, 700, 150, 180, 0, 2.5f, 30, 20,0}; 
             player->cbcStats = (CBC_Stats){5, 5, 2, 0, 0, false, false}; 
             break;
     }       

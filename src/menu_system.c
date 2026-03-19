@@ -72,7 +72,7 @@ typedef enum {
 
 static BookAnimState bookState = BOOK_IDLE;
 static float bookProgress = 0.0f; // Chạy từ 0.0 đến 1.0
-static float bookAnimSpeed = 2.0f; // Tốc độ lật sách (Tăng số để lật nhanh hơn)
+static float bookAnimSpeed = 6.0f; // Tốc độ lật sách (Tăng số để lật nhanh hơn)
 
 // --- Biến cho hiệu ứng Rơi ---
 static float bookDropYOffset = 0.0f;   // Tọa độ lệch khi rơi
@@ -596,10 +596,12 @@ void ProcessButtonAction(int actionID) {
 void Menu_Update() {
     if (IsKeyPressed(KEY_F11)) ToggleGameFullscreen();
     extern bool Gameplay_IsEnding();
+    extern bool isPointOfNoReturn; // [MỚI] Gọi cờ khóa vĩnh viễn từ story_manager sang
    if (currentMenu == MENU_NONE) {
         if (Inventory_IsActive()) return;
         // Bấm ESC trong game -> Mở Menu Pause, Sách rơi xuống
-        if (IsKeyPressed(KEY_ESCAPE) && !Gameplay_IsEnding()) {
+        // [ĐÃ SỬA LẠI IF NÀY] Chỉ cho mở Menu Pause khi CHƯA bước vào Điểm-Không-Quay-Đầu
+        if (IsKeyPressed(KEY_ESCAPE) && !Gameplay_IsEnding() && !isPointOfNoReturn) {
             Menu_SwitchTo(MENU_PAUSE);
             bookState = BOOK_DROPPING; 
             bookDropYOffset = -((float)SCREEN_HEIGHT + 200.0f);
@@ -755,11 +757,54 @@ void Menu_Update() {
     if (currentMenu == MENU_CHARACTER_PROFILE && selectedCharIndex != -1 && !isGameStarting) {
         const char *fullProfileText = "";
         //Hiển thị câu mô ta cho từng class của menu_profileb
-        if (selectedCharIndex == 0) fullProfileText = "BỘ PC1\n\n366363636363636363\n KẺ HỦY DIỆT OSG\nKỹ năng: ẢO MA CANADA";
-        else if (selectedCharIndex == 1) fullProfileText = "BỘ PC2\n\nSức mạnh nghệ tuyệt đối.\nVũ khí: Củ nghệ.\nLối chơi: không biết";
-        else if (selectedCharIndex == 2) fullProfileText = "BỘ PC3\n\nĐiều khiển tri thức cổ xưa.\nVũ khí: Gậy phép.\nLối chơi: Sát thương diện rộng.";
-        else if (selectedCharIndex == 3) fullProfileText = "BỘ PC4\n\nNhãn quan của loài đại bàng.\nVũ khí: Cung tên.\nLối chơi: Tiêu diệt từ xa.";
-
+        if (selectedCharIndex == 0) {
+            fullProfileText = 
+                u8"Đầu gấu\n\n"
+                u8"Trùm trường có tiếng, là thành viên có đóng\n"
+                u8"góp nhiều của FU Street Workout.\n"
+                u8"Tuy tính tình nóng nảy, có chút bạo lực nhưng\n"
+                u8"luôn sẵn sàng bảo vệ người thân, bạn bè\n"
+                u8"nếu có nguy hiểm.\n\n"
+                u8"Máu: 7\n"
+                u8"Nội tại: Đúng 3 câu liên tiếp hồi 1 máu\n"
+                u8"Skill: Xóa đi 1 đáp án sai (3 lượt/round)";
+        }
+        else if (selectedCharIndex == 1) {
+            fullProfileText = 
+                u8"Học bá\n\n"
+                u8"Cóc vàng 3 kì liên tiếp, đạt nhiều danh hiệu\n"
+                u8"trong các cuộc thi giải thuật, olympic toán học,\n"
+                u8"đã giải 4000 bài LeetCode, Top 100 HackerRank.\n"
+                u8"Não to nhưng hướng nội, ít tham gia\n"
+                u8"các hoạt động ngoài trời.\n\n"
+                u8"Máu: 3\n"
+                u8"Nội tại: Làm sai 1 câu được chọn lại\n"
+                u8"Skill: Tiết lộ câu trả lời đúng (2 lượt/round)";
+        }
+        else if (selectedCharIndex == 2) {
+            fullProfileText = 
+                u8"Soái ca\n\n"
+                u8"Soái ca mạnh nhất trường, được nhiều bạn nữ để ý,\n"
+                u8"hiện đang làm KOL cho nhiều thương hiệu thời trang\n"
+                u8"và cũng là một người mẫu ảnh nổi tiếng.\n"
+                u8"Người đẹp tính cách cũng đẹp, hay giúp đỡ mọi\n"
+                u8"người, luôn hòa đồng khiến ai cũng quý mến.\n\n"
+                u8"Máu: 4\n"
+                u8"Nội tại: Đúng 3 câu liên tiếp skip 1 câu sau\n"
+                u8"Skill: Hồi máu (2 lượt/round)";
+        }
+        else if (selectedCharIndex == 3) {
+            fullProfileText = 
+                u8"Phú nhị đại\n\n"
+                u8"Con nhà tỷ phú, bố là chủ tịch, mẹ là nhạc sĩ,\n"
+                u8"sở hữu nhiều ngôi nhà, có tài xế riêng lái\n"
+                u8"siêu xe chở đến trường.\n"
+                u8"Có tiền nên rất hào phóng, luôn bỏ tiền ra chi\n"
+                u8"cho bạn bè nên được mọi người tôn trọng.\n\n"
+                u8"Máu: 5\n"
+                u8"Nội tại: Làm sai 2 câu liên tục skip 1 câu sau\n"
+                u8"Skill: Loại bỏ 2 đáp án sai ngẫu nhiên (2 lượt/round)";
+        }
         if (!isTextFinished) {
             framesCounterText++;
             if (framesCounterText >= 2) { 
@@ -1330,7 +1375,7 @@ void Menu_Draw() {
         float textStartY = sh * 0.22f; // Độ cao từ trên xuống
 
         // Vẽ chuỗi hiển thị (displayedText) bằng font Tiếng Việt
-        DrawTextEx(globalFont, displayedText, (Vector2){ textStartX, textStartY }, 22, 2, DARKGRAY);
+        DrawTextEx(globalFont, displayedText, (Vector2){ textStartX-55, textStartY -20},18, 1, BLACK);
 
         // ĐÂY LÀ CHỖ CHUYỂN MAP MƯỢT MÀ:
         if (isGameStarting && auraScale > 20.0f) {

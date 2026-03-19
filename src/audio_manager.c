@@ -28,15 +28,41 @@ void Audio_Init() {
     musicList[MUSIC_NHA_AN] = LoadMusicStream("resources/sound/bgm/bgm_canteen.mp3");
     musicList[MUSIC_LAB] = LoadMusicStream("resources/sound/bgm/bgm_lab.mp3");
     musicList[MUSIC_BETA] = LoadMusicStream("resources/sound/bgm/bgm_beta.mp3");
-    musicList[MUSIC_MAP_DEN] = LoadMusicStream("resources/sound/bgm/bgm_den.mp3");  
-    musicList[MUSic_MAP_TRANG]= LoadMusicStream("resources/sound/bgm/bgm_trang.mp3"); 
-
+    musicList[MUSIC_BATTLE] = LoadMusicStream("resources/sound/bgm/bgm_battle.mp3");
+    // [THÊM DÒNG NÀY] Load nhạc Phase 2
+    musicList[MUSIC_BATTLE_PHASE2] = LoadMusicStream("resources/sound/bgm/bgm_battle_phase2.mp3");
     // Load SFX
     soundList[SFX_STEP] = LoadSound("resources/sound/sfx/sfx_step.wav");
-    soundList[SFX_TALK] = LoadSound("resources/sound/sfx/sfx_talk.wav");
+   soundList[SFX_TALK] = LoadSound("resources/sound/sfx/sfx_dialog_sound_tap.mp3");
     soundList[SFX_UI_CLICK] = LoadSound("resources/sound/sfx/sfx_click.ogg");
     soundList[SFX_UI_HOVER] = LoadSound("resources/sound/sfx/sfx_hover.ogg");
+    soundList[SFX_DAUGAU_DANHTHUONG] = LoadSound("resources/sound/sfx/daugau_danhthuong_timer0.5-3.mp3");
+    soundList[SFX_EXPLOSION_3S] = LoadSound("resources/sound/sfx/explotion_timer_3s.mp3");
+    soundList[SFX_KECHIUDON] = LoadSound("resources/sound/sfx/kechiudon_timeming0.5s_to_end.mp3");
+    soundList[SFX_CUDAMSAMSET_PREP] = LoadSound("resources/sound/sfx/lightninghit_timeming_0.5_3.mp3");
+    soundList[SFX_CUDAMSAMSET_BOOM] = LoadSound("resources/sound/sfx/lightninghit_timing_3_to_end.mp3");
+    soundList[SFX_RUNGCHAN_PREP] = LoadSound("resources/sound/sfx/rungchan_timing_0.5_to_3s.mp3");
+    soundList[SFX_GIAPGAI] = LoadSound("resources/sound/sfx/giap_gai.mp3");
+    soundList[SFX_PHANUNGHOAHOC] = LoadSound("resources/sound/sfx/phan_ung_hoa_hoc_allphase.mp3");
+    // [THÊM DÒNG NÀY VÀO CHỖ LOAD SOUND]
+    soundList[SFX_TAPTRUNGCAODO] = LoadSound("resources/sound/sfx/taptrungcaodo_allphase.mp3");
+    soundList[SFX_CAUTUTRUONG_PREP] = LoadSound("resources/sound/sfx/cau_tu_truong_0.5_to_3s.mp3");
+    soundList[SFX_DINHLICUOICUNG_PREP] = LoadSound("resources/sound/sfx/dinhlicuoicung.mp3");
+    soundList[SFX_BOSS_LAZER] = LoadSound("resources/sound/sfx/lazer_timing allskill.mp3");
+    soundList[SFX_BOSS_TELEGATE] = LoadSound("resources/sound/sfx/telegate_allphase.mp3");
+    soundList[SFX_BOSS_PHAOHODEN] = LoadSound("resources/sound/sfx/phao_ho_den_timing0_to_3s.mp3");
+    soundList[SFX_BOSS_DOTKICHPHANRA] = LoadSound("resources/sound/sfx/dot_kich_phan_ra_0.5_to_3s.mp3");
+    soundList[SFX_BOSS_QUATAIHUYETTHANH] = LoadSound("resources/sound/sfx/qua_tai_huyet_thanh_allphase.mp3");
 
+    soundList[SFX_SOAICA_HUYETTIEN] = LoadSound("resources/sound/sfx/huyet_tien_hit_timing_3s.mp3");
+    soundList[SFX_SOAICA_HAOQUANG] = LoadSound("resources/sound/sfx/hao_quang_huyet_sac0.2_to_end.mp3");
+    soundList[SFX_SOAICA_DAUAN] = LoadSound("resources/sound/sfx/dau_an_ky_sinh0.2_to_end.mp3");
+    soundList[SFX_SOAICA_GIAOKEO] = LoadSound("resources/sound/sfx/giao_keo_ac_quy_0.2_to_end.mp3");
+    soundList[SFX_SOAICA_SINGLE_ARROW] = LoadSound("resources/sound/sfx/one_shot0.2.mp3");
+    soundList[SFX_PHUNHIDAI_COINSPIN] = LoadSound("resources/sound/sfx/coinspin0.5_to_3.mp3");
+    soundList[SFX_PHUNHIDAI_DOTIM_PREP] = LoadSound("resources/sound/sfx/do_tim_con_moi_timing0.5_to_3s.mp3");
+    soundList[SFX_PHUNHIDAI_DOTIM_BOOM] = LoadSound("resources/sound/sfx/do_tim_con_moi_timing_3s.mp3");
+    soundList[SFX_PHUNHIDAI_TRIETHA] = LoadSound("resources/sound/sfx/triet_ha_con_moi_allphase.mp3");
     // Apply Volume mặc định
     Audio_SetMasterVolume(currentMasterVol); // Set tổng trước
     Audio_SetMusicVolume(currentMusicVol);
@@ -64,8 +90,66 @@ void Audio_StopMusic(MusicType type) {
     StopMusicStream(musicList[type]);
 }
 void Audio_PlaySoundEffect(SoundType type) {
-    if (!isInitialized || type >= SFX_COUNT) return;
-    PlaySound(soundList[type]);
+    if (isMuted || isSFXMuted) return;
+    
+    if (type >= 0 && type < SFX_COUNT) {
+        float finalVol = currentSFXVol;
+
+        // [MỚI] HỆ THỐNG KÍCH ÂM LƯỢNG (ĐÃ TỐI ƯU SIÊU GỌN)
+        switch (type) {
+            case SFX_KECHIUDON:
+                finalVol = currentSFXVol * 30.0f; 
+                break;
+            
+            case SFX_DINHLICUOICUNG_PREP:
+            case SFX_BOSS_PHAOHODEN:
+            case SFX_BOSS_DOTKICHPHANRA:
+                finalVol = currentSFXVol * 7.0f; 
+                break;
+                
+            case SFX_CAUTUTRUONG_PREP:
+            case SFX_BOSS_LAZER:
+            case SFX_BOSS_TELEGATE:
+            case SFX_TALK:
+                finalVol = currentSFXVol * 4.0f; 
+                break;
+
+            // Tất cả các chiêu còn lại dùng chung mức x5.0f
+            case SFX_DAUGAU_DANHTHUONG:
+            case SFX_EXPLOSION_3S:
+            case SFX_CUDAMSAMSET_PREP:
+            case SFX_CUDAMSAMSET_BOOM:
+            case SFX_RUNGCHAN_PREP:
+            case SFX_GIAPGAI:
+            case SFX_PHANUNGHOAHOC:
+            case SFX_TAPTRUNGCAODO:
+            case SFX_BOSS_QUATAIHUYETTHANH:
+            case SFX_SOAICA_SINGLE_ARROW:
+                finalVol = currentSFXVol * 5.0f; 
+                break;
+            case SFX_PHUNHIDAI_COINSPIN:
+            case SFX_PHUNHIDAI_DOTIM_PREP:
+            case SFX_PHUNHIDAI_DOTIM_BOOM:
+            case SFX_PHUNHIDAI_TRIETHA:
+                finalVol = currentSFXVol * 5.0f; 
+                break;
+            // ... (các case x5.0f đang có sẵn)
+            case SFX_SOAICA_HUYETTIEN:
+            case SFX_SOAICA_HAOQUANG:
+            case SFX_SOAICA_DAUAN:
+            case SFX_SOAICA_GIAOKEO:
+                finalVol = currentSFXVol * 5.0f; 
+                break;
+
+            default:
+                // Các âm thanh UI, Bước chân... giữ nguyên x1.0f
+                break;
+        }
+
+        // Set âm lượng đã kích rồi mới phát nhạc
+        SetSoundVolume(soundList[type], finalVol);
+        PlaySound(soundList[type]);
+    }
 }
 void Audio_PlayMusicForMap(int mapID) {
     switch (mapID) {
@@ -75,8 +159,6 @@ void Audio_PlayMusicForMap(int mapID) {
         case MAP_NHA_AN:    Audio_PlayMusic(MUSIC_NHA_AN); break;
         case MAP_BETA:    Audio_PlayMusic(MUSIC_BETA); break;
         case MAP_LAB:    Audio_PlayMusic(MUSIC_LAB); break;
-        case MAP_DEN:       Audio_PlayMusic(MUSIC_MAP_DEN); break;
-        case MAP_TRANG:     Audio_PlayMusic(MUSic_MAP_TRANG); break;
         default: break;
     }
 }
